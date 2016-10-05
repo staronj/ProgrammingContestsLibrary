@@ -94,4 +94,14 @@ BOOST_AUTO_TEST_CASE(range_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(indirect_iterator_test) {
+  std::vector<std::string> values = {"Ala", "ma", "kota"};
+  std::vector<int> indexes = {2, 2, 0, 1};
+  auto it = make_indirect_iterator(values.begin(), indexes.begin());
+  auto end = make_indirect_iterator(values.begin(), indexes.end());
+  std::vector<std::string> result(it, end);
+  std::vector<std::string> expected = {"kota", "kota", "Ala", "ma"};
+  BOOST_CHECK(result == expected);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

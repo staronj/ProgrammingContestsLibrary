@@ -58,12 +58,12 @@ public:
   static_assert(std::is_integral<Integral>::value, "counting_iterator's template argument should be integral");
   using self_type = counting_iterator;
   using value_type = Integral;
-  using reference = const Integral&;
-  using pointer = const Integral*;
+  using reference = const value_type&;
+  using pointer = const value_type*;
   using difference_type = typename std::make_signed<Integral>::type;
   using iterator_category = std::random_access_iterator_tag;
 
-  counting_iterator(): value_(0) { }
+  counting_iterator(): value_() { }
 
   explicit counting_iterator(Integral n): value_(n) { }
 
@@ -98,11 +98,11 @@ public:
     return value_type(value_ + n);
   }
 
-  friend difference_type operator<(const self_type& lhs, const self_type& rhs) {
+  friend bool operator<(const self_type& lhs, const self_type& rhs) {
     return lhs.value_ < rhs.value_;
   }
 
-  friend difference_type operator==(const self_type& lhs, const self_type& rhs) {
+  friend bool operator==(const self_type& lhs, const self_type& rhs) {
     return lhs.value_ == rhs.value_;
   }
 
@@ -121,12 +121,12 @@ public:
   static_assert(std::is_integral<Integral>::value, "reverse_counting_iterator's template argument should be integral");
   using self_type = reverse_counting_iterator;
   using value_type = Integral;
-  using reference = const Integral&;
-  using pointer = const Integral*;
+  using reference = const value_type&;
+  using pointer = const value_type*;
   using difference_type = typename std::make_signed<Integral>::type;
   using iterator_category = std::random_access_iterator_tag;
 
-  reverse_counting_iterator(): value_(0) { }
+  reverse_counting_iterator(): value_() { }
 
   explicit reverse_counting_iterator(Integral n): value_(n) { }
 
@@ -161,11 +161,11 @@ public:
     return value_type(value_ - n);
   }
 
-  friend difference_type operator<(const self_type& lhs, const self_type& rhs) {
+  friend bool operator<(const self_type& lhs, const self_type& rhs) {
     return rhs.value_ < lhs.value_;
   }
 
-  friend difference_type operator==(const self_type& lhs, const self_type& rhs) {
+  friend bool operator==(const self_type& lhs, const self_type& rhs) {
     return lhs.value_ == rhs.value_;
   }
 
@@ -219,5 +219,52 @@ typename std::enable_if<std::is_integral<Integral>::value, iterator_range<revers
   return make_range(make_reverse_counting_iterator(end - 1), make_reverse_counting_iterator(begin - 1));
 }
 
+
+template <typename ValuesIterator, typename IndexesIterator>
+class indirect_iterator {
+public:
+  static_assert(is_iterator<ValuesIterator>::value, "first indirect_iterator's template argument must be iterator.");
+  static_assert(is_iterator<IndexesIterator>::value, "second indirect_iterator's template argument must be iterator.");
+  static_assert(
+      std::is_same<typename std::iterator_traits<ValuesIterator>::iterator_category, std::random_access_iterator_tag>::value,
+      "ValuesIterator must be random assess iterator."
+  );
+
+  using self_type = indirect_iterator;
+  using value_type = typename std::iterator_traits<ValuesIterator>::value_type;
+  using reference = const value_type&;
+  using pointer = const value_type*;
+  using difference_type = typename std::iterator_traits<IndexesIterator>::difference_type;
+  using iterator_category = std::forward_iterator_tag;
+
+  indirect_iterator():
+      values_(), indexes_() { }
+
+  explicit indirect_iterator(ValuesIterator values, IndexesIterator indexes):
+      values_(std::move(values)), indexes_(std::move(indexes)) { }
+
+  reference operator*() const {
+    return *(values_ + *indexes_);
+  }
+
+  self_type& operator++() {
+    ++indexes_;
+    return *this;
+  }
+
+  friend bool operator==(const self_type& lhs, const self_type& rhs) {
+    return lhs.indexes_ == rhs.indexes_;
+  }
+
+private:
+  ValuesIterator values_;
+  IndexesIterator indexes_;
+};
+
+template <typename ValuesIterator, typename IndexesIterator>
+auto make_indirect_iterator(ValuesIterator values, IndexesIterator indexes) ->
+indirect_iterator<ValuesIterator, IndexesIterator> {
+  return indirect_iterator<ValuesIterator, IndexesIterator>(std::move(values), std::move(indexes));
+};
 
 } // namespace lib

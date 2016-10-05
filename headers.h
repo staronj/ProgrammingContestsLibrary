@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <bitset>
 #include <vector>
+#include <array>
 #include <list>
 #include <deque>
 #include <queue>
