@@ -123,7 +123,7 @@ inline bool operator<=(const T& lhs, const T& rhs) {
 
 // lhs >= rhs -> !(rhs < lhs)
 template <typename T>
-inline bool operator<=(const T& lhs, const T& rhs) {
+inline bool operator>=(const T& lhs, const T& rhs) {
   return rhs <= lhs;
 }
 
