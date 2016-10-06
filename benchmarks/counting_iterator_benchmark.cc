@@ -37,6 +37,7 @@ BASELINE_F(BuildVector, For, SizeFixture, samples, iterations)
   for (int i = 0; i < N; ++i)
     V.push_back(i);
   celero::DoNotOptimizeAway(V.size());
+  celero::DoNotOptimizeAway(V[V[N - 1]]);
 }
 
 BENCHMARK_F(BuildVector, ReserveFor, SizeFixture, samples, iterations)
@@ -46,10 +47,12 @@ BENCHMARK_F(BuildVector, ReserveFor, SizeFixture, samples, iterations)
   for (int i = 0; i < N; ++i)
     V.push_back(i);
   celero::DoNotOptimizeAway(V.size());
+  celero::DoNotOptimizeAway(V[V[N - 1]]);
 }
 
 BENCHMARK_F(BuildVector, CountingIterator, SizeFixture, samples, iterations)
 {
   std::vector<int> V(make_counting_iterator(0), make_counting_iterator(N));
   celero::DoNotOptimizeAway(V.size());
+  celero::DoNotOptimizeAway(V[V[N - 1]]);
 }

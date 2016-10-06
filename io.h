@@ -45,21 +45,52 @@ private:
 
 template <typename T>
 constexpr bool allow_print_operator() {
-  return is_iterable<T>::value && !std::is_same<T, std::string>::value && !std::is_same<T, const char*>::value;
+  return
+      is_iterable<T>::value &&
+      !std::is_same<T, std::string>::value &&
+      !std::is_same<T, const char*>::value &&
+      !std::is_same<typename std::remove_extent<T>::type, char>::value;
 }
+
+template<std::size_t...>
+struct integer_sequence{};
+
+template <size_t N>
+struct generate_sequence {
+private:
+  template<std::size_t M, std::size_t... Is>
+  struct helper {
+    using type = typename helper<M-1, M-1, Is...>::type;
+  };;
+
+  template<std::size_t... Is>
+  struct helper<0, Is...> {
+    using type = integer_sequence<Is...>;
+  };
+
+public:
+using type = typename helper<N>::type;
+};
 
 template <typename... Args>
 class tuple_printer {
   static constexpr size_t arguments_count = sizeof...(Args);
+  using index_sequence = typename generate_sequence<arguments_count>::type;
   using function_type = void(tuple_printer::*)();
   using table_type = std::array<function_type, arguments_count>;
   using tuple_type = std::tuple<Args...>;
 
-  static constexpr table_type build_table() {
-    return {{}};
+  template <size_t N>
+  void print_() {
+    stream_ << std::get<N>(tuple_);
   }
 
-  static constexpr table_type functions_ = build_table();
+  template <size_t... Indexes>
+  static constexpr table_type build_table(integer_sequence<Indexes...>) {
+    return {{&tuple_printer::print_<Indexes>...}};
+  }
+
+  static constexpr table_type functions_ = build_table(index_sequence());
 public:
   tuple_printer (std::ostream& stream, const tuple_type& tuple):
       stream_(stream), tuple_(tuple) { }
@@ -87,7 +118,7 @@ std::ostream& simple(std::ostream& stream) {
   return stream;
 }
 
-std::ostream& add_none(std::ostream& stream) {
+std::ostream& fancy(std::ostream& stream) {
   stream.iword(detail::kSimpleFancyFlagID) = detail::fancy_printing_type;
   return stream;
 }
@@ -127,5 +158,40 @@ operator<<(std::ostream& stream, const Iterable& iterable) {
   return stream;
 }
 
+template <typename... Args>
+void print(std::ostream& stream, const char* format, const Args&... args) {
+  auto tuple = std::make_tuple(std::cref(args)...);
+  detail::tuple_printer<const Args&...> tuple_printer(stream, tuple);
+  for (const char* it = format, *prev = format; *it != '\0'; ) {
+    if (*it == '\0') {
+      stream.write(prev, it - prev);
+      prev = it;
+    }
+    else if (*it == '%') {
+      stream.write(prev, it - prev);
+      ++it;
+      if (*it == '%') {
+        stream.put('%');
+      }
+      else if (std::isdigit(*it)) {
+        size_t index = size_t(*it - '0');
+        tuple_printer.print(index);
+      }
+      else {
+        throw std::invalid_argument("print - invalid character after %");
+      }
+      prev = ++it;
+    }
+    else {
+      ++it;
+    }
+  }
+  stream.put('\n');
+}
+
+template <typename... Args>
+void print(const char* format, const Args&... args) {
+  print(std::cout, format, args...);
+}
 
 } // namespace lib
