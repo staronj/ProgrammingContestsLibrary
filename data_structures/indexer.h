@@ -5,16 +5,15 @@
 
 namespace lib {
 
-template <typename Value, typename Comparator = std::less<Value>>
+template <typename Value>
 class Indexer {
 public:
   using value_type = Value;
   using reference = const value_type&;
-  using comparator_type = Comparator;
   using id_type = uint32;
 
-  Indexer(Comparator comparator = Comparator()):
-      value_to_id_(comparator) { }
+  Indexer():
+      value_to_id_() { }
 
   id_type get_id(const value_type& value) {
     auto it = value_to_id_.find(value);
@@ -35,8 +34,12 @@ public:
     }
   }
 
+  size_t size() const {
+    return value_to_id_.size();
+  }
+
 private:
-  using map_type = std::map<value_type, id_type, Comparator>;
+  using map_type = std::unordered_map<value_type, id_type>;
   map_type value_to_id_;
   std::vector<typename map_type::const_iterator> id_to_value_;
 };
