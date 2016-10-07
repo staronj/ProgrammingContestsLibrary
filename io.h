@@ -52,6 +52,30 @@ constexpr bool allow_print_operator() {
       !std::is_same<typename std::remove_extent<T>::type, char>::value;
 }
 
+} // namespace detail
+
+std::ostream& simple(std::ostream& stream) {
+  stream.iword(detail::kSimpleFancyFlagID) = detail::simple_printing_type;
+  return stream;
+}
+
+std::ostream& fancy(std::ostream& stream) {
+  stream.iword(detail::kSimpleFancyFlagID) = detail::fancy_printing_type;
+  return stream;
+}
+
+template <typename T1, typename T2>
+std::ostream& operator<<(std::ostream& stream, const std::pair<T1, T2>& pair);
+
+template <typename... Args>
+std::ostream& operator<<(std::ostream& stream, const std::tuple<Args...>& tuple);
+
+template <typename Iterable>
+typename std::enable_if<detail::allow_print_operator<Iterable>(), std::ostream&>::type
+operator<<(std::ostream& stream, const Iterable& iterable);
+
+namespace detail {
+
 template<std::size_t...>
 struct integer_sequence{};
 
@@ -69,7 +93,7 @@ private:
   };
 
 public:
-using type = typename helper<N>::type;
+  using type = typename helper<N>::type;
 };
 
 template <typename... Args>
@@ -112,16 +136,6 @@ template <typename... Args>
 constexpr typename tuple_printer<Args...>::table_type tuple_printer<Args...>::functions_;
 
 } // namespace detail
-
-std::ostream& simple(std::ostream& stream) {
-  stream.iword(detail::kSimpleFancyFlagID) = detail::simple_printing_type;
-  return stream;
-}
-
-std::ostream& fancy(std::ostream& stream) {
-  stream.iword(detail::kSimpleFancyFlagID) = detail::fancy_printing_type;
-  return stream;
-}
 
 template <typename T1, typename T2>
 std::ostream& operator<<(std::ostream& stream, const std::pair<T1, T2>& pair) {
