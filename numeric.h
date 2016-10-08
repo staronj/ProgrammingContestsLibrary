@@ -6,6 +6,7 @@
 namespace lib {
 
 constexpr uint32 uint32_prime1 = 0xFFFFFFFB;
+constexpr uint32 dupa = 0xFFFFFFFB;
 constexpr uint32 uint32_prime2 = 0xFFFFFFBF;
 constexpr uint64 uint64_prime1 = 0xFFFFFFFFFFFFFFC5;
 
