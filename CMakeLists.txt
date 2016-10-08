@@ -24,7 +24,8 @@ foreach(TEST ${TEST_LIST})
     target_link_libraries(${NAME}
         ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     )
-    add_test(${NAME} ${NAME})
+    set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY tests/)
+    add_test(${NAME} tests/${NAME})
 endforeach(TEST)
 
 file(GLOB BENCHMARK_LIST
@@ -37,4 +38,5 @@ foreach(BENCHMARK ${BENCHMARK_LIST})
     target_link_libraries(${NAME}
             celero
     )
+    set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY benchmarks/)
 endforeach(BENCHMARK)
