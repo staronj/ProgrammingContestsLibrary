@@ -74,6 +74,35 @@ template <typename Iterable>
 typename std::enable_if<detail::allow_print_operator<Iterable>(), std::ostream&>::type
 operator<<(std::ostream& stream, const Iterable& iterable);
 
+#ifdef HAVE_INT128_TYPES
+
+std::ostream& operator<<(std::ostream& stream, uint128 n) {
+  constexpr int32 buffer_size = 64;
+  constexpr uint128 ten = 10;
+  char buffer[buffer_size];
+  int32 index = buffer_size - 1;
+
+  do {
+    uint128 digit = n % 10;
+    buffer[index--] = char('0' + digit);
+    n /= 10;
+  } while (n > 0 && index >= 0);
+
+  stream.write(buffer + index + 1, buffer_size - index - 1);
+  return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, int128 n) {
+  if (n < 0) {
+    stream.put('-');
+    n = -n;
+  }
+  stream << uint128(n);
+  return stream;
+}
+
+#endif
+
 namespace detail {
 
 template<std::size_t...>

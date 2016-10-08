@@ -113,4 +113,47 @@ BOOST_AUTO_TEST_CASE(print_test) {
   }
 }
 
+#ifdef HAVE_INT128_TYPES
+
+BOOST_AUTO_TEST_CASE(int128_test) {
+  {
+    std::ostringstream stream;
+    int128 n = 0;
+    stream << n;
+    BOOST_CHECK_EQUAL(stream.str(), "0");
+  }
+
+  {
+    std::ostringstream stream;
+    int128 n = 1;
+    stream << n;
+    BOOST_CHECK_EQUAL(stream.str(), "1");
+  }
+
+  {
+    std::ostringstream stream;
+    int128 n = -1;
+    stream << n;
+    BOOST_CHECK_EQUAL(stream.str(), "-1");
+  }
+
+  {
+    uint128 million = 1000 * 1000;
+    std::ostringstream stream;
+    int128 n = million * million * million * million * million * million + million;
+    stream << n;
+    BOOST_CHECK_EQUAL(stream.str(), "1000000000000000000000000000001000000");
+  }
+
+  {
+    uint128 million = 1000 * 1000;
+    std::ostringstream stream;
+    int128 n = million * million * million * million * million * million + million;
+    stream << (-n);
+    BOOST_CHECK_EQUAL(stream.str(), "-1000000000000000000000000000001000000");
+  }
+}
+
+#endif
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -10,13 +10,17 @@ find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR})
 
+file(GLOB_RECURSE HEADERS_LIST
+        "*.h"
+)
+
 file(GLOB TEST_LIST
         "tests/*_test.cc"
 )
 
 foreach(TEST ${TEST_LIST})
     get_filename_component(NAME ${TEST} NAME_WE)
-    add_executable(${NAME} ${TEST})
+    add_executable(${NAME} ${TEST} ${HEADERS_LIST})
     target_link_libraries(${NAME}
         ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     )
@@ -29,7 +33,7 @@ file(GLOB BENCHMARK_LIST
 
 foreach(BENCHMARK ${BENCHMARK_LIST})
     get_filename_component(NAME ${BENCHMARK} NAME_WE)
-    add_executable(${NAME} ${BENCHMARK})
+    add_executable(${NAME} ${BENCHMARK} ${HEADERS_LIST})
     target_link_libraries(${NAME}
             celero
     )
