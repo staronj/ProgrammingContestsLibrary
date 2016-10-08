@@ -47,9 +47,11 @@ using uint128 = unsigned __int128;
 
 using bit_vector = std::vector<bool>;
 
+using char_pair     = std::pair<char, char>;
+using bool_pair     = std::pair<bool, bool>;
 using int32_pair    = std::pair<int32, int32>;
 using uint32_pair   = std::pair<uint32, uint32>;
 using int64_pair    = std::pair<int64, int64>;
-using uint64_pair    = std::pair<uint64, uint64>;
+using uint64_pair   = std::pair<uint64, uint64>;
 
 } // namespace lib

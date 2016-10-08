@@ -49,6 +49,10 @@ BOOST_AUTO_TEST_CASE(knuth_morris_pratt_test) {
     KnuthMorrisPratt kmp;
     kmp.feed(text.begin(), text.end());
     BOOST_CHECK(kmp.result() == expected);
+
+    const auto& borders = kmp.borders();
+    std::vector<uint32> expected_borders = {4, 2};
+    BOOST_CHECK(borders == expected_borders);
   }
 
   {
@@ -57,6 +61,10 @@ BOOST_AUTO_TEST_CASE(knuth_morris_pratt_test) {
     KnuthMorrisPratt kmp;
     kmp.feed(text.begin(), text.end());
     BOOST_CHECK(kmp.result() == expected);
+
+    const auto& borders = kmp.borders();
+    std::vector<uint32> expected_borders = {7, 6, 5, 4, 3, 2, 1};
+    BOOST_CHECK(borders == expected_borders);
   }
 }
 

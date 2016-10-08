@@ -10,9 +10,7 @@ namespace lib {
 class KnuthMorrisPratt {
 public:
   KnuthMorrisPratt() = default;
-
   KnuthMorrisPratt(const KnuthMorrisPratt &) = delete;
-
   KnuthMorrisPratt &operator=(const KnuthMorrisPratt &) = delete;
 
   KnuthMorrisPratt(KnuthMorrisPratt &&other) :
@@ -27,6 +25,8 @@ public:
     if (size == 0)
       return;
 
+    P_[1] = 0;
+
     for (auto i: range(1u, size)) {
       uint32 t = P_[i];
       while(t > 0 && *(begin + i) != *(begin + t))
@@ -37,14 +37,28 @@ public:
 
       P_[i + 1] = t;
     }
+
+    uint32 border = P_.back();
+    borders_.clear();
+    while (border != 0) {
+      borders_.push_back(border);
+      border = P_[border];
+    }
+    borders_.shrink_to_fit();
   }
 
   const std::vector<uint32>& result() const {
     return P_;
   }
 
+  // Borders (prefix-suffixes) in decreasing order
+  const std::vector<uint32>& borders() const {
+    return borders_;
+  }
+
 private:
   std::vector<uint32> P_;
+  std::vector<uint32> borders_;
 };
 
 } // namespace lib
