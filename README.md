@@ -9,10 +9,8 @@ make test
 ```
 
 #### Run benchmarks
-```bash
-make
-make test
-```
+
+Build target `all`, go to subdirectory `benchmarks` and run executable.
 
 ## Dependencies
 
