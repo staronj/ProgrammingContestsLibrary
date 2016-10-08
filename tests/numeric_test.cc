@@ -98,6 +98,15 @@ BOOST_AUTO_TEST_CASE(primes_test) {
   }
 
   BOOST_CHECK(sieve_of_eratostenes(100 * 1000 * 1000) == linear_sieve(100 * 1000 * 1000));
+
+  BOOST_CHECK(is_prime(uint32_prime1));
+  BOOST_CHECK(is_prime(uint32_prime2));
+  BOOST_CHECK(is_prime(uint64_prime1));
+
+  // they are not twin primes
+  BOOST_CHECK(!is_prime(uint32_prime1 - 2));
+  BOOST_CHECK(!is_prime(uint32_prime2 - 2));
+  BOOST_CHECK(!is_prime(uint64_prime1 - 2));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

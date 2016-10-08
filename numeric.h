@@ -5,6 +5,10 @@
 
 namespace lib {
 
+constexpr uint32 uint32_prime1 = 0xFFFFFFFB;
+constexpr uint32 uint32_prime2 = 0xFFFFFFBF;
+constexpr uint64 uint64_prime1 = 0xFFFFFFFFFFFFFFC5;
+
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, bool>::type
 divides(T d, T n) {
@@ -207,6 +211,10 @@ bool miller_rabin_prime_test(uint64 p)
     return small.test(p);
   else
     return big.test(p);
+}
+
+inline bool is_prime(uint64 p) {
+  return miller_rabin_prime_test(p);
 }
 
 } // namespace lib
