@@ -6,6 +6,7 @@
 #include <iterator>
 #include <type_traits>
 #include <utility>
+#include <memory>
 #include <functional>
 #include <bitset>
 #include <vector>
@@ -18,6 +19,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <cinttypes>
+#include <cstring>
 #include <random>
 
 namespace lib {
