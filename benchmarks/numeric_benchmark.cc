@@ -16,8 +16,9 @@ class SizeFixture : public celero::TestFixture
 public:
   std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override {
     return {
-        {10 * 1000, 100},
-        {1000 * 1000, 0},
+        {100 * 1000, 10},
+        {1000 * 1000, 5},
+        {10 * 1000 * 1000, 1},
         {100 * 1000 * 1000, 1}
     };
   }
@@ -42,3 +43,30 @@ BENCHMARK_F(Sieve, Linear, SizeFixture, samples, iterations)
   celero::DoNotOptimizeAway(primes[N - 1]);
 }
 
+class NumbersFixture : public celero::TestFixture
+{
+public:
+  std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override {
+    return {
+        {1000, 10},
+        {1000 * 1000, 10},
+        {1000 * 1000 * 1000, 10},
+        {1000uLL * 1000 * 1000 * 1000, 10},
+        {1000uLL * 1000 * 1000 * 1000 * 100, 10},
+    };
+  }
+
+  void setUp(int64_t experimentValue) override {
+    number = (lib::random() % (experimentValue - 2)) + 2;
+  }
+
+  uint64 number;
+};
+
+constexpr size_t factorization_samples = 10000;
+
+BASELINE_F(Factorization, Factorize, NumbersFixture, samples, iterations)
+{
+  auto v = factorize(number);
+  celero::DoNotOptimizeAway(v.front() + v.back());
+}

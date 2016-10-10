@@ -151,6 +151,10 @@ bit_vector linear_sieve(uint32 n) {
   return V;
 }
 
+/**
+ * Returns bit_vector of size n.
+ * k-th bit is on if and only if k is prime number
+ */
 inline bit_vector sieve(uint32 n) {
   return sieve_of_eratostenes(n);
 }
@@ -216,6 +220,43 @@ bool miller_rabin_prime_test(uint64 p)
 
 inline bool is_prime(uint64 p) {
   return miller_rabin_prime_test(p);
+}
+
+/**
+ * Returns list of prime numbers less than n.
+ */
+std::vector<uint32> prime_numbers(uint32 n) {
+  bit_vector P = sieve(n);
+  std::vector<uint32> result;
+  uint32 count = 0;
+  for (auto i: range(0u, n))
+    if (P[i])
+      count++;
+  result.reserve(count);
+  for (auto i: range(0u, n))
+    if (P[i])
+      result.push_back(i);
+  return result;
+}
+
+constexpr uint64 kPrimesPreprocessedNumber = 100 * 1000 * 1000;
+constexpr uint64 kMaxFactorizableNumber = kPrimesPreprocessedNumber * kPrimesPreprocessedNumber;
+
+std::vector<uint64> factorize(uint64 n) {
+  static std::vector<uint32> primes = prime_numbers(kPrimesPreprocessedNumber);
+  std::vector<uint64> result;
+  for (const uint64 p: primes) {
+    if (n == 1)
+      break;
+
+    while (divides(p, n)) {
+      result.push_back(p);
+      n /= p;
+    }
+  }
+  if (n > 1)
+    result.push_back(n);
+  return result;
 }
 
 } // namespace lib
