@@ -28,7 +28,7 @@ public:
     N = experimentValue;
     constexpr uint32 kMaxNumber = 1000 * 1000 * 1000;
     std::string string;
-    for (auto i: range(int64_t(0), experimentValue)) {
+    for (auto i: range<uint32>(0, experimentValue)) {
       string += std::to_string(lib::random() % kMaxNumber);
       string += '\n';
     }
@@ -43,7 +43,7 @@ public:
 BASELINE_F(Load, Istringstream, NumbersLoadFixture, samples, iterations)
 {
   uint64 sum = 0;
-  for (auto i: range(0u, N)) {
+  for (auto i: range<uint32>(0, N)) {
     uint32 k;
     stream >> k;
     sum += k;

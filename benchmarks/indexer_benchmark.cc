@@ -27,7 +27,7 @@ public:
     using lib::random;
     std::vector<std::string> strings;
     std::string string;
-    for (auto i: range(int64_t(0), experimentValue)) {
+    for (auto i: range<uint32>(0, experimentValue)) {
       for (auto j: range(0, 6)) {
         string += char('a' + random() % 20);
       }
@@ -35,7 +35,7 @@ public:
       string.clear();
     }
 
-    for (auto i: range(int64_t(0), experimentValue)) {
+    for (auto i: range<uint32>(0, experimentValue)) {
       queries.push_back(strings[random() % experimentValue]);
     }
   }
@@ -51,7 +51,7 @@ BASELINE_F(Indexer, Indexer, QueriesFixture, samples, iterations)
     indexer.get_id(string);
   }
 
-  for (auto i: range(size_t(0), indexer.size())) {
+  for (auto i: range<uint32>(0, indexer.size())) {
     indexer.get_value(i);
   }
 }

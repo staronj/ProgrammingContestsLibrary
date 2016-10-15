@@ -25,7 +25,7 @@ public:
   {
     N = experimentValue;
     using lib::random;
-    for (auto i: range(int64(0), experimentValue)) {
+    for (auto i: range<uint32>(0, experimentValue)) {
       queries.emplace_back(random() % experimentValue, random() % experimentValue);
     }
   }

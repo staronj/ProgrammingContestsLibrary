@@ -181,7 +181,7 @@ std::ostream& operator<<(std::ostream& stream, const std::tuple<Args...>& tuple)
   detail::delimiter_printer delimiter_printer(stream);
   detail::tuple_printer<Args...> tuple_printer(stream, tuple);
   stream << delimiter_printer.prefix();
-  for (auto i: range(size_t(0), sizeof...(Args))) {
+  for (auto i: range<size_t>(0, sizeof...(Args))) {
     stream << delimiter_printer.delimiter();
     tuple_printer.print(i);
   }

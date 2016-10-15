@@ -24,12 +24,12 @@ public:
     };
   }
 
-  void setUp(int64_t experimentValue) override
+  void setUp(int64 experimentValue) override
   {
     text.reserve(experimentValue);
     text.clear();
     using lib::random;
-    for (auto i: range(int64_t(0), experimentValue))
+    for (auto i: range<uint32>(0, experimentValue))
       text += char('a' + random() % 20);
   }
 
@@ -49,7 +49,7 @@ BENCHMARK_F(Borders, Hasher, TextFixture, samples, iterations)
   Hasher hasher;
   hasher.feed(text.begin(), text.end());
   uint32 longest = 0;
-  for (auto i: range(1uL, text.size())) {
+  for (auto i: range<uint32>(1, text.size())) {
    if (hasher.get_hash(0, i) == hasher.get_hash(text.size() - i, i)) {
      longest = i;
    }

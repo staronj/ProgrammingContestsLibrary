@@ -26,7 +26,7 @@ public:
   {
     using lib::random;
     std::queue<int32> queue;
-    for (auto i: range(int64_t(0), experimentValue)) {
+    for (auto i: range<uint32>(0, experimentValue)) {
       if (!queue.empty() && random() % 2 == 0) {
         queries.push_back(-queue.front());
         queue.pop();
