@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iterator>
 #include <type_traits>
+#include <algorithm>
+#include <memory>
 #include <utility>
 #include <functional>
 #include <bitset>

@@ -26,7 +26,7 @@ private:
 };
 
 
-template <template <typename Graph, typename EdgeData> typename Edge, typename EdgeData = empty_type, typename VertexData = empty_type>
+template <template <typename Graph, typename EdgeData> class Edge, typename EdgeData = empty_type, typename VertexData = empty_type>
 class StaticGraph {
 public:
   using self_type = StaticGraph;

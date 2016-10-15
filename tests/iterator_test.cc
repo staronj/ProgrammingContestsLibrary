@@ -94,6 +94,18 @@ BOOST_AUTO_TEST_CASE(range_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(mapping_iterator_test) {
+  std::vector<uint32> values = {1, 2, 3};
+
+  using iterator = mapping_iterator<std::vector<uint32>::iterator, std::function<uint32(uint32)>>;
+
+  auto begin = iterator(values.begin(), [](uint32 n) { return 2 * n; });
+  auto end = iterator(values.end());
+  std::vector<uint32> result(begin, end);
+  std::vector<uint32> expected = {2, 4, 6};
+  BOOST_CHECK(result == expected);
+}
+
 BOOST_AUTO_TEST_CASE(indirect_iterator_test) {
   std::vector<std::string> values = {"Ala", "ma", "kota"};
   std::vector<int> indexes = {2, 2, 0, 1};

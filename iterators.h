@@ -18,9 +18,7 @@ private:
       std::declval<I&>() ++,
       std::iterator_traits<I>(),
       bool()) { return
-        std::is_destructible<I>::value &&
-        std::is_copy_constructible<I>::value &&
-        std::is_copy_assignable<I>::value;
+        std::is_destructible<I>::value;
   }
 
   template<typename I> static constexpr bool test(...) { return false; }
@@ -219,52 +217,104 @@ typename std::enable_if<std::is_integral<Integral>::value, iterator_range<revers
   return make_range(make_reverse_counting_iterator(end - 1), make_reverse_counting_iterator(begin - 1));
 }
 
-
-template <typename ValuesIterator, typename IndexesIterator>
-class indirect_iterator {
+template <typename Iterator, typename Mapper>
+class mapping_iterator {
 public:
+  using self_type = mapping_iterator;
+  using underlying_value_type = decltype(*std::declval<Iterator>());
+  using value_type = decltype(std::declval<Mapper>()(std::declval<underlying_value_type>()));
+  using reference = value_type;
+  using pointer = typename std::remove_reference<value_type>::type*;
+  using difference_type = typename std::iterator_traits<Iterator>::difference_type;
+  using iterator_category = typename std::iterator_traits<Iterator>::iterator_category;
+
+  mapping_iterator(const Mapper& mapper = Mapper()):
+      iterator_(), mapper_(mapper) { }
+
+  explicit mapping_iterator(Iterator iterator, const Mapper& mapper = Mapper()):
+      iterator_(iterator), mapper_(mapper) { }
+
+  reference operator*() const {
+    return mapper_(*iterator_);
+  }
+
+  self_type& operator++() {
+    ++iterator_;
+    return *this;
+  }
+
+  self_type& operator--() {
+    --iterator_;
+    return *this;
+  }
+
+  self_type& operator+=(difference_type n) {
+    iterator_ += n;
+    return *this;
+  }
+
+  friend self_type operator+(const self_type& obj, difference_type n) {
+    return self_type(obj.iterator_ + n, obj.mapper_);
+  }
+
+  friend difference_type operator-(const self_type& lhs, const self_type& rhs) {
+    return lhs.iterator_ - rhs.iterator_;
+  }
+
+  value_type operator[](difference_type n) {
+    return *(*this + n);
+  }
+
+  friend bool operator<(const self_type& lhs, const self_type& rhs) {
+    return lhs.iterator_ < rhs.iterator_;
+  }
+
+  friend bool operator==(const self_type& lhs, const self_type& rhs) {
+    return lhs.iterator_ == rhs.iterator_;
+  }
+
+private:
+  Iterator iterator_;
+  Mapper mapper_;
+};
+
+namespace detail {
+
+template <typename ValuesIterator>
+struct IndirectMapper {
   static_assert(is_iterator<ValuesIterator>::value, "first indirect_iterator's template argument must be iterator.");
-  static_assert(is_iterator<IndexesIterator>::value, "second indirect_iterator's template argument must be iterator.");
   static_assert(
       std::is_same<typename std::iterator_traits<ValuesIterator>::iterator_category, std::random_access_iterator_tag>::value,
       "ValuesIterator must be random assess iterator."
   );
 
-  using self_type = indirect_iterator;
   using value_type = typename std::iterator_traits<ValuesIterator>::value_type;
   using reference = const value_type&;
-  using pointer = const value_type*;
-  using difference_type = typename std::iterator_traits<IndexesIterator>::difference_type;
-  using iterator_category = std::forward_iterator_tag;
+  using index_type = typename std::iterator_traits<ValuesIterator>::difference_type;
 
-  indirect_iterator():
-      values_(), indexes_() { }
+  IndirectMapper() = default;
 
-  explicit indirect_iterator(ValuesIterator values, IndexesIterator indexes):
-      values_(std::move(values)), indexes_(std::move(indexes)) { }
+  IndirectMapper(ValuesIterator values):
+      values_(values) { }
 
-  reference operator*() const {
-    return *(values_ + *indexes_);
-  }
-
-  self_type& operator++() {
-    ++indexes_;
-    return *this;
-  }
-
-  friend bool operator==(const self_type& lhs, const self_type& rhs) {
-    return lhs.indexes_ == rhs.indexes_;
+  reference operator()(index_type n) const {
+    return *(values_ + n);
   }
 
 private:
   ValuesIterator values_;
-  IndexesIterator indexes_;
 };
+
+} // namespace detail
+
+template <typename ValuesIterator, typename IndexesIterator>
+using indirect_iterator = mapping_iterator<IndexesIterator, detail::IndirectMapper<ValuesIterator>>;
 
 template <typename ValuesIterator, typename IndexesIterator>
 auto make_indirect_iterator(ValuesIterator values, IndexesIterator indexes) ->
 indirect_iterator<ValuesIterator, IndexesIterator> {
-  return indirect_iterator<ValuesIterator, IndexesIterator>(std::move(values), std::move(indexes));
+  detail::IndirectMapper<ValuesIterator> mapper(values);
+  return indirect_iterator<ValuesIterator, IndexesIterator>(std::move(indexes), std::move(mapper));
 };
 
 } // namespace lib
