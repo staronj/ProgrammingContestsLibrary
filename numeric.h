@@ -5,8 +5,13 @@
 
 namespace lib {
 
+constexpr uint32 uint32_infinity = 1000 * 1000 * 1000;
+constexpr int32 int32_infinity = uint32_infinity;
+
+constexpr uint64 uint64_infinity = uint64(uint32_infinity) * uint64(uint32_infinity);
+constexpr int64 int64_infinity = uint64_infinity;
+
 constexpr uint32 uint32_prime1 = 0xFFFFFFFB;
-constexpr uint32 dupa = 0xFFFFFFFB;
 constexpr uint32 uint32_prime2 = 0xFFFFFFBF;
 constexpr uint64 uint64_prime1 = 0xFFFFFFFFFFFFFFC5;
 
