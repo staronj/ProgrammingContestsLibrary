@@ -20,6 +20,8 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <cinttypes>
+#include <ctime>
+#include <cctype>
 #include <random>
 
 namespace lib {
