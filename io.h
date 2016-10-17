@@ -407,60 +407,39 @@ void read(std::istream& stream, Args&&... args) {
 }
 
 /**
- * Input iterator for reading lines from input.
+ * Generator for reading lines from std::istream.
  */
-class lines_iterator {
+class lines_generator: public generator<std::string> {
 public:
-  using self_type = lines_iterator;
-  using value_type = std::string;
-  using reference = const value_type&;
-  using pointer = const value_type*;
-  using difference_type = std::ptrdiff_t;
-  using iterator_category = std::input_iterator_tag;
+  lines_generator(std::istream* stream):
+      stream_(stream) { }
 
-  lines_iterator():
-      stream_(nullptr), line_() { }
-
-  lines_iterator(std::istream* stream):
-      stream_(stream) {
-    next_line();
-  }
-
-  reference operator*() const {
+  value_type next() final {
+    if (!stream_->good())
+      throw std::ios::failure("lines_generator - stream in invalid state after line read.");
+    else
+      std::getline(*stream_, line_);
     return line_;
   }
 
-  pointer operator->() const {
-    return &line_;
-  }
-
-  self_type& operator++() {
-    next_line();
-    return *this;
-  }
-
-  friend bool operator==(const self_type& lhs, const self_type& rhs) {
-    return lhs.is_end() == rhs.is_end();
+  bool hasNext() final {
+    return !stream_->eof();
   }
 
 private:
-  void next_line() {
-    if (stream_) {
-      if (stream_->eof())
-        stream_ = nullptr;
-      else if (!stream_->good())
-        throw std::ios::failure("lines_iterator - stream in invalid state after line read.");
-      else
-        std::getline(*stream_, line_);
-    }
-  }
-
-  bool is_end() const {
-    return stream_ == nullptr;
-  }
-
   std::istream* stream_;
   std::string line_;
+};
+
+/**
+ * Input iterator for reading lines from input.
+ */
+class lines_iterator: public generator_iterator<std::string> {
+public:
+  lines_iterator() = default;
+
+  lines_iterator(std::istream* stream):
+      generator_iterator(new lines_generator(stream)) { }
 };
 
 /**

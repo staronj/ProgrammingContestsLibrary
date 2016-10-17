@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(int128_test) {
 
 #endif
 
-BOOST_AUTO_TEST_CASE(iterate_lines_test) {
+BOOST_AUTO_TEST_CASE(lines_iterator_test) {
   {
     std::istringstream stream;
     std::vector<std::string> result{lines_iterator(&stream), lines_iterator()};
@@ -281,6 +281,48 @@ BOOST_AUTO_TEST_CASE(iterate_lines_test) {
   {
     std::istringstream stream("Ala\nma\n\nkota");
     std::vector<std::string> result{lines_iterator(&stream), lines_iterator()};
+    std::vector<std::string> expected_result = {"Ala", "ma", "", "kota"};
+    BOOST_CHECK(result == expected_result);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(iterate_lines_test) {
+  {
+    std::istringstream stream;
+    std::vector<std::string> result;
+    for (const auto& line: iterate_lines(stream)) {
+      result.push_back(line);
+    }
+    std::vector<std::string> expected_result = {""};
+    BOOST_CHECK(result == expected_result);
+  }
+
+  {
+    std::istringstream stream("Ala");
+    std::vector<std::string> result;
+    for (const auto& line: iterate_lines(stream)) {
+      result.push_back(line);
+    }
+    std::vector<std::string> expected_result = {"Ala"};
+    BOOST_CHECK(result == expected_result);
+  }
+
+  {
+    std::istringstream stream("Ala\n");
+    std::vector<std::string> result;
+    for (const auto& line: iterate_lines(stream)) {
+      result.push_back(line);
+    }
+    std::vector<std::string> expected_result = {"Ala", ""};
+    BOOST_CHECK(result == expected_result);
+  }
+
+  {
+    std::istringstream stream("Ala\nma\n\nkota");
+    std::vector<std::string> result;
+    for (const auto& line: iterate_lines(stream)) {
+      result.push_back(line);
+    }
     std::vector<std::string> expected_result = {"Ala", "ma", "", "kota"};
     BOOST_CHECK(result == expected_result);
   }
