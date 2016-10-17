@@ -84,6 +84,24 @@ BOOST_AUTO_TEST_CASE(ostream_printing_test) {
 BOOST_AUTO_TEST_CASE(print_test) {
   {
     std::ostringstream stream;
+    print(stream, "");
+    BOOST_CHECK_EQUAL(stream.str(), "\n");
+  }
+
+  {
+    std::ostringstream stream;
+    print(stream, "Ala");
+    BOOST_CHECK_EQUAL(stream.str(), "Ala\n");
+  }
+
+  {
+    std::ostringstream stream;
+    print(stream, "Ala %0 kota", "ma");
+    BOOST_CHECK_EQUAL(stream.str(), "Ala ma kota\n");
+  }
+
+  {
+    std::ostringstream stream;
     Noncopyable non;
     print(stream, "%0 %1 %0 %2", "Ala", "kota", non);
     BOOST_CHECK_EQUAL(stream.str(), "Ala kota Ala noncopyable\n");
@@ -92,6 +110,16 @@ BOOST_AUTO_TEST_CASE(print_test) {
   {
     std::ostringstream stream;
     BOOST_CHECK_THROW(print(stream, "%0 %2", "Ala"), std::exception);
+  }
+
+  {
+    std::ostringstream stream;
+    BOOST_CHECK_THROW(print(stream, "%"), std::exception);
+  }
+
+  {
+    std::ostringstream stream;
+    BOOST_CHECK_THROW(print(stream, " Ala %"), std::exception);
   }
 
   {
@@ -110,6 +138,12 @@ BOOST_AUTO_TEST_CASE(print_test) {
     std::ostringstream stream;
     print(stream, "%0%1 %2%3", std::boolalpha, true, fancy, std::make_pair(1, 2));
     BOOST_CHECK_EQUAL(stream.str(), "true (1, 2)\n");
+  }
+
+  {
+    std::ostringstream stream;
+    print(stream, "%0", lib::flush);
+    BOOST_CHECK_EQUAL(stream.str(), "\n");
   }
 }
 

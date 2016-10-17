@@ -205,16 +205,17 @@ template <typename... Args>
 void print(std::ostream& stream, const char* format, const Args&... args) {
   auto tuple = std::make_tuple(std::cref(args)...);
   detail::tuple_printer<const Args&...> tuple_printer(stream, tuple);
+  constexpr char null = '\0';
+  constexpr char percent = '%';
   for (const char* it = format, *prev = format; *it != '\0'; ) {
-    if (*it == '\0') {
-      stream.write(prev, it - prev);
-      prev = it;
-    }
-    else if (*it == '%') {
-      stream.write(prev, it - prev);
+    while (*it != null && *it != percent)
+      it++;
+
+    stream.write(prev, it - prev);
+    if (*it == percent) {
       ++it;
-      if (*it == '%') {
-        stream.put('%');
+      if (*it == percent) {
+        stream.put(percent);
       }
       else if (std::isdigit(*it)) {
         size_t index = size_t(*it - '0');
@@ -225,9 +226,6 @@ void print(std::ostream& stream, const char* format, const Args&... args) {
       }
       prev = ++it;
     }
-    else {
-      ++it;
-    }
   }
   stream.put('\n');
 }
@@ -235,6 +233,10 @@ void print(std::ostream& stream, const char* format, const Args&... args) {
 template <typename... Args>
 void print(const char* format, const Args&... args) {
   print(std::cout, format, args...);
+}
+
+std::ostream& flush(std::ostream& stream) {
+  return stream.flush();
 }
 
 } // namespace lib
