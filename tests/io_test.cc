@@ -7,7 +7,7 @@
 
 using namespace lib;
 
-BOOST_AUTO_TEST_SUITE(io)
+BOOST_AUTO_TEST_SUITE(io_suite)
 
 struct Noncopyable {
   Noncopyable() = default;
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(print_test) {
 
   {
     std::ostringstream stream;
-    print(stream, "%0", lib::flush);
+    print(stream, "%0", flush);
     BOOST_CHECK_EQUAL(stream.str(), "\n");
   }
 }
@@ -189,5 +189,35 @@ BOOST_AUTO_TEST_CASE(int128_test) {
 }
 
 #endif
+
+BOOST_AUTO_TEST_CASE(iterate_lines_test) {
+  {
+    std::istringstream stream;
+    std::vector<std::string> result{lines_iterator(&stream), lines_iterator()};
+    std::vector<std::string> expected_result = {""};
+    BOOST_CHECK(result == expected_result);
+  }
+
+  {
+    std::istringstream stream("Ala");
+    std::vector<std::string> result{lines_iterator(&stream), lines_iterator()};
+    std::vector<std::string> expected_result = {"Ala"};
+    BOOST_CHECK(result == expected_result);
+  }
+
+  {
+    std::istringstream stream("Ala\n");
+    std::vector<std::string> result{lines_iterator(&stream), lines_iterator()};
+    std::vector<std::string> expected_result = {"Ala", ""};
+    BOOST_CHECK(result == expected_result);
+  }
+
+  {
+    std::istringstream stream("Ala\nma\n\nkota");
+    std::vector<std::string> result{lines_iterator(&stream), lines_iterator()};
+    std::vector<std::string> expected_result = {"Ala", "ma", "", "kota"};
+    BOOST_CHECK(result == expected_result);
+  }
+}
 
 BOOST_AUTO_TEST_SUITE_END()

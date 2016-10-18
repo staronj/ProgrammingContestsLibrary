@@ -239,4 +239,62 @@ std::ostream& flush(std::ostream& stream) {
   return stream.flush();
 }
 
+class lines_iterator {
+public:
+  using self_type = lines_iterator;
+  using value_type = std::string;
+  using reference = const value_type&;
+  using pointer = const value_type*;
+  using difference_type = std::ptrdiff_t;
+  using iterator_category = std::input_iterator_tag;
+
+  lines_iterator():
+      stream_(nullptr), line_() { }
+
+  lines_iterator(std::istream* stream):
+      stream_(stream) {
+    next_line();
+  }
+
+  reference operator*() const {
+    return line_;
+  }
+
+  pointer operator->() const {
+    return &line_;
+  }
+
+  self_type& operator++() {
+    next_line();
+    return *this;
+  }
+
+  friend bool operator==(const self_type& lhs, const self_type& rhs) {
+    return lhs.is_end() == rhs.is_end();
+  }
+
+private:
+  void next_line() {
+    if (stream_) {
+      if (stream_->eof())
+        stream_ = nullptr;
+      else if (!stream_->good())
+        throw std::ios::failure("lines_iterator - stream in invalid state after line read.");
+      else
+        std::getline(*stream_, line_);
+    }
+  }
+
+  bool is_end() const {
+    return stream_ == nullptr;
+  }
+
+  std::istream* stream_;
+  std::string line_;
+};
+
+iterator_range<lines_iterator> iterate_lines(std::istream& stream) {
+  return make_range(lines_iterator(&stream), lines_iterator());
+}
+
 } // namespace lib
