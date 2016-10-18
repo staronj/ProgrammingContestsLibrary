@@ -40,3 +40,13 @@ foreach(BENCHMARK ${BENCHMARK_LIST})
     )
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY benchmarks/)
 endforeach(BENCHMARK)
+
+add_custom_command(OUTPUT
+        ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc
+        COMMAND
+        python include.py --input main.cc --output ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc
+        DEPENDS main.cc ${HEADERS_LIST}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_executable(main ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc ${HEADERS_LIST})

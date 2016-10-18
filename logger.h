@@ -4,7 +4,7 @@
 #include "io.h"
 
 namespace lib {
-namespace logger {
+namespace logging {
 
 enum class log_level {
   debug = 15,
@@ -77,5 +77,5 @@ Logger& get_logger(const std::string& name) {
   return it->second;
 }
 
-} // namespace logger
+} // namespace logging
 } // namespace lib

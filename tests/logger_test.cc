@@ -5,7 +5,7 @@
 #include <boost/test/unit_test.hpp>
 #include "logger.h"
 
-using namespace lib::logger;
+using namespace lib::logging;
 
 BOOST_AUTO_TEST_SUITE(logger_test)
 
