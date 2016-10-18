@@ -45,7 +45,7 @@ add_custom_command(OUTPUT
         ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc
         COMMAND
         python include.py --input main.cc --output ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc
-        DEPENDS main.cc ${HEADERS_LIST}
+        DEPENDS main.cc ${HEADERS_LIST} include.py
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
