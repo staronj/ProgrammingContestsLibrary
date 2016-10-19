@@ -44,7 +44,7 @@ private:
 };
 
 is_in_set_predicate<char> is_in_set(const char* characters) {
-  return is_in_set_predicate<char>(characters, characters + strlen(characters));
+  return is_in_set_predicate<char>(characters, characters + std::strlen(characters));
 }
 
 template <typename Iterator, typename Predicate>

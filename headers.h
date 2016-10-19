@@ -22,6 +22,7 @@
 #include <cinttypes>
 #include <ctime>
 #include <cctype>
+#include <cstring>
 #include <random>
 
 namespace lib {
