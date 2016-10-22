@@ -21,7 +21,7 @@ public:
 
   void run() {
     for (auto v: range<id_type>(0, vertices_count_)) {
-      if (!exited_[v])
+      if (!exited(v))
         run_from(v);
     }
   }
@@ -39,13 +39,13 @@ public:
       }
       else if (entered_[v]) {
         exited_[v] = true;
-        exit(v);
+        on_exit(v);
         stack_.pop_back();
       }
       else {
         parent_[v] = parent;
         entered_[v] = true;
-        enter(v);
+        on_enter(v);
 
         for (auto edge: graph_->edges_from(v)) {
           id_type u = edge.pass_from(v);
@@ -56,10 +56,50 @@ public:
     }
   }
 
-  void enter(id_type v) { }
-  void exit(id_type v) { }
+  id_type parent(id_type v) const {
+    return parent_.at(v);
+  }
+
+  const std::vector<id_type>& parents() const {
+    return parent_;
+  }
+
+  bool entered(id_type v) const {
+    return entered_.at(v);
+  }
+
+  bool exited(id_type v) const {
+    return exited_.at(v);
+  }
+
+
+  using callback_function_type = std::function<void(id_type)>;
+
+  /**
+   * Registers callback called on entering vertex.
+   */
+  void register_on_enter(callback_function_type on_enter) {
+    on_enter_.push_back(std::move(on_enter));
+  }
+
+  /**
+   * Registers callback called on exiting vertex.
+   */
+  void register_on_exit(callback_function_type on_exit) {
+    on_exit_.push_back(std::move(on_exit));
+  }
 
 private:
+  void on_enter(id_type v) {
+    for (auto& obj: on_enter_)
+      obj(v);
+  }
+
+  void on_exit(id_type v) {
+    for (auto& obj: on_exit_)
+      obj(v);
+  }
+
   const Graph* graph_;
   size_type vertices_count_;
   bit_vector entered_;
@@ -67,10 +107,13 @@ private:
   std::vector<id_type> parent_;
 
   std::vector<std::pair<id_type, id_type>> stack_;
+
+  std::vector<callback_function_type> on_enter_;
+  std::vector<callback_function_type> on_exit_;
 };
 
 template <typename Graph>
-static constexpr id_type DepthFirstSearch<Graph>::invalid_vertex;
+constexpr id_type DepthFirstSearch<Graph>::invalid_vertex;
 
 } // namespace graph
 } // namespace lib
