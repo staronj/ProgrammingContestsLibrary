@@ -55,4 +55,58 @@ BOOST_AUTO_TEST_CASE(size) {
   BOOST_CHECK_EQUAL(queue.size(), 0);
 }
 
+BOOST_AUTO_TEST_CASE(comparator_type_less) {
+  struct Comparator {
+    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) {
+      return lhs.first < rhs.first;
+    }
+  };
+
+  MaxQueue<std::pair<int, int>, Comparator> queue;
+  queue.push(std::make_pair(1, 0));
+  queue.push(std::make_pair(1, 1));
+  queue.push(std::make_pair(1, 2));
+  BOOST_CHECK_EQUAL(queue.max().second, 0);
+  queue.pop();
+  BOOST_CHECK_EQUAL(queue.max().second, 1);
+  queue.push(std::make_pair(2, 3));
+  BOOST_CHECK_EQUAL(queue.max().second, 3);
+}
+
+BOOST_AUTO_TEST_CASE(comparator_type_less_or_equal) {
+  struct Comparator {
+    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) {
+      return lhs.first <= rhs.first;
+    }
+  };
+
+  MaxQueue<std::pair<int, int>, Comparator> queue;
+  queue.push(std::make_pair(1, 0));
+  queue.push(std::make_pair(1, 1));
+  queue.push(std::make_pair(1, 2));
+  BOOST_CHECK_EQUAL(queue.max().second, 2);
+  queue.pop();
+  BOOST_CHECK_EQUAL(queue.max().second, 2);
+  queue.push(std::make_pair(2, 3));
+  BOOST_CHECK_EQUAL(queue.max().second, 3);
+}
+
+BOOST_AUTO_TEST_CASE(comparator_type_greater) {
+  struct Comparator {
+    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) {
+      return lhs.first > rhs.first;
+    }
+  };
+
+  MaxQueue<std::pair<int, int>, Comparator> queue;
+  queue.push(std::make_pair(1, 0));
+  queue.push(std::make_pair(1, 1));
+  queue.push(std::make_pair(1, 2));
+  BOOST_CHECK_EQUAL(queue.max().second, 0);
+  queue.pop();
+  BOOST_CHECK_EQUAL(queue.max().second, 1);
+  queue.push(std::make_pair(0, 3));
+  BOOST_CHECK_EQUAL(queue.max().second, 3);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
