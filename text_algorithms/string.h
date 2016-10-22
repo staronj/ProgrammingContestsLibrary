@@ -80,7 +80,13 @@ std::vector<std::string> split(Iterator begin, Iterator end, const char* chars, 
 
 template <typename Iterator>
 std::string join(std::string separator, Iterator begin, Iterator end) {
+  size_t size = 0;
+  for (const auto& str: make_range(begin, end))
+    size += 1 + str.size();
+
   std::string result;
+  result.reserve(size);
+
   bool first = true;
   for (const auto& str: make_range(begin, end)) {
     if (!first)
