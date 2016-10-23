@@ -4,6 +4,7 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "graph/depth_first_search.h"
+#include "graph/breadth_first_search.h"
 #include "iterators.h"
 #include "io.h"
 
@@ -94,6 +95,49 @@ BOOST_AUTO_TEST_CASE(medium_graph_dfs) {
   BOOST_CHECK(expected_parent == dfs.parents());
   BOOST_CHECK(expected_preorder == preorder);
   BOOST_CHECK(expected_postorder == postorder);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(breadth_first_search_suite)
+
+BOOST_AUTO_TEST_CASE(simple_graph_bfs) {
+  using graph_type = SimpleGraphFixture::graph_type;
+  SimpleGraphFixture fixture;
+  BreadthFirstSearch<graph_type> bfs(fixture.graph);
+
+  std::vector<id_type> visit_order;
+  bfs.register_on_visit([&visit_order](id_type v) {
+    visit_order.push_back(v);
+  });
+
+  bfs.run_from(0);
+
+  std::vector<id_type> expected_parent = {0, 0, 1, 0};
+  std::vector<id_type> expected_visit_order = {0, 1, 3, 2};
+
+  BOOST_CHECK(expected_parent == bfs.parents());
+  BOOST_CHECK(expected_visit_order == visit_order);
+}
+
+BOOST_AUTO_TEST_CASE(medium_graph_bfs) {
+  using graph_type = MediumGraphFixture::graph_type;
+  using search_type = BreadthFirstSearch<graph_type>;
+  MediumGraphFixture fixture;
+  search_type bfs(fixture.graph);
+
+  std::vector<id_type> visit_order;
+  bfs.register_on_visit([&visit_order](id_type v) {
+    visit_order.push_back(v);
+  });
+
+  bfs.run_from(0);
+
+  std::vector<id_type> expected_parent = {0, 0, search_type::invalid_vertex, 0, 3, 1};
+  std::vector<id_type> expected_visit_order = {0, 1, 3, 5, 4};
+
+  BOOST_CHECK(expected_parent == bfs.parents());
+  BOOST_CHECK(expected_visit_order == visit_order);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
