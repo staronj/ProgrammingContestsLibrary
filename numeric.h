@@ -2,6 +2,7 @@
 // Jakub Staroń, 2016
 
 #include "headers.h"
+#include "iterators.h"
 
 namespace lib {
 
