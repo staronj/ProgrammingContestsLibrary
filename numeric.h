@@ -21,6 +21,19 @@ divides(T d, T n) {
   return (n % d) == 0;
 }
 
+template <typename T>
+T abs(const T& value) {
+  constexpr T zero(0);
+  return (value < zero)? (-value) : (value);
+}
+
+template <typename T>
+int signum(const T& value) {
+  constexpr T zero(0);
+  return (value == zero)? 0 : ((value < zero)? -1 : 1);
+}
+
+
 int64 GCD(int64 a, int64 b) {
   while (a != 0) {
     int t = a;
