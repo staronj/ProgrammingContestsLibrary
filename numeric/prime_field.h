@@ -19,7 +19,7 @@ template <typename Integral>
 constexpr
 typename std::enable_if<std::is_signed<Integral>::value, uint32>::type
 modulo(Integral value, uint32 prime) {
-  return (int64(value % prime) + int64(prime)) % prime;
+  return (int64(value % int64(prime)) + int64(prime)) % prime;
 }
 
 } // namespace detail
