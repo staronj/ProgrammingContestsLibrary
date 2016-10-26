@@ -278,4 +278,30 @@ std::vector<uint64> factorize(uint64 n) {
   return result;
 }
 
+/**
+ * Returns true if g is primitive root modulo p
+ */
+bool is_primitive_root(uint32 p, uint32 g) {
+  g %= p;
+  if (g == 0)
+    return false;
+
+  uint32 k = p - 1;
+  for (uint32 d = 2; d * d <= k; ++d) {
+    bool hit = false;
+    while (divides(d, k)) {
+      hit = true;
+      k /= d;
+    }
+
+    if (hit && pow_modulo(g, (p - 1) / d, p) == 1)
+      return false;
+  }
+
+  if (k > 1 && pow_modulo(g, (p - 1) / k, p) == 1)
+    return false;
+
+  return true;
+}
+
 } // namespace lib

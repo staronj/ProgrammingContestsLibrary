@@ -3,39 +3,34 @@
 
 #include "headers.h"
 #include "numeric.h"
+#include "numeric/prime_field.h"
+#include "operators.h"
 
 namespace lib {
+namespace hash {
 
-template <typename T>
-struct hash_traits;
+using hash_type = std::pair<numeric::prime_field<uint32_prime1>, numeric::prime_field<uint32_prime2>>;
+using scalar_type = uint32;
 
-template <>
-struct hash_traits<uint32_pair> {
-  using hash_type = uint32_pair;
-  using work_type = uint64_pair;
-  using scalar_type = uint64;
+constexpr hash_type zero{0, 0};
+constexpr hash_type one{1, 1};
+constexpr hash_type multipler{259, 440}; // primitive roots!!
 
-  static constexpr work_type modulo{uint32_prime1, uint32_prime2};
-  static constexpr work_type zero{0, 0};
-  static constexpr work_type one{1, 1};
-  static constexpr work_type multipler{257, 434};
+inline constexpr hash_type add(const hash_type& lhs, const hash_type& rhs) {
+  return lhs + rhs;
+}
 
-  static constexpr hash_type add(const hash_type& lhs, const hash_type& rhs) {
-    return (work_type(lhs) + work_type(rhs)) % modulo;
-  }
+inline constexpr hash_type multiply(const hash_type& lhs, const hash_type& rhs) {
+  return lhs * rhs;
+}
 
-  static constexpr hash_type multiply(const hash_type& lhs, const hash_type& rhs) {
-    return (work_type(lhs) * work_type(rhs)) % modulo;
-  }
+inline constexpr hash_type multiply(const hash_type& lhs, const scalar_type & rhs) {
+  return lhs * rhs;
+}
 
-  static constexpr hash_type substract(const hash_type& lhs, const hash_type& rhs) {
-    return (modulo + work_type(lhs) - work_type(rhs)) % modulo;
-  }
-};
+inline constexpr hash_type subtract(const hash_type& lhs, const hash_type& rhs) {
+  return lhs - rhs;
+}
 
-constexpr hash_traits<uint32_pair>::work_type hash_traits<uint32_pair>::modulo;
-constexpr hash_traits<uint32_pair>::work_type hash_traits<uint32_pair>::zero;
-constexpr hash_traits<uint32_pair>::work_type hash_traits<uint32_pair>::one;
-constexpr hash_traits<uint32_pair>::work_type hash_traits<uint32_pair>::multipler;
-
+} // namespace hash
 } // namespace lib

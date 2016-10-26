@@ -7,9 +7,8 @@ namespace lib {
 
 class Hasher {
 public:
-  using hash_traits = lib::hash_traits<uint32_pair>;
-  using hash_type = hash_traits::hash_type;
-  using scalar_type = hash_traits::scalar_type;
+  using hash_type = hash::hash_type;
+  using scalar_type = hash::scalar_type;
   using index_type = uint32;
 
   Hasher() = default;
@@ -29,22 +28,21 @@ public:
     powers_.resize(size_ + 1);
     hashes_.resize(size_ + 1);
 
-    powers_[0] = hash_traits::one;
+    powers_[0] = hash::one;
     for(auto i: range(0u, size_))
-      powers_[i + 1] = hash_traits::multiply(powers_[i], hash_traits::multipler);
+      powers_[i + 1] = hash::multiply(powers_[i], hash::multipler);
 
-    hashes_[0] = hash_traits::zero;
+    hashes_[0] = hash::zero;
     for(auto i: range(0u, size_)) {
-      hash_type character = hash_traits::one * scalar_type(*begin);
-      hash_type tmp = hash_traits::multiply(character, powers_[i]);
-      hashes_[i + 1] = hash_traits::add(tmp, hashes_[i]);
+      hash_type tmp = hash::multiply(powers_[i], scalar_type(*begin));
+      hashes_[i + 1] = hash::add(tmp, hashes_[i]);
       ++begin;
     }
   }
 
   hash_type get_hash(index_type begin, index_type length) {
-    hash_type tmp = hash_traits::substract(hashes_[begin + length] , hashes_[begin]);
-    return hash_traits::multiply(tmp, powers_[size_ - begin]);
+    hash_type tmp = hash::subtract(hashes_[begin + length] , hashes_[begin]);
+    return hash::multiply(tmp, powers_[size_ - begin]);
   }
 
 private:

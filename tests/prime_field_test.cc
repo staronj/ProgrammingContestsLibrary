@@ -155,6 +155,93 @@ BOOST_AUTO_TEST_CASE(division_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(inverse_test) {
+  {
+    numeric::prime_field<5> a(2);
+    BOOST_CHECK_EQUAL(inverse(a), 3);
+  }
+
+  {
+    numeric::prime_field<7> a(3);
+    BOOST_CHECK_EQUAL(inverse(a), 5);
+  }
+
+  {
+    numeric::prime_field<13> a(5);
+    BOOST_CHECK_EQUAL(inverse(a), 8);
+  }
+
+  {
+    numeric::prime_field<uint32_prime1> a(5);
+    BOOST_CHECK_EQUAL(inverse(a), 3435973833u);
+    BOOST_CHECK_EQUAL(a * 3435973833, 1);
+  }
+
+  {
+    numeric::prime_field<uint32_prime1> a(3435973833u);
+    BOOST_CHECK_EQUAL(inverse(a), 5);
+  }
+
+  {
+    numeric::prime_field<uint32_prime1> a(123456);
+    BOOST_CHECK_EQUAL(inverse(a), 1336367439u);
+    BOOST_CHECK_EQUAL(a * 1336367439u, 1);
+  }
+
+  {
+    numeric::prime_field<uint32_prime1> a(1336367439u);
+    BOOST_CHECK_EQUAL(inverse(a), 123456);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(shortcut_operators_test) {
+  {
+    numeric::prime_field<5> a(2);
+    numeric::prime_field<5> b(3);
+    a += b;
+    BOOST_CHECK_EQUAL(a, 0);
+    BOOST_CHECK_EQUAL(b, 3);
+  }
+
+  {
+    numeric::prime_field<5> a(2);
+    a += a;
+    BOOST_CHECK_EQUAL(a, 4);
+    a += a;
+    BOOST_CHECK_EQUAL(a, 3);
+  }
+
+  {
+    numeric::prime_field<5> a(3);
+    numeric::prime_field<5> b(2);
+    a -= b;
+    BOOST_CHECK_EQUAL(a, 1);
+    BOOST_CHECK_EQUAL(b, 2);
+    a -= a;
+    BOOST_CHECK_EQUAL(a, 0);
+  }
+
+  {
+    numeric::prime_field<5> a(3);
+    numeric::prime_field<5> b(2);
+    a *= b;
+    BOOST_CHECK_EQUAL(a, 1);
+    BOOST_CHECK_EQUAL(b, 2);
+    a *= b;
+    BOOST_CHECK_EQUAL(a, 2);
+  }
+
+  {
+    numeric::prime_field<5> a(3);
+    numeric::prime_field<5> b(2);
+    a /= b;
+    BOOST_CHECK_EQUAL(a, 4);
+    BOOST_CHECK_EQUAL(b, 2);
+    a /= a;
+    BOOST_CHECK_EQUAL(a, 1);
+  }
+}
+
 BOOST_AUTO_TEST_CASE(io_test) {
   {
     std::ostringstream stream;
@@ -189,6 +276,22 @@ BOOST_AUTO_TEST_CASE(io_test) {
     numeric::prime_field<uint32_prime1> a;
     stream >> a;
     BOOST_CHECK_EQUAL(a, uint32_prime1 - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(equality_test) {
+  {
+    numeric::prime_field<5> a(2);
+    numeric::prime_field<5> b(2);
+    BOOST_CHECK(a == b);
+    BOOST_CHECK(!(a != b));
+  }
+
+  {
+    numeric::prime_field<5> a(2);
+    numeric::prime_field<5> b(3);
+    BOOST_CHECK(a != b);
+    BOOST_CHECK(!(a == b));
   }
 }
 

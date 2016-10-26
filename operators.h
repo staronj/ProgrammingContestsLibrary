@@ -134,39 +134,39 @@ inline bool operator!=(const T& lhs, const T& rhs) {
 }
 
 // + for pairs
-template <typename Integral>
-constexpr std::pair<Integral, Integral> operator+(const std::pair<Integral, Integral>& lhs, const std::pair<Integral, Integral>& rhs) {
-  return std::pair<Integral, Integral>(lhs.first + rhs.first, lhs.second + rhs.second);
+template <typename Integral1, typename Integral2>
+constexpr std::pair<Integral1, Integral2> operator+(const std::pair<Integral1, Integral2>& lhs, const std::pair<Integral1, Integral2>& rhs) {
+  return std::pair<Integral1, Integral2>(lhs.first + rhs.first, lhs.second + rhs.second);
 }
 
 // - for pairs
-template <typename Integral>
-constexpr std::pair<Integral, Integral> operator-(const std::pair<Integral, Integral>& lhs, const std::pair<Integral, Integral>& rhs) {
-  return std::pair<Integral, Integral>(lhs.first - rhs.first, lhs.second - rhs.second);
+template <typename Integral1, typename Integral2>
+constexpr std::pair<Integral1, Integral2> operator-(const std::pair<Integral1, Integral2>& lhs, const std::pair<Integral1, Integral2>& rhs) {
+  return std::pair<Integral1, Integral2>(lhs.first - rhs.first, lhs.second - rhs.second);
 }
 
 // % for pairs
-template <typename Integral>
-constexpr std::pair<Integral, Integral> operator%(const std::pair<Integral, Integral>& lhs, const std::pair<Integral, Integral>& rhs) {
-  return std::pair<Integral, Integral>(lhs.first % rhs.first, lhs.second % rhs.second);
+template <typename Integral1, typename Integral2>
+constexpr std::pair<Integral1, Integral2> operator%(const std::pair<Integral1, Integral2>& lhs, const std::pair<Integral1, Integral2>& rhs) {
+  return std::pair<Integral1, Integral2>(lhs.first % rhs.first, lhs.second % rhs.second);
 }
 
 // * for pairs
-template <typename Integral>
-constexpr std::pair<Integral, Integral> operator*(const std::pair<Integral, Integral>& lhs, const std::pair<Integral, Integral>& rhs) {
-  return std::pair<Integral, Integral>(lhs.first * rhs.first, lhs.second * rhs.second);
+template <typename Integral1, typename Integral2>
+constexpr std::pair<Integral1, Integral2> operator*(const std::pair<Integral1, Integral2>& lhs, const std::pair<Integral1, Integral2>& rhs) {
+  return std::pair<Integral1, Integral2>(lhs.first * rhs.first, lhs.second * rhs.second);
 }
 
 // % for (pair, Integral)
-template <typename Integral>
-constexpr std::pair<Integral, Integral> operator%(const std::pair<Integral, Integral>& lhs, const Integral& rhs) {
-  return std::pair<Integral, Integral>(lhs.first % rhs, lhs.second % rhs);
+template <typename Integral1, typename Integral2, typename Integral3>
+constexpr std::pair<Integral1, Integral2> operator%(const std::pair<Integral1, Integral2>& lhs, const Integral3& rhs) {
+  return std::pair<Integral1, Integral2>(lhs.first % rhs, lhs.second % rhs);
 }
 
 // * for (pair, Integral)
-template <typename Integral>
-constexpr std::pair<Integral, Integral> operator*(const std::pair<Integral, Integral>& lhs, const Integral& rhs) {
-  return std::pair<Integral, Integral>(lhs.first * rhs, lhs.second * rhs);
+template <typename Integral1, typename Integral2, typename Integral3>
+constexpr std::pair<Integral1, Integral2> operator*(const std::pair<Integral1, Integral2>& lhs, const Integral3& rhs) {
+  return std::pair<Integral1, Integral2>(lhs.first * rhs, lhs.second * rhs);
 }
 
 
