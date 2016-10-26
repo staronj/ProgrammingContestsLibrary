@@ -59,6 +59,17 @@ BOOST_AUTO_TEST_CASE(creation_test) {
     numeric::prime_field<uint32_prime1> m(-1);
     BOOST_CHECK_EQUAL(n.value(), m.value());
   }
+
+  {
+    numeric::prime_field<uint32_prime1> n(-int64(uint32_prime1) - int64(uint32_prime1) - 10);
+    BOOST_CHECK_EQUAL(n, -10);
+  }
+
+  {
+    int64 value = uint32_prime1;
+    numeric::prime_field<uint32_prime1> n((value << 20) + 10);
+    BOOST_CHECK_EQUAL(n.value(), 10);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(addition_test) {
@@ -120,6 +131,64 @@ BOOST_AUTO_TEST_CASE(multiplication_test) {
     BOOST_CHECK_EQUAL(a * b, 2);
     BOOST_CHECK_EQUAL(a * a, 1);
     BOOST_CHECK_EQUAL(b * b * b * b, 16);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(division_test) {
+  {
+    numeric::prime_field<5> a(2);
+    numeric::prime_field<5> zero(0);
+    BOOST_CHECK_EQUAL(2 / a, 1);
+    BOOST_CHECK_EQUAL(a / 2, 1);
+    BOOST_CHECK_EQUAL(4 / a, 2);
+    BOOST_CHECK_EQUAL(9 / a, 2);
+    BOOST_CHECK_EQUAL(a / 3, 4);
+  }
+
+  {
+    numeric::prime_field<uint32_prime1> a(uint32_prime1 - 1);
+    numeric::prime_field<uint32_prime1> b(uint32_prime1 - 2);
+    BOOST_CHECK_EQUAL(b / a, 2);
+    BOOST_CHECK_EQUAL(inverse(a / b), 2);
+    BOOST_CHECK_EQUAL(a / a, 1);
+    BOOST_CHECK_EQUAL(b / b, 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(io_test) {
+  {
+    std::ostringstream stream;
+    numeric::prime_field<5> a(9);
+    stream << a;
+    BOOST_CHECK_EQUAL(stream.str(), "4");
+  }
+
+  {
+    std::ostringstream stream;
+    numeric::prime_field<uint32_prime1> a(uint32_prime1 - 1);
+    stream << a;
+    BOOST_CHECK_EQUAL(stream.str(), std::to_string(uint32_prime1 - 1));
+  }
+
+  {
+    std::istringstream stream("1234");
+    numeric::prime_field<5> a;
+    stream >> a;
+    BOOST_CHECK_EQUAL(a, 4);
+  }
+
+  {
+    std::istringstream stream("-1");
+    numeric::prime_field<5> a;
+    stream >> a;
+    BOOST_CHECK_EQUAL(a, 4);
+  }
+
+  {
+    std::istringstream stream(std::to_string(uint32_prime1 - 1));
+    numeric::prime_field<uint32_prime1> a;
+    stream >> a;
+    BOOST_CHECK_EQUAL(a, uint32_prime1 - 1);
   }
 }
 

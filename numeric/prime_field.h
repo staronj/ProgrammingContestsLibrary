@@ -6,23 +6,7 @@
 namespace lib {
 namespace numeric {
 
-namespace detail {
-
-template <typename Integral>
-constexpr
-typename std::enable_if<std::is_unsigned<Integral>::value, uint32>::type
-modulo(Integral value, uint32 prime) {
-  return value % prime;
-}
-
-template <typename Integral>
-constexpr
-typename std::enable_if<std::is_signed<Integral>::value, uint32>::type
-modulo(Integral value, uint32 prime) {
-  return (int64(value % int64(prime)) + int64(prime)) % prime;
-}
-
-} // namespace detail
+// Predeclarations
 
 template <uint32 prime>
 class prime_field;
@@ -31,7 +15,7 @@ template<uint32 prime>
 prime_field<prime> power(prime_field<prime> a, uint64 n);
 
 template<uint32 prime>
-prime_field<prime> power(prime_field<prime> a, int64 n);
+prime_field<prime> inverse(const prime_field<prime>& lhs);
 
 template<uint32 prime>
 std::ostream& operator<<(std::ostream& stream, const prime_field<prime>& lhs);
@@ -39,27 +23,33 @@ std::ostream& operator<<(std::ostream& stream, const prime_field<prime>& lhs);
 template<uint32 prime>
 std::istream& operator>>(std::istream& stream, prime_field<prime>& lhs);
 
-template<uint32 prime>
-constexpr prime_field<prime> operator+(const prime_field<prime>& lhs, const prime_field<prime>& rhs);
+// Predeclarations End
 
-template<uint32 prime>
-constexpr prime_field<prime> operator-(const prime_field<prime>& lhs, const prime_field<prime>& rhs);
+namespace detail {
 
-template<uint32 prime>
-constexpr prime_field<prime> operator*(const prime_field<prime>& lhs, const prime_field<prime>& rhs);
+template <typename Integral>
+constexpr
+typename std::enable_if<std::is_unsigned<Integral>::value, uint32>::type
+modulo(Integral value, uint32 prime) {
+  return uint64(value) % uint64(prime);
+}
 
-template<uint32 prime>
-prime_field<prime> operator/(const prime_field<prime>& lhs, const prime_field<prime>& rhs);
+template <typename Integral>
+constexpr
+typename std::enable_if<std::is_signed<Integral>::value, uint32>::type
+modulo(Integral value, uint32 prime) {
+  return ((int64(value) % int64(prime)) + int64(prime)) % int64(prime);
+}
 
-template<uint32 prime>
-constexpr bool operator==(const prime_field<prime>& lhs, const prime_field<prime>& rhs);
+} // namespace detail
 
-template<uint32 prime>
-constexpr bool operator!=(const prime_field<prime>& lhs, const prime_field<prime>& rhs);
 
 template <uint32 prime>
 class prime_field {
 public:
+  constexpr prime_field():
+      value_(0) { }
+
   template <typename Integral, typename = typename std::enable_if<std::is_integral<Integral>::value>::type>
   constexpr prime_field(Integral value):
       value_(detail::modulo(value, prime)) { }
@@ -77,9 +67,11 @@ public:
   }
 
   friend prime_field power <>(prime_field a, uint64 n);
-  friend prime_field power <>(prime_field a, int64 n);
-  
-  friend prime_field operator/ <>(const prime_field& lhs, const prime_field& rhs);
+  friend prime_field inverse <>(const prime_field& lhs);
+
+  friend prime_field operator/(const prime_field& lhs, const prime_field& rhs) {
+    return lhs * inverse(rhs);
+  }
 
   void operator+=(const prime_field& rhs);
   void operator-=(const prime_field& rhs);
@@ -112,7 +104,7 @@ prime_field<prime> power(prime_field<prime> a, uint64 n) {
   else if (a == 0)
     return 0;
   n %= (prime - 1); // Fermat little theorem
-  constexpr prime_field<prime> result = 1;
+  prime_field<prime> result = 1;
   while (n > 0) {
     if (n % 2 == 1)
       result *= a;
@@ -123,20 +115,10 @@ prime_field<prime> power(prime_field<prime> a, uint64 n) {
 }
 
 template<uint32 prime>
-prime_field<prime> power(prime_field<prime> a, int64 n) {
-  if (n >= 0)
-    return power(a, uint64(n));
-  else if (a == 0)
-    throw std::logic_error("prime_field power - zero to negative power!");
-  else
-    return power(a, detail::modulo(n, prime));
-}
-
-template<uint32 prime>
-prime_field<prime> operator/(const prime_field<prime>& lhs, const prime_field<prime>& rhs) {
-  if (rhs == 0)
-    throw std::logic_error("prime_field - division by zero");
-  return lhs * power(rhs, prime - 2);
+prime_field<prime> inverse(const prime_field<prime>& lhs) {
+  if (lhs == 0)
+    throw std::logic_error("prime_field - inverse of zero");
+  return power(lhs, prime - 2);
 }
 
 template<uint32 prime>
