@@ -37,6 +37,9 @@ struct ProductTypeDeductor {
 template <typename T, typename Type>
 using enable_if_floating = typename std::enable_if<std::is_floating_point<T>::value, Type>::type;
 
+template <typename T, typename Type>
+using enable_if_integral = typename std::enable_if<std::is_integral<T>::value, Type>::type;
+
 } // namespace detail
 
 template<typename T>
@@ -101,6 +104,16 @@ detail::enable_if_floating<T, void> operator/=(point<T>& lhs, const T& rhs) {
 }
 
 template<typename T>
+detail::enable_if_integral<T, bool> operator==(const point<T>& lhs, const point<T>& rhs) {
+  return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+template<typename T>
+detail::enable_if_integral<T, bool> operator!=(const point<T>& lhs, const point<T>& rhs) {
+  return !(lhs == rhs);
+}
+
+template<typename T>
 typename detail::ProductTypeDeductor<T>::type ScalarProduct(const point<T>& lhs, const point<T>& rhs) {
   using product_type = typename detail::ProductTypeDeductor<T>::type;
   return
@@ -145,7 +158,7 @@ cos(const point<T>& lhs, const point<T>& rhs) {
 }
 
 template<typename T>
-std::ostream operator<<(std::ostream& stream, const point<T>& point) {
+std::ostream& operator<<(std::ostream& stream, const point<T>& point) {
   lib::detail::delimiter_printer printer(stream);
   stream << printer.prefix();
   stream << printer.delimiter() << point.x;
@@ -155,7 +168,7 @@ std::ostream operator<<(std::ostream& stream, const point<T>& point) {
 }
 
 template<typename T>
-std::istream operator>>(std::istream& stream, const point<T>& point) {
+std::istream& operator>>(std::istream& stream, point<T>& point) {
   return stream >> point.x >> point.y;
 }
 
