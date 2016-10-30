@@ -24,6 +24,7 @@
 #include <cctype>
 #include <cstring>
 #include <random>
+#include <cassert>
 
 namespace lib {
 

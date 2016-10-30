@@ -4,6 +4,7 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "iterators.h"
+#include "io.h"
 #include "numeric/number_theory.h"
 
 using namespace lib::numeric;
@@ -16,6 +17,101 @@ BOOST_AUTO_TEST_CASE(gcd_test) {
   BOOST_CHECK_EQUAL(GCD(100, 43), 1);
   BOOST_CHECK_EQUAL(GCD((1uLL << 63) + 16, (1uLL << 62) + 16), 16);
   BOOST_CHECK_EQUAL(GCD((1uLL << 63) + (1uLL << 42), (1uLL << 63) + (1uLL << 41)), (1uLL << 41));
+}
+
+BOOST_AUTO_TEST_CASE(extended_gcd_test) {
+  using namespace lib;
+  std::vector<int64_pair> tests = {
+      {0, 1},
+      {1, 0},
+      {0, 2},
+      {2, 0},
+      {1, 1},
+      {10, 3},
+      {10, 100},
+      {12, 16},
+      {0xFFFFFFFBu, 0xFFFFFFBFu},
+  };
+
+  for(const auto& test: tests) {
+    int64 a,b,x,y;
+    std::tie(a, b) = test;
+    std::tie(x, y) = ExtendedGCD(a, b);
+    BOOST_CHECK_MESSAGE(a * x + b * y == GCD(a, b),
+                        "Wrong extended gcd for pair (" + std::to_string(a) + ", " + std::to_string(b) + ")"
+    );
+  }
+}
+
+BOOST_AUTO_TEST_CASE(merge_congruences_test) {
+  using namespace lib;
+  using test_type = std::tuple<uint64_pair, uint64_pair, uint64_pair>;
+  std::vector<test_type> tests = {
+      test_type {
+          {1, 2},
+          {1, 3},
+          {1, 6}
+      },
+      test_type {
+          {2, 4},
+          {4, 6},
+          {10, 12}
+      },
+      test_type {
+          {13, 16},
+          {9, 12},
+          {45, 48}
+      },
+  };
+
+  for(const auto& test: tests) {
+    uint64_pair a, b, ab;
+    std::tie(a, b, ab) = test;
+    uint64_pair result = MergeCongruences(a, b);
+
+    std::ostringstream errorMessage;
+    errorMessage << fancy;
+    print(errorMessage, "Wrong result: congruences %0 and %1 gave %2", a, b, result);
+
+    BOOST_CHECK_MESSAGE(ab == result, errorMessage.str());
+  }
+}
+
+BOOST_AUTO_TEST_CASE(merge_congruences_contradicting_test) {
+  using namespace lib;
+  using test_type = std::tuple<uint64_pair, uint64_pair>;
+  std::vector<test_type> tests = {
+      test_type {
+          {1, 2},
+          {2, 4},
+      },
+      test_type {
+          {3, 4},
+          {2, 6},
+      },
+      test_type {
+          {0, 16},
+          {2, 12},
+      },
+  };
+
+  for(const auto& test: tests) {
+    uint64_pair a, b;
+    std::tie(a, b) = test;
+    BOOST_CHECK_THROW(MergeCongruences(a, b), std::runtime_error);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(merge_congruences_iterable_test) {
+  using namespace lib;
+  std::vector<uint64_pair> congruences = {
+      {1, 2},
+      {2, 3},
+      {4, 5},
+      {6, 7}
+  };
+  uint64_pair result{209, 210};
+  BOOST_CHECK(MergeCongruences(congruences.begin(), congruences.end()) == result);
 }
 
 BOOST_AUTO_TEST_CASE(operations_32bits_test) {
@@ -39,9 +135,9 @@ BOOST_AUTO_TEST_CASE(operations_32bits_test) {
 
 BOOST_AUTO_TEST_CASE(power_modulo_test) {
   lib::uint64 modulo = lib::power(10, 9) + 7;
-  BOOST_CHECK_EQUAL(PowerModulo(2, lib::power(10, 17), modulo), 952065854);
-  BOOST_CHECK_EQUAL(PowerModulo(3, lib::power(10, 17), modulo), 368629774);
-  BOOST_CHECK_EQUAL(PowerModulo(3, lib::power(10, 17) + 1, modulo), 105889315);
+  BOOST_CHECK_EQUAL(PowerModulo32(2, lib::power(10, 17), modulo), 952065854);
+  BOOST_CHECK_EQUAL(PowerModulo32(3, lib::power(10, 17), modulo), 368629774);
+  BOOST_CHECK_EQUAL(PowerModulo32(3, lib::power(10, 17) + 1, modulo), 105889315);
 }
 
 BOOST_AUTO_TEST_CASE(square_test) {
@@ -222,6 +318,36 @@ BOOST_AUTO_TEST_CASE(is_primitive_root_test) {
 
   BOOST_CHECK_EQUAL(IsPrimitiveRoot(259, 0xFFFFFFFB), true);
   BOOST_CHECK_EQUAL(IsPrimitiveRoot(258, 0xFFFFFFFB), false);
+}
+
+BOOST_AUTO_TEST_CASE(inverse_test) {
+  BOOST_CHECK_EQUAL(Inverse(1, 2), 1);
+  BOOST_CHECK_EQUAL(Inverse(2, 7), 4);
+  BOOST_CHECK_EQUAL(Inverse(7, 13), 2);
+  BOOST_CHECK_EQUAL(Inverse(12, 13), 12);
+  BOOST_CHECK_EQUAL(Inverse(1, 13), 1);
+}
+
+BOOST_AUTO_TEST_CASE(multiplicative_order_test) {
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(1, 2), 1);
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(2, 7), 3);
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(3, 7), 6);
+  BOOST_CHECK_THROW(MultiplicativeOrder(0, 7), std::runtime_error);
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(1, 13), 1);
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(2, 13), 12);
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(3, 13), 3);
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(12, 13), 2);
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(10, 13), 6);
+
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(3, 0xFFFFFFFBu), 2147483645u);
+  BOOST_CHECK_EQUAL(MultiplicativeOrder(2, 0xFFFFFFFBu), 0xFFFFFFFBu - 1u);
+}
+
+BOOST_AUTO_TEST_CASE(discrete_logarithm_test) {
+  BOOST_CHECK_EQUAL(DiscreteLogarithm(1, 1, 2), 0);
+  BOOST_CHECK_EQUAL(DiscreteLogarithm(2, 4, 7), 2);
+  BOOST_CHECK_EQUAL(DiscreteLogarithm(3, 5, 7), 5);
+  BOOST_CHECK_EQUAL(DiscreteLogarithm(3, 1431655764, 0xFFFFFFFB), 2147483644);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
