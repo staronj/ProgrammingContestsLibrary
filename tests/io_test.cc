@@ -147,6 +147,72 @@ BOOST_AUTO_TEST_CASE(print_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(pair_tuple_input_test) {
+  {
+    std::istringstream stream("1 2");
+    std::pair<int, int> pair;
+    stream >> pair;
+    BOOST_CHECK(pair == std::make_pair(1, 2));
+  }
+
+  {
+    std::istringstream stream("Ala a");
+    std::pair<std::string, char> pair;
+    stream >> pair;
+    BOOST_CHECK(pair == std::make_pair(std::string("Ala"), 'a'));
+  }
+
+  {
+    std::istringstream stream("Ala 1 2");
+    std::tuple<std::string, int, int> tuple;
+    stream >> tuple;
+    BOOST_CHECK(tuple == std::make_tuple(std::string("Ala"), 1, 2));
+  }
+
+  {
+    std::istringstream stream("1 2 3");
+    int a,b,c;
+    stream >> std::tie(a, b, c);
+    BOOST_CHECK_EQUAL(a, 1);
+    BOOST_CHECK_EQUAL(b, 2);
+    BOOST_CHECK_EQUAL(c, 3);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(read_test) {
+  {
+    std::istringstream stream("1 2 3");
+    int a, b, c;
+    read(stream, a, b, c);
+    BOOST_CHECK_EQUAL(a, 1);
+    BOOST_CHECK_EQUAL(b, 2);
+    BOOST_CHECK_EQUAL(c, 3);
+  }
+
+  {
+    std::istringstream stream("Ala 1 2");
+    std::tuple<std::string, int, int> tuple;
+    read(stream, tuple);
+    BOOST_CHECK(tuple == std::make_tuple(std::string("Ala"), 1, 2));
+  }
+
+  {
+    std::istringstream stream("1 2 3");
+    int a, b;
+    stream >> a >> ignore<int>() >> b;
+    BOOST_CHECK_EQUAL(a, 1);
+    BOOST_CHECK_EQUAL(b, 3);
+  }
+
+  {
+    std::istringstream stream("1 2 3");
+    int a, b;
+    read(stream, a, ignore<int>(), b);
+    BOOST_CHECK_EQUAL(a, 1);
+    BOOST_CHECK_EQUAL(b, 3);
+  }
+}
+
 #ifdef HAVE_INT128_TYPES
 
 BOOST_AUTO_TEST_CASE(int128_test) {

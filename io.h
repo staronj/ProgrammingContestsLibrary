@@ -125,44 +125,91 @@ public:
   using type = typename helper<N>::type;
 };
 
-template <typename... Args>
-class tuple_printer {
-  static constexpr size_t arguments_count = sizeof...(Args);
-  using index_sequence = typename generate_sequence<arguments_count>::type;
-  using function_type = void(tuple_printer::*)();
-  using table_type = std::array<function_type, arguments_count>;
-  using tuple_type = std::tuple<Args...>;
-
-  template <size_t N>
-  void print_() {
-    stream_ << std::get<N>(tuple_);
-  }
+template <typename Functor, size_t N>
+struct dynamize {
+  using functor_type = Functor;
+private:
+  using index_sequence = typename generate_sequence<N>::type;
+  using function_type = void(functor_type::*)();
+  using table_type = std::array<function_type, N>;
 
   template <size_t... Indexes>
   static constexpr table_type build_table(integer_sequence<Indexes...>) {
-    return {{&tuple_printer::print_<Indexes>...}};
+    return {{&functor_type::template operator()<Indexes>...}};
   }
 
   static constexpr table_type functions_ = build_table(index_sequence());
 public:
-  tuple_printer (std::ostream& stream, const tuple_type& tuple):
-      stream_(stream), tuple_(tuple) { }
+  dynamize(functor_type&& functor):
+      functor_(std::move(functor)) { }
 
-
-  void print(size_t i) {
-    if (i >= arguments_count)
+  void call(size_t i) {
+    if (i >= N)
       throw std::out_of_range("tuple_printer: out of range");
 
-    (this->*functions_[i])();
+    (functor_.*functions_[i])();
   }
 
 private:
-  std::ostream& stream_;
-  const tuple_type& tuple_;
+  functor_type functor_;
+};
+
+template <typename Functor, size_t N>
+constexpr typename dynamize<Functor, N>::table_type dynamize<Functor, N>::functions_;
+
+template <typename... Args>
+class tuple_printer {
+  static constexpr size_t arguments_count = sizeof...(Args);
+  using tuple_type = std::tuple<Args...>;
+
+  struct impl {
+    std::ostream& stream_;
+    const tuple_type& tuple_;
+
+    template <size_t N>
+    void operator()() {
+      stream_ << std::get<N>(tuple_);
+    }
+  };
+
+public:
+  tuple_printer (std::ostream& stream, const tuple_type& tuple):
+    dynamize_(impl{stream, tuple}) { }
+
+  void print(size_t i) {
+    dynamize_.call(i);
+  }
+
+private:
+  dynamize<impl, arguments_count> dynamize_;
 };
 
 template <typename... Args>
-constexpr typename tuple_printer<Args...>::table_type tuple_printer<Args...>::functions_;
+class tuple_reader {
+  static constexpr size_t arguments_count = sizeof...(Args);
+  using tuple_type = std::tuple<Args...>;
+
+  struct impl {
+    std::istream& stream_;
+    tuple_type& tuple_;
+
+    template <size_t N>
+    void operator()() {
+      stream_ >> std::get<N>(tuple_);
+    }
+  };
+
+public:
+  tuple_reader (std::istream& stream, tuple_type& tuple):
+      dynamize_(impl{stream, tuple}) { }
+
+  void read(size_t i) {
+    dynamize_.call(i);
+  }
+
+private:
+  dynamize<impl, arguments_count> dynamize_;
+};
 
 } // namespace detail
 
@@ -199,6 +246,31 @@ operator<<(std::ostream& stream, const Iterable& iterable) {
   }
   stream << printer.postfix();
   return stream;
+}
+
+template <typename T1, typename T2>
+std::istream& operator>>(std::istream& stream, std::pair<T1, T2>& pair) {
+  return stream >> pair.first >> pair.second;
+}
+
+template <typename... Args>
+std::istream& operator>>(std::istream& stream, std::tuple<Args...>& tuple) {
+  detail::tuple_reader<Args...> tuple_reader(stream, tuple);
+  for (auto i: range<size_t>(0, sizeof...(Args))) {
+    tuple_reader.read(i);
+  }
+  return stream;
+}
+
+
+/**
+ * To allow constructions like
+ * int a, b, c;
+ * std::cin >> std::tie(a, b, c);
+ */
+template <typename... Args>
+std::istream& operator>>(std::istream& stream, std::tuple<Args...>&& tuple) {
+  return stream >> tuple;
 }
 
 template <typename... Args>
@@ -238,6 +310,27 @@ void print(const char* format, const Args&... args) {
 std::ostream& flush(std::ostream& stream) {
   return stream.flush();
 }
+
+/**
+ * takes arguments as rref to allow constructions like
+ * int a, b;
+ * read(std::cin, a, ignore<int>(), b);
+ */
+template <typename... Args>
+void read(std::istream& stream, Args&&... args) {
+  auto tuple = std::make_tuple(std::ref(args)...);
+  stream >> tuple;
+}
+
+template <typename T>
+struct ignore {
+  ignore() = default;
+
+  friend std::istream& operator>>(std::istream& stream, const ignore&) {
+    T ignored;
+    return stream >> ignored;
+  }
+};
 
 class lines_iterator {
 public:
