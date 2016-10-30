@@ -2,6 +2,11 @@
 
 ## Usage
 
+#### Build documentation
+```bash
+make doc
+```
+
 #### Run tests
 ```bash
 make
@@ -13,6 +18,20 @@ make test
 Build target `all`, go to subdirectory `benchmarks` and run executable.
 
 ## Dependencies
+
+### Doxygen
+
+Tool for generating documentation. 
+
+```bash
+sudo apt-get install doxygen
+```
+
+#### Installation
+```bash
+sudo apt-get install libboost-test-dev
+```
+
 
 ### Boost unit test framework
 

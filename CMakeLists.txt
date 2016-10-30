@@ -8,6 +8,17 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2")
 CHECK_TYPE_SIZE("__int128" INT128_TYPE BUILTIN_TYPES_ONLY)
 CHECK_TYPE_SIZE("unsigned __int128" UINT128_TYPE BUILTIN_TYPES_ONLY)
 
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+    add_custom_target(doc
+            ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Generating API documentation with Doxygen" VERBATIM
+            )
+endif(DOXYGEN_FOUND)
+
+
 link_directories(/usr/local/bin)
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 

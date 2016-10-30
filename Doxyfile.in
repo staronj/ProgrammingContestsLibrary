@@ -1,0 +1,47 @@
+PROJECT_NAME           = "@CMAKE_PROJECT_NAME@"
+STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@ \
+                         @PROJECT_BINARY_DIR@
+INPUT                  = @doxy_main_page@ \
+                         @PROJECT_SOURCE_DIR@ \
+                         @PROJECT_BINARY_DIR@
+FILE_PATTERNS          = *.h \
+                         *.cc
+RECURSIVE              = YES
+EXCLUDE                = benchmarks \
+                         tests
+EXCLUDE_SYMBOLS = detail
+USE_MDFILE_AS_MAINPAGE = @doxy_main_page@
+
+OUTPUT_LANGUAGE        = English
+BRIEF_MEMBER_DESC      = YES
+JAVADOC_AUTOBRIEF      = YES
+BUILTIN_STL_SUPPORT    = YES
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_METHODS  = YES
+SHOW_FILES             = YES
+SHOW_NAMESPACES        = YES
+SHOW_INCLUDE_FILES     = NO
+
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+
+SOURCE_BROWSER         = YES
+
+GENERATE_HTML          = YES
+GENERATE_DOCSET        = NO
+GENERATE_HTMLHELP      = NO
+GENERATE_CHI           = NO
+GENERATE_QHP           = NO
+GENERATE_LATEX         = NO
+GENERATE_RTF           = NO
+GENERATE_MAN           = NO
+GENERATE_XML           = NO
+GENERATE_AUTOGEN_DEF   = NO
+
+HAVE_DOT               = NO

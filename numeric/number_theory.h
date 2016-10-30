@@ -78,6 +78,9 @@ uint64_pair MergeCongruences(const uint64_pair first, const uint64_pair second) 
   return {Modulo(c, m), m};
 }
 
+/**
+ * Returns result of merging congruences from range [behin, end)
+ */
 template <typename Iterator>
 uint64_pair MergeCongruences(Iterator begin, Iterator end) {
   uint64_pair result{0, 1};
