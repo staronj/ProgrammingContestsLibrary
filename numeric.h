@@ -16,18 +16,27 @@ constexpr uint32 uint32_prime1 = 0xFFFFFFFB;
 constexpr uint32 uint32_prime2 = 0xFFFFFFBF;
 constexpr uint64 uint64_prime1 = 0xFFFFFFFFFFFFFFC5;
 
+/**
+ * Returns true if d divides n.
+ */
 template <typename T>
 typename std::enable_if<std::is_integral<T>::value, bool>::type
 divides(T d, T n) {
   return (n % d) == 0;
 }
 
+/**
+ * Returns abs(value) independently of value type.
+ */
 template <typename T>
 T abs(const T& value) {
   constexpr T zero(0);
   return (value < zero)? (-value) : (value);
 }
 
+/**
+ * Returns -1, 0 or 1 depending on signum of value. Return type is int.
+ */
 template <typename T>
 int signum(const T& value) {
   constexpr T zero(0);

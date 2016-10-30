@@ -5,6 +5,19 @@
 
 namespace lib {
 
+/**
+ * Data structure for assigning consecutive identificators for values.
+ *
+ * Example:
+ * <pre>
+ * Indexer<std::string> indexer;
+ * indeger.getID("Ala"); // returns 0
+ * indeger.getID("ma"); // returns 1
+ * indeger.getID("kota"); // returns 2
+ * indeger.getID("Ala"); // returns 0
+ * indeger.getValue(1); // returns "ma"
+ * </pre>
+ */
 template <typename Value>
 class Indexer {
 public:
@@ -15,7 +28,13 @@ public:
   Indexer():
       value_to_id_() { }
 
-  id_type get_id(const value_type& value) {
+  /**
+   * Returns id of value.
+   *
+   * If value was already in set returns id of this value.
+   * If value is not in set assign new id to value and returns it.
+   */
+  id_type getID(const value_type &value) {
     auto it = value_to_id_.find(value);
     if (it == value_to_id_.end()) {
       id_type id = value_to_id_.size();
@@ -25,7 +44,10 @@ public:
     return it->second;
   }
 
-  reference get_value(id_type id) {
+  /**
+   * Returns value associated with given id.
+   */
+  reference getValue(id_type id) {
     try {
       return id_to_value_.at(id)->first;
     }
@@ -34,6 +56,9 @@ public:
     }
   }
 
+  /**
+   * Returns number of stored (id, value) pairs.
+   */
   size_t size() const {
     return value_to_id_.size();
   }

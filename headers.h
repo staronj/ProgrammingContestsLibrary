@@ -28,6 +28,13 @@
 
 namespace lib {
 
+/**
+ * Random number generator. Returns 32 bits numbers.
+ *
+ * You should prefer this random number generator over
+ * C's rand(), because rand() max range is not strictly
+ * defined and can be supringsly small (like 10000).
+ */
 std::knuth_b random(time(0));
 
 using int8    = std::int8_t;

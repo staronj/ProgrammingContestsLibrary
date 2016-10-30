@@ -6,6 +6,9 @@
 
 namespace lib {
 
+/**
+ * FindAndUnion structure.
+ */
 class FindAndUnion {
 public:
   using ptr = std::shared_ptr<FindAndUnion>;
@@ -15,13 +18,16 @@ public:
       rank_(size, 0),
       parent_(make_counting_iterator(0u), make_counting_iterator(size)) { }
 
+  /**
+   * Returns representative of v subset.
+   */
   id_type find_root(id_type v) {
     if(v != parent_[v])
       parent_[v] = find_root(parent_[v]);
     return parent_[v];
   }
 
-  /*
+  /**
    * Returns true if union was performed and false if
    * u and v defines the same set.
    */

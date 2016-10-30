@@ -6,6 +6,14 @@
 
 namespace lib {
 
+/**
+ * type_traits-like predicate. Equal to true_type if argument is iterator.
+ *
+ * Example:
+ * <pre>
+ * static_assert(is_iterator<std::vector<int>::iterator>::value, "vector iterator is not iterator! help!");
+ * </pre>
+ */
 template<typename Iterator>
 struct is_iterator {
 private:
@@ -27,6 +35,14 @@ public:
   static constexpr bool value = test<Iterator>(0);
 };
 
+/**
+ * type_traits-like predicate. Equal to true_type if argument is iteratorable.
+ *
+ * Example:
+ * <pre>
+ * static_assert(is_iteratorable<std::vector<int>>::value, "vector should be iterable!");
+ * </pre>
+ */
 template<typename T>
 struct is_iterable {
   template <typename C>
@@ -50,6 +66,16 @@ public:
   static constexpr bool value = test<T>(0);
 };
 
+/**
+ * Random access iterator for iterating over integral type.
+ *
+ * Example:
+ * <pre>
+ * std::vector<int> v(counting_iterator<int>(0), counting_iterator<int>(5));
+ * </pre>
+ *
+ * Produces v with elements {0, 1, 2, 3, 4}
+ */
 template <typename Integral>
 class counting_iterator {
 public:
@@ -108,11 +134,31 @@ private:
   Integral value_;
 };
 
+/**
+ * Helper function for building counting_iterator.
+ *
+ * Example:
+ * <pre>
+ * std::vector<int> v(make_counting_iterator(0), make_counting_iterator(5));
+ * </pre>
+ *
+ * Produces v with elements {0, 1, 2, 3, 4}
+ */
 template <typename Integral>
 auto make_counting_iterator(Integral n) -> counting_iterator<Integral> {
   return counting_iterator<Integral>(n);
 }
 
+/**
+ * Random access iterator for iterating over integral type in reversed order.
+ *
+ * Example:
+ * <pre>
+ * std::vector<int> v(reverse_counting_iterator<int>(4), reverse_counting_iterator<int>(-1));
+ * </pre>
+ *
+ * Produces v with elements {4, 3, 2, 1, 0}
+ */
 template <typename Integral>
 class reverse_counting_iterator {
 public:
@@ -171,11 +217,33 @@ private:
   Integral value_;
 };
 
+/**
+ * Helper function for building reverse_counting_iterator.
+ *
+ * Example:
+ * <pre>
+ * std::vector<int> v(make_reverse_counting_iterator(4), make_reverse_counting_iterator(-1));
+ * </pre>
+ *
+ * Produces v with elements {4, 3, 2, 1, 0}
+ */
 template <typename Integral>
 auto make_reverse_counting_iterator(Integral n) -> reverse_counting_iterator<Integral> {
   return reverse_counting_iterator<Integral>(n);
 }
 
+/**
+ * Helper class for encapsulating iterator pair as iterable.
+ *
+ * Example:
+ * <pre>
+ * void foo(Iterator begin, Iterator end) {
+ *    for (const auto& elem: iterator_range<Iterator>(begin, end)) {
+ *      ...
+ *    }
+ * }
+ * </pre>
+ */
 template <typename Iterator>
 class iterator_range {
 public:
@@ -200,23 +268,88 @@ private:
   iterator_type end_;
 };
 
+/**
+ * Helper function for encapsulating iterator pair as iterable.
+ *
+ * Example:
+ * <pre>
+ * void foo(Iterator begin, Iterator end) {
+ *    for (const auto& elem: make_range(begin, end)) {
+ *      ...
+ *    }
+ * }
+ * </pre>
+ */
 template <typename Iterator>
 auto make_range(Iterator begin, Iterator end) -> iterator_range<Iterator> {
   return iterator_range<Iterator>(std::move(begin), std::move(end));
 }
 
+/**
+ * Python-like range function.
+ *
+ * Example:
+ * <pre>
+ * for (auto i: range(0, 5)) {
+ *    std::cout << i << ' ';
+ * }
+ * </pre>
+ * Prints: 0 1 2 3 4
+ *
+ * You can also explicitly specify the type:
+ * <pre>
+ * for (auto i: range<uint32>(0, 5)) {
+ *    std::cout << i << ' ';
+ * }
+ * </pre>
+ */
 template <typename Integral>
 auto range(Integral begin, Integral end) ->
 typename std::enable_if<std::is_integral<Integral>::value, iterator_range<counting_iterator<Integral>>>::type {
   return make_range(make_counting_iterator(begin), make_counting_iterator(end));
 }
 
+/**
+ * Python-like function for iterating over reversed range.
+ *
+ * Example:
+ * <pre>
+ * for (auto i: rrange(0, 5)) {
+ *    std::cout << i << ' ';
+ * }
+ * </pre>
+ * Prints: 4 3 2 1 0
+ *
+ * You can also explicitly specify the type:
+ * <pre>
+ * for (auto i: rrange<uint32>(0, 5)) {
+ *    std::cout << i << ' ';
+ * }
+ * </pre>
+ */
 template <typename Integral>
 auto rrange(Integral begin, Integral end) ->
 typename std::enable_if<std::is_integral<Integral>::value, iterator_range<reverse_counting_iterator<Integral>>>::type {
   return make_range(make_reverse_counting_iterator(end - 1), make_reverse_counting_iterator(begin - 1));
 }
 
+/**
+ * Iterator performing transformation on values.
+ *
+ * Example:
+ * <pre>
+ * std::vector<int> v = {1, 2, 3};
+ * using iterator = std::vector<int>::iterator;
+ * using mapping_it = mapping_iterator<iterator, std::function<int(int)>>;
+ * mapping_it it(v.begin(), [](int n) { return 2*n; });
+ * mapping_it end(v.end());
+ *
+ * for (const auto& elem: make_range(it, end)) {
+ *   std::cout << elem << ' ';
+ * }
+ * </pre>
+ * Prints 2 4 6
+ */
 template <typename Iterator, typename Mapper>
 class mapping_iterator {
 public:
@@ -310,6 +443,21 @@ private:
 template <typename ValuesIterator, typename IndexesIterator>
 using indirect_iterator = mapping_iterator<IndexesIterator, detail::IndirectMapper<ValuesIterator>>;
 
+/**
+ * Iterates over random acess iterator with usage of permutation.
+ *
+ * Example:
+ * <pre>
+ * std::vector<int> perm = {2, 0, 1};
+ * std::vector<std::string> values = {"Ala", "ma", "kota"};
+ * auto it = make_indirect_iterator(values.begin(), perm.begin());
+ * auto end = make_indirect_iterator(values.begin(), perm.end());
+ * for (const auto& elem: make_range(it, end)) {
+ *    std::cout << elem << ' ';
+ * }
+ * </pre>
+ * Prints: kota Ala ma
+ */
 template <typename ValuesIterator, typename IndexesIterator>
 auto make_indirect_iterator(ValuesIterator values, IndexesIterator indexes) ->
 indirect_iterator<ValuesIterator, IndexesIterator> {

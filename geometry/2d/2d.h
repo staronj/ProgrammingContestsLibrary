@@ -180,9 +180,9 @@ struct Segment {
 
 template<typename T>
 struct Line {
-  Line(const point<T>& first, const point<T>& second):
-      Line::first(first),
-      Line::second(second) { }
+  Line(const point<T>& _first, const point<T>& _second):
+      first(_first),
+      second(_second) { }
 
   Line(const Segment<T>& segment):
       first(segment.first),

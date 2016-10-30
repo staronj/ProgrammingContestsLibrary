@@ -48,11 +48,11 @@ BASELINE_F(Indexer, Indexer, QueriesFixture, samples, iterations)
 {
   Indexer<std::string> indexer;
   for (const auto& string: queries) {
-    indexer.get_id(string);
+    indexer.getID(string);
   }
 
   for (auto i: range<uint32>(0, indexer.size())) {
-    indexer.get_value(i);
+    indexer.getValue(i);
   }
 }
 

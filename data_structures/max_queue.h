@@ -6,6 +6,8 @@
 namespace lib {
 
 /**
+ * MaxQueue data structure.
+ *
  * std::less for oldest max
  * std::less_or_equal for earliest max
  * std::greater for oldest min
@@ -19,9 +21,15 @@ public:
   using comparator_type = Comparator;
   using size_type = uint32;
 
+  /**
+   * Constructs new empty queue.
+   */
   MaxQueue(comparator_type comparator = comparator_type()):
       comparator_(comparator), size_(0) { }
 
+  /**
+   * Pushes new value to queue.
+   */
   void push(value_type value) {
     size_type count = 1;
     while (!queue_.empty() && comparator_(queue_.back().first, value)) {
@@ -32,6 +40,9 @@ public:
     ++size_;
   }
 
+  /**
+   * Pops value from queue. If queue is empty behaviour is undefined.
+   */
   void pop() {
     --queue_.front().second;
     if (queue_.front().second == 0)
@@ -39,14 +50,23 @@ public:
     --size_;
   }
 
+  /**
+   * Returns maximum value in queue.
+   */
   reference max() const {
     return queue_.front().first;
   }
 
+  /**
+   * Returns true if queue is empty.
+   */
   bool empty() const {
     return queue_.empty();
   }
 
+  /**
+   * Returns size of queue.
+   */
   size_type size() const {
     return size_;
   }

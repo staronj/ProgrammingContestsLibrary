@@ -6,6 +6,8 @@
 namespace lib {
 
 /**
+ * MaxStack data structure.
+ *
  * std::less for oldest max
  * std::less_or_equal for earliest max
  * std::greater for oldest min
@@ -19,29 +21,47 @@ public:
   using comparator_type = Comparator;
   using size_type = uint32;
 
+  /**
+   * Constructs new empty stack.
+   */
   MaxStack(comparator_type comparator = comparator_type()):
       comparator_(comparator) { }
 
+  /**
+   * Pushes new value to stack.
+   */
   void push(value_type value) {
     uint32 max_index =
-        (empty() || comparator_(max(), value))? stack_.size() : stack_.back().second;
+        (empty() || comparator_(max(), value))? size_type(stack_.size()) : stack_.back().second;
     stack_.emplace_back(value, max_index);
   }
 
+  /**
+   * Pops value from stack. If stack is empty behaviour is undefined.
+   */
   void pop() {
     stack_.pop_back();
   }
 
+  /**
+   * Returns maximum value in stack.
+   */
   reference max() const {
     return stack_[stack_.back().second].first;
   }
 
+  /**
+   * Returns true if stack is empty.
+   */
   bool empty() const {
     return stack_.empty();
   }
 
+  /**
+   * Returns size of stack.
+   */
   size_type size() const {
-    return stack_.size();
+    return size_type(stack_.size());
   }
 
 private:
