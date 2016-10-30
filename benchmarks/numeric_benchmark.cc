@@ -2,7 +2,7 @@
 #include <celero/Celero.h>
 
 #include "iterators.h"
-#include "numeric.h"
+#include "numeric/number_theory.h"
 
 CELERO_MAIN
 
@@ -30,6 +30,42 @@ public:
   uint32 N;
 };
 
+
+bit_vector sieve_of_eratostenes(uint32 n) {
+  bit_vector V(n, true);
+  V[0] = V[1] = 0;
+
+
+  for(uint32 x = 2; x * x < n ; ++x) {
+    if(V[x])
+      for(uint32 y = x * x ; y < n ; y += x)
+        V[y] = 0;
+  }
+
+  return V;
+}
+
+bit_vector linear_sieve(uint32 n) {
+  bit_vector V(n, true);
+  V[0] = V[1] = false;
+  uint64 p = 2;
+
+  while(p * p < n) {
+    uint64 q = p;
+    while(p * q < n) {
+      uint64 x = p * q;
+      while(x < n) {
+        V[x] = false;
+        x *= p;
+      }
+
+      while(!V[++q]);
+    }
+
+    while(!V[++p]);
+  }
+  return V;
+}
 
 BASELINE_F(Sieve, Eratostenes, SizeFixture, samples, iterations)
 {
@@ -67,6 +103,6 @@ constexpr size_t factorization_samples = 10000;
 
 BASELINE_F(Factorization, Factorize, NumbersFixture, samples, iterations)
 {
-  auto v = factorize(number);
+  auto v = numeric::Factorize(number);
   celero::DoNotOptimizeAway(v.front() + v.back());
 }

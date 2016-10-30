@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.4)
+INCLUDE (CheckTypeSize)
 project(ProgrammingContestsLibrary)
 enable_testing()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2")
+
+CHECK_TYPE_SIZE("__int128" INT128_TYPE BUILTIN_TYPES_ONLY)
+CHECK_TYPE_SIZE("unsigned __int128" UINT128_TYPE BUILTIN_TYPES_ONLY)
 
 link_directories(/usr/local/bin)
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)

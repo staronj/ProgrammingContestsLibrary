@@ -5,14 +5,15 @@
 #include <boost/test/unit_test.hpp>
 #include "io.h"
 #include "text_algorithms/hasher.h"
+#include "numeric/number_theory.h"
 
 using namespace lib;
 
 BOOST_AUTO_TEST_SUITE(hasher_test)
 
 BOOST_AUTO_TEST_CASE(multipler_test) {
-  BOOST_CHECK(is_primitive_root(uint32_prime1, hash::multipler.first.value()));
-  BOOST_CHECK(is_primitive_root(uint32_prime2, hash::multipler.second.value()));
+  BOOST_CHECK(numeric::IsPrimitiveRoot(uint32_prime1, hash::multipler.first.value()));
+  BOOST_CHECK(numeric::IsPrimitiveRoot(uint32_prime2, hash::multipler.second.value()));
 }
 
 BOOST_AUTO_TEST_CASE(hasher_test) {
