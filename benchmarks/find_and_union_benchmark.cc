@@ -24,9 +24,9 @@ public:
   void setUp(int64_t experimentValue) override
   {
     N = experimentValue;
-    using lib::random;
+    using lib::Random32;
     for (auto i: range<uint32>(0, experimentValue)) {
-      queries.emplace_back(random() % experimentValue, random() % experimentValue);
+      queries.emplace_back(Random32() % experimentValue, Random32() % experimentValue);
     }
   }
 

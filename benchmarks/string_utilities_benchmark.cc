@@ -23,11 +23,11 @@ public:
 
   void setUp(int64_t experimentValue) override
   {
-    using lib::random;
+    using lib::Random32;
     std::string string;
     for (auto i: range<uint32>(0, 10)) {
       for (auto j: range<uint32>(0, experimentValue)) {
-        string += char('a' + random() % 2);
+        string += char('a' + Random32() % 2);
       }
       texts.push_back(string);
       string.clear();

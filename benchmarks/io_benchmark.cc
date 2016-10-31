@@ -29,7 +29,7 @@ public:
     constexpr uint32 kMaxNumber = 1000 * 1000 * 1000;
     std::string string;
     for (auto i: range<uint32>(0, experimentValue)) {
-      string += std::to_string(lib::random() % kMaxNumber);
+      string += std::to_string(lib::Random32() % kMaxNumber);
       string += '\n';
     }
     stream.str(string);

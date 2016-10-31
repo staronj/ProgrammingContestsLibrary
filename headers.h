@@ -28,15 +28,6 @@
 
 namespace lib {
 
-/**
- * Random number generator. Returns 32 bits numbers.
- *
- * You should prefer this random number generator over
- * C's rand(), because rand() max range is not strictly
- * defined and can be supringsly small (like 10000).
- */
-std::knuth_b random(time(0));
-
 using int8    = std::int8_t;
 using uint8   = std::uint8_t;
 using int16   = std::int16_t;
@@ -45,6 +36,29 @@ using int32   = std::int32_t;
 using uint32  = std::uint32_t;
 using int64   = std::int64_t;
 using uint64  = std::uint64_t;
+
+/**
+ * Random number generator. Returns 32 bits numbers.
+ *
+ * You should prefer this random number generator over
+ * C's rand(), because rand() max range is not strictly
+ * defined and can be supringsly small (like 10000).
+ */
+std::knuth_b Random(time(0));
+
+/**
+ * 32 bits random generator.
+ */
+uint32 Random32() {
+  return Random();
+}
+
+/**
+ * 64 bits random generator.
+ */
+uint64 Random64() {
+  return uint64(Random32()) << 32 | uint64(Random32());
+}
 
 #ifdef __SIZEOF_INT128__
 #define HAVE_INT128_TYPES

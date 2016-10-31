@@ -27,9 +27,9 @@ public:
   {
     for (auto i: range<uint32>(0, experimentValue))
       graph.add_vertex();
-    using lib::random;
+    using lib::Random32;
     for (auto i: range<uint32>(0, 3 * experimentValue)) {
-      graph.add_edge(random() % experimentValue, random() % experimentValue);
+      graph.add_edge(Random32() % experimentValue, Random32() % experimentValue);
     }
   }
 

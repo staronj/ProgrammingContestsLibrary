@@ -24,19 +24,19 @@ public:
 
   void setUp(int64_t experimentValue) override
   {
-    using lib::random;
+    using lib::Random32;
     std::vector<std::string> strings;
     std::string string;
     for (auto i: range<uint32>(0, experimentValue)) {
       for (auto j: range(0, 6)) {
-        string += char('a' + random() % 20);
+        string += char('a' + Random32() % 20);
       }
       strings.push_back(string);
       string.clear();
     }
 
     for (auto i: range<uint32>(0, experimentValue)) {
-      queries.push_back(strings[random() % experimentValue]);
+      queries.push_back(strings[Random32() % experimentValue]);
     }
   }
 

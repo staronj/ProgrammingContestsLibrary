@@ -93,7 +93,7 @@ public:
   }
 
   void setUp(int64_t experimentValue) override {
-    number = (lib::random() % (experimentValue - 2)) + 2;
+    number = (lib::Random32() % (experimentValue - 2)) + 2;
   }
 
   uint64 number;

@@ -24,15 +24,15 @@ public:
 
   void setUp(int64_t experimentValue) override
   {
-    using lib::random;
+    using lib::Random32;
     std::queue<int32> queue;
     for (auto i: range<uint32>(0, experimentValue)) {
-      if (!queue.empty() && random() % 2 == 0) {
+      if (!queue.empty() && Random32() % 2 == 0) {
         queries.push_back(-queue.front());
         queue.pop();
       }
       else {
-        int32 value = 1 + random() % 1000000uLL;
+        int32 value = 1 + Random32() % 1000000uLL;
         queries.push_back(value);
         queue.push(value);
       }

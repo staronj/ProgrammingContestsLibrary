@@ -28,9 +28,9 @@ public:
   {
     text.reserve(experimentValue);
     text.clear();
-    using lib::random;
+    using lib::Random32;
     for (auto i: range<uint32>(0, experimentValue))
-      text += char('a' + random() % 20);
+      text += char('a' + Random32() % 20);
   }
 
   std::string text;
