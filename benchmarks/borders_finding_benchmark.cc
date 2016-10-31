@@ -38,19 +38,17 @@ public:
 
 BASELINE_F(Borders, KMP, TextFixture, samples, iterations)
 {
-  KnuthMorrisPratt kmp;
-  kmp.feed(text.begin(), text.end());
+  KnuthMorrisPratt kmp(text.begin(), text.end());
   if (!kmp.borders().empty())
     celero::DoNotOptimizeAway(kmp.borders().front());
 }
 
 BENCHMARK_F(Borders, Hasher, TextFixture, samples, iterations)
 {
-  Hasher hasher;
-  hasher.feed(text.begin(), text.end());
+  Hasher hasher(text.begin(), text.end());
   uint32 longest = 0;
   for (auto i: range<uint32>(1, text.size())) {
-   if (hasher.get_hash(0, i) == hasher.get_hash(text.size() - i, i)) {
+   if (hasher.getHash(0, i) == hasher.getHash(text.size() - i, i)) {
      longest = i;
    }
   }

@@ -7,9 +7,11 @@ INPUT                  = @doxy_main_page@ \
 FILE_PATTERNS          = *.h \
                          *.cc
 RECURSIVE              = YES
-EXCLUDE                = benchmarks \
-                         tests
+
+EXCLUDE_PATTERNS       = */tests/*
+EXCLUDE_PATTERNS       += */benchmarks/*
 EXCLUDE_SYMBOLS = detail
+
 USE_MDFILE_AS_MAINPAGE = @doxy_main_page@
 
 OUTPUT_LANGUAGE        = English

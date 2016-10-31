@@ -11,9 +11,17 @@ namespace numeric {
 template <uint32 prime>
 class prime_field;
 
+/**
+ * Returns a^n in Z_prime.
+ */
 template<uint32 prime>
 prime_field<prime> power(prime_field<prime> a, uint64 n);
 
+/**
+ * Returns 1/lhs in Z_prime.
+ *
+ * Throws an std::runtime_error if lhs is not inversible (ie is 0).
+ */
 template<uint32 prime>
 prime_field<prime> inverse(const prime_field<prime>& lhs);
 
@@ -43,7 +51,9 @@ modulo(Integral value, uint32 prime) {
 
 } // namespace detail
 
-
+/**
+ * Integers modulo compiled-time prime. Type safe.
+ */
 template <uint32 prime>
 class prime_field {
 public:
@@ -69,6 +79,9 @@ public:
   friend prime_field power <>(prime_field a, uint64 n);
   friend prime_field inverse <>(const prime_field& lhs);
 
+  /**
+   * Returns lhs/rhs in Z_prime.
+   */
   friend prime_field operator/(const prime_field& lhs, const prime_field& rhs) {
     return lhs * inverse(rhs);
   }
@@ -86,6 +99,9 @@ public:
     return !(lhs == rhs);
   }
 
+  /**
+   * Returns conversion of value to uint32.
+   */
   constexpr uint32 value() const {
     return value_;
   }
@@ -117,7 +133,7 @@ prime_field<prime> power(prime_field<prime> a, uint64 n) {
 template<uint32 prime>
 prime_field<prime> inverse(const prime_field<prime>& lhs) {
   if (lhs == 0)
-    throw std::logic_error("prime_field - inverse of zero");
+    throw std::runtime_error("prime_field - inverse of zero");
   return power(lhs, prime - 2);
 }
 

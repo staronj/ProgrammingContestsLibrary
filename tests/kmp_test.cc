@@ -14,40 +14,35 @@ BOOST_AUTO_TEST_CASE(knuth_morris_pratt_test) {
   {
     std::string text = "";
     std::vector<uint32> expected = {0};
-    KnuthMorrisPratt kmp;
-    kmp.feed(text.begin(), text.end());
+    KnuthMorrisPratt kmp(text.begin(), text.end());
     BOOST_CHECK(kmp.result() == expected);
   }
 
   {
     std::string text = "a";
     std::vector<uint32> expected = {0, 0};
-    KnuthMorrisPratt kmp;
-    kmp.feed(text.begin(), text.end());
+    KnuthMorrisPratt kmp(text.begin(), text.end());
     BOOST_CHECK(kmp.result() == expected);
   }
 
   {
     std::string text = "ab";
     std::vector<uint32> expected = {0, 0, 0};
-    KnuthMorrisPratt kmp;
-    kmp.feed(text.begin(), text.end());
+    KnuthMorrisPratt kmp(text.begin(), text.end());
     BOOST_CHECK(kmp.result() == expected);
   }
 
   {
     std::string text = "aa";
     std::vector<uint32> expected = {0, 0, 1};
-    KnuthMorrisPratt kmp;
-    kmp.feed(text.begin(), text.end());
+    KnuthMorrisPratt kmp(text.begin(), text.end());
     BOOST_CHECK(kmp.result() == expected);
   }
 
   {
     std::string text = "ababaaabab";
     std::vector<uint32> expected = {0, 0, 0, 1, 2, 3, 1, 1, 2, 3, 4};
-    KnuthMorrisPratt kmp;
-    kmp.feed(text.begin(), text.end());
+    KnuthMorrisPratt kmp(text.begin(), text.end());
     BOOST_CHECK(kmp.result() == expected);
 
     const auto& borders = kmp.borders();
@@ -58,8 +53,7 @@ BOOST_AUTO_TEST_CASE(knuth_morris_pratt_test) {
   {
     std::string text = "aaaaaaaa";
     std::vector<uint32> expected = {0, 0, 1, 2, 3, 4, 5, 6, 7};
-    KnuthMorrisPratt kmp;
-    kmp.feed(text.begin(), text.end());
+    KnuthMorrisPratt kmp(text.begin(), text.end());
     BOOST_CHECK(kmp.result() == expected);
 
     const auto& borders = kmp.borders();

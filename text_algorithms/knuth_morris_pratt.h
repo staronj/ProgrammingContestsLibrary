@@ -7,17 +7,18 @@
 
 namespace lib {
 
+/**
+ * Computes prefix-suffix table of text using KMP algorithm.
+ */
 class KnuthMorrisPratt {
 public:
-  KnuthMorrisPratt() = default;
-  KnuthMorrisPratt(const KnuthMorrisPratt &) = delete;
-  KnuthMorrisPratt &operator=(const KnuthMorrisPratt &) = delete;
+  using ptr = std::shared_ptr<KnuthMorrisPratt>; /// Smart pointer to class.
 
-  KnuthMorrisPratt(KnuthMorrisPratt &&other) :
-      P_(std::move(other.P_)) {}
-
+  /**
+   * Builds KMP class from sequence.
+   */
   template<typename Iterator>
-  void feed(Iterator begin, Iterator end) {
+  KnuthMorrisPratt(Iterator begin, Iterator end) {
     uint32 size = uint32(std::distance(begin, end));
     P_.resize(size + 1);
     P_[0] = 0;
@@ -47,11 +48,22 @@ public:
     borders_.shrink_to_fit();
   }
 
+  KnuthMorrisPratt(const KnuthMorrisPratt &) = delete;
+  KnuthMorrisPratt &operator=(const KnuthMorrisPratt &) = delete;
+
+  KnuthMorrisPratt(KnuthMorrisPratt &&other) :
+      P_(std::move(other.P_)) {}
+
+  /**
+   * Returns prefix-suffix array.
+   */
   const std::vector<uint32>& result() const {
     return P_;
   }
 
-  // Borders (prefix-suffixes) in decreasing order
+  /**
+   * Returns vector of borders (prefix-suffixes) in decreasing order
+   */
   const std::vector<uint32>& borders() const {
     return borders_;
   }
