@@ -82,4 +82,30 @@ inline uint32 trailing_zeros(uint64 n) {
   return (n == 0)? 0u : __builtin_ctzll(n);
 }
 
+/**
+ * Returns vector of prefix sums, ie for sequence a_0, a_1, ..., a_n
+ * returns sequence 0, a_0, a_0 + a_1, ..., a_0 + a_1 + ... + a_n
+ *
+ * Note that returned vector have size n + 1.
+ * Also note, that function need a template parameter to specify
+ * value type.
+ *
+ * Example:
+ * <pre>
+ * std::vector<uint32> v = {1, 2, 3}
+ * PrefixSums<uint64>(v.begin(), v.end()); // returns vector<uint64>{0, 1, 3, 6}
+ * </pre>
+ */
+template <typename ValueType, typename Iterator>
+std::vector<ValueType> PrefixSums(Iterator begin, Iterator end) {
+  auto length = std::distance(begin, end);
+  std::vector<ValueType> result;
+  result.reserve(length + 1);
+  result.push_back(ValueType(0));
+  for (const auto& elem: make_range(begin, end)) {
+    result.push_back(result.back() + elem);
+  }
+  return result;
+}
+
 } // namespace lib

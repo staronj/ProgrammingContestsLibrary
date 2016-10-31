@@ -63,4 +63,24 @@ BOOST_AUTO_TEST_CASE(integer_log2_test) {
   BOOST_CHECK_EQUAL(integer_log2(0xFFFFFFFFFFFFFFuLL), 55);
 }
 
+BOOST_AUTO_TEST_CASE(prefix_sum_test) {
+  {
+    std::vector<uint32> values = {};
+    std::vector<uint32> expected = {0};
+    BOOST_CHECK(PrefixSums<uint32>(values.begin(), values.end()) == expected);
+  }
+
+  {
+    std::vector<uint32> values = {1, 2, 3};
+    std::vector<uint32> expected = {0, 1, 3, 6};
+    BOOST_CHECK(PrefixSums<uint32>(values.begin(), values.end()) == expected);
+  }
+
+  {
+    std::vector<int32> values = {-1, 2, -1};
+    std::vector<int32> expected = {0, -1, 1, 0};
+    BOOST_CHECK(PrefixSums<int32>(values.begin(), values.end()) == expected);
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

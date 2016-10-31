@@ -9,7 +9,8 @@ namespace logging {
 enum class log_level {
   debug = 15,
   info = 10,
-  error = 5
+  error = 5,
+  none = 0
 };
 
 class Logger {
