@@ -129,10 +129,6 @@ BOOST_AUTO_TEST_CASE(operations_32bits_test) {
   BOOST_CHECK_EQUAL(Multiply32((1u << 31) - 1, (1u << 31) - 2, (1u << 31)), 2);
 }
 
-#ifdef HAVE_INT128_TYPES
-
-#endif
-
 BOOST_AUTO_TEST_CASE(power_modulo_test) {
   lib::uint64 modulo = lib::power(10, 9) + 7;
   BOOST_CHECK_EQUAL(PowerModulo32(2, lib::power(10, 17), modulo), 952065854);
@@ -288,7 +284,12 @@ BOOST_AUTO_TEST_CASE(primes_test) {
 
   BOOST_CHECK(IsPrime(uint32_prime1));
   BOOST_CHECK(IsPrime(uint32_prime2));
+  BOOST_CHECK(IsPrime(999999999999999989uLL)); // biggest prime smaller than 10^18
+  BOOST_CHECK(!IsPrime(999999999999999991uLL));
+
+#ifdef USE_INT128_TYPES
   BOOST_CHECK(IsPrime(uint64_prime1));
+#endif
 
   // they are not twin primes
   BOOST_CHECK(!IsPrime(uint32_prime1 - 2));

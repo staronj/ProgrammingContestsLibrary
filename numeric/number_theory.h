@@ -125,7 +125,7 @@ uint32 PowerModulo32(uint32 a, uint64 n, uint32 modulo) {
   return result;
 }
 
-#ifdef HAVE_INT128_TYPES
+#ifdef USE_INT128_TYPES
 
 /**
  * Returns (a + b) (mod modulo)
@@ -154,6 +154,44 @@ uint64 Multiply64(uint64 a, uint64 b, uint64 modulo) {
   return (uint128(a) * uint128(b)) % uint128(modulo);
 }
 
+#else
+
+/**
+ * Returns (a + b) (mod modulo)
+ *
+ * Note that a + b should be smaller than 2^64.
+ */
+uint64 Add64(uint64 a, uint64 b, uint64 modulo) {
+  return (a + b) % modulo;
+}
+
+/**
+ * Returns (a - b) (mod modulo)
+ *
+ * Note that a + modulo should be smaller than 2^64.
+ */
+uint64 Subtract64(uint64 a, uint64 b, uint64 modulo) {
+  return (modulo + a - b) % modulo;
+}
+
+/**
+ * Returns (a * b) (mod modulo)
+ *
+ * Note that 2 * modulo should be smaller than 2^64.
+ */
+uint64 Multiply64(uint64 a, uint64 b, uint64 modulo) {
+  uint64 result = 0;
+  while (b > 0) {
+    if(b % 2 == 1)
+      result = Add64(result, a, modulo);
+    a = Add64(a, a, modulo);
+    b /= 2;
+  }
+  return result;
+}
+
+#endif
+
 /**
  * Returns a^n (mod modulo)
  *
@@ -165,12 +203,10 @@ uint64 PowerModulo64(uint64 a, uint64 n, uint64 modulo) {
     if (n % 2 != 0)
       result = Multiply64(result , a, modulo);
     n /= 2;
-    a = Multiply64(a , a, modulo);
+    a = Multiply64(a, a, modulo);
   }
   return result;
 }
-
-#endif
 
 /**
  * Returns floor(sqrt(n)).

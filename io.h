@@ -99,7 +99,7 @@ template <typename Iterable>
 typename std::enable_if<detail::allow_print_operator<Iterable>(), std::ostream&>::type
 operator<<(std::ostream& stream, const Iterable& iterable);
 
-#ifdef HAVE_INT128_TYPES
+#ifdef USE_INT128_TYPES
 
 /**
  * Overload operator<< for ostream and uint128.

@@ -62,12 +62,15 @@ uint64 Random64() {
 
 #ifdef __SIZEOF_INT128__
 #define HAVE_INT128_TYPES
-constexpr bool have_int128_types = true;
-#else
-constexpr bool have_int128_types = false;
 #endif
 
-#ifdef HAVE_INT128_TYPES
+#define USE_INT128_TYPES_IF_AVAILABLE 0
+
+#if defined(HAVE_INT128_TYPES) && USE_INT128_TYPES_IF_AVAILABLE
+#define USE_INT128_TYPES
+#endif
+
+#ifdef USE_INT128_TYPES
 using int128 = __int128;
 using uint128 = unsigned __int128;
 #endif

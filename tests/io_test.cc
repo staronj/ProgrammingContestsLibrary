@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(read_test) {
   }
 }
 
-#ifdef HAVE_INT128_TYPES
+#ifdef USE_INT128_TYPES
 
 BOOST_AUTO_TEST_CASE(int128_test) {
   {
