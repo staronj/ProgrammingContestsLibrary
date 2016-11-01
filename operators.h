@@ -128,8 +128,8 @@ inline bool operator>=(const T& lhs, const T& rhs) {
 }
 
 // lhs >= rhs -> !(rhs < lhs)
-template <typename T>
-inline bool operator!=(const T& lhs, const T& rhs) {
+template <typename T1, typename T2>
+inline bool operator!=(const T1& lhs, const T2& rhs) {
   return !(lhs == rhs);
 }
 
