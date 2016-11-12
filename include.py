@@ -6,6 +6,7 @@ import argparse
 import os
 import codecs
 import re
+import regex
 from collections import deque
 
 
@@ -23,10 +24,6 @@ def is_pragma(line):
 
 def is_local_input(line):
     return re.match("^#include\s+\"(.*)\"", line) is not None
-
-def is_copyright_comment(line):
-    return re.match("//\s+Jakub\s+Staroń", line) is not None
-
 
 class FileIncluder:
     def __init__(self, path):
@@ -56,9 +53,20 @@ def copyright_message():
 
 def main():
     parser = argparse.ArgumentParser(description='Generate random passwords.')
-    parser.add_argument('--input', required=True, type=str, help='name of input file')
-    parser.add_argument('--output', required=True, type=str, help='name of output file, must be different from input')
-    parser.add_argument('--path', required=False, type=str, help='path with PCL library, default is input file folder')
+    parser.add_argument('--input', required=True, type=str,
+                        help='name of input file')
+
+    parser.add_argument('--output', required=True, type=str,
+                        help='name of output file, must be different from input')
+
+    parser.add_argument('--path', required=False, type=str,
+                        help='path with PCL library, default is input file folder')
+
+    parser.add_argument('--remove-comments', required=False, default=False, action='store_true',
+                        help='if set, comments will be removed')
+
+    parser.add_argument('--remove-whitespaces', required=False, default=False, action='store_true',
+                        help='if set, unnecessary whitespaces will be removed, implies remove-comments')
 
     args = parser.parse_args()
     if args.path is None:
@@ -68,22 +76,45 @@ def main():
         parser.print_help()
         exit(1)
 
+    if args.remove_whitespaces:
+        args.remove_comments = True
+
     queue = deque()
     queue.extend(load_lines(args.input))
 
     includer = FileIncluder(args.path)
+    code = ""
+
+    while queue:
+        line = queue.popleft()
+        if is_pragma(line):
+            continue
+        elif is_local_input(line):
+            lines = includer.load(line)
+            queue.extendleft(reversed(lines))
+        else:
+            code += line
+
+    not_inside_string = r'(?<=^(?!#)[^"\n]*?(?:(?:\"(?:\\"|[^\n"])*\")[^"\n]*?)*?)'
+
+    if args.remove_comments:
+        # Single line comments
+        code = regex.subn(not_inside_string + r'\/\/[^\n]*$', r'', code, flags=re.MULTILINE)[0]
+
+        # Multiline comments
+        code = regex.subn(not_inside_string + r'\/\*(?:.|\n)*?\*\/', r'', code, flags=re.MULTILINE)[0]
+
+    if args.remove_whitespaces:
+        # Unnecessary white characters
+        code = regex.subn(not_inside_string + r'\n\s+', r'\n', code, flags=re.MULTILINE)[0]
+        code = regex.subn(not_inside_string + r'\s+\n', r'\n', code, flags=re.MULTILINE)[0]
+        code = regex.subn(not_inside_string + r'\s\s+', r' ', code)[0]
+        code = regex.subn(not_inside_string + r'(?P<char>\W)\s+(?!#)', r'\g<char>', code, flags=re.MULTILINE)[0]
+        code = regex.subn(not_inside_string + r'\s+(?!#)(?P<char>\W)', r'\g<char>', code, flags=re.MULTILINE)[0]
 
     with codecs.open(args.output, "w", "utf-8") as file:
         file.write(copyright_message())
-        while queue:
-            line = queue.popleft()
-            if is_pragma(line) or is_copyright_comment(line):
-                continue
-            elif is_local_input(line):
-                lines = includer.load(line)
-                queue.extendleft(reversed(lines))
-            else:
-                file.write(line)
+        file.write(code)
 
 
 if __name__ == "__main__":
