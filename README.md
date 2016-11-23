@@ -59,3 +59,10 @@ sudo make install
 cd ..
 sudo cp -R Celero/include/celero /usr/local/include/
 ```
+
+### Regex python package
+
+#### Installation
+```bash
+pip install regex
+```

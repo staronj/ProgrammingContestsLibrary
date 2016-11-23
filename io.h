@@ -58,7 +58,9 @@ constexpr bool allow_print_operator() {
  * Sets stream printing mode to simple. Default option.
  *
  * Example:
+ * <pre>
  * std::cout << simple << std::make_pair(1, 2) << std::endl;
+ * </pre>
  * Prints:
  * 1 2
  */
@@ -71,7 +73,9 @@ std::ostream& simple(std::ostream& stream) {
  * Sets stream printing mode to fancy. Helpful for printing debug messages.
  *
  * Example:
+ * <pre>
  * std::cout << simple << std::make_pair(1, 2) << std::endl;
+ * </pre>
  * Prints:
  * (1, 2)
  */
@@ -150,8 +154,10 @@ std::istream& operator>>(std::istream& stream, std::tuple<Args...>& tuple);
  * Helper for marking input as ignored.
  *
  * Example:
+ * <pre>
  * int a, b;
  * std::cin >> a >> ignore<int>() >> b;
+ * </pre>
  */
 template <typename T>
 struct ignore {
@@ -332,8 +338,10 @@ std::istream& operator>>(std::istream& stream, std::tuple<Args...>& tuple) {
  * Second version of overload operator>> for istream and pair.
  *
  * Needed to allow constructions like
+ * <pre>
  * int a, b, c;
  * std::cin >> std::tie(a, b, c);
+ * </pre>
  */
 template <typename... Args>
 std::istream& operator>>(std::istream& stream, std::tuple<Args...>&& tuple) {
@@ -344,7 +352,9 @@ std::istream& operator>>(std::istream& stream, std::tuple<Args...>&& tuple) {
  * Python-like print function.
  *
  * Example:
+ * <pre>
  * print(std::cerr, "1 + 2 = %0, 2 + 3 = %1", 3, 5);
+ * </pre>
  */
 template <typename... Args>
 void print(std::ostream& stream, const char* format, const Args&... args) {
@@ -386,19 +396,35 @@ void print(const char* format, const Args&... args) {
 /**
  * flush operator for usage with print.
  *
- * Example
+ * Example:
+ * <pre>
  * print("important message%0", lib::flush);
+ * </pre>
  */
 std::ostream& flush(std::ostream& stream) {
   return stream.flush();
 }
 
 /**
+ * non-flushing newline operator.
+ *
+ * Example:
+ * <pre>
+ * std::cout << "Ala ma kota." << newline;
+ * </pre>
+ */
+std::ostream& newline(std::ostream& stream) {
+  return stream.put('\n');
+}
+
+/**
  * Python-like read function.
  *
  * Example:
+ * <pre>
  * int a, b;
  * read(std::cin, a, ignore<int>(), b);
+ * </pre>
  */
 template <typename... Args>
 void read(std::istream& stream, Args&&... args) {

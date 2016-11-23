@@ -22,21 +22,28 @@ def load_lines(filename):
 def is_pragma(line):
     return re.match("^#pragma\s+once", line) is not None
 
-def is_local_input(line):
-    return re.match("^#include\s+\"(.*)\"", line) is not None
 
 class FileIncluder:
     def __init__(self, path):
         self.path = path
         self.loaded = set()
+        self.not_found = set()
 
     def load(self, line):
         include = self.get_include_name(line)
         if include not in self.loaded:
             self.loaded.add(include)
-            return load_lines(os.path.join(self.path, include))
+            try:
+                return load_lines(os.path.join(self.path, include))
+            except IOError:
+                self.not_found.add(include)
+                return [line]
         else:
             return list()
+
+    def is_local_include(self, line):
+        include = re.match("^#include\s+\"(.*)\"", line)
+        return (include is not None) and (include.group(1) not in self.not_found)
 
     def get_include_name(self, line):
         match = re.match("^#include\s+\"(.*)\"", line)
@@ -89,7 +96,7 @@ def main():
         line = queue.popleft()
         if is_pragma(line):
             continue
-        elif is_local_input(line):
+        elif includer.is_local_include(line):
             lines = includer.load(line)
             queue.extendleft(reversed(lines))
         else:
