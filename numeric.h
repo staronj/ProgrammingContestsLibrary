@@ -108,4 +108,44 @@ std::vector<ValueType> PrefixSums(Iterator begin, Iterator end) {
   return result;
 }
 
+/**
+ * Returns position of element with maximum value.
+ *
+ * Takes range of iterators, function and
+ * comparator for function results.
+ *
+ * Returns position of first element for which value
+ * of function is the biggest.
+ */
+template <typename Iterator, typename Function, typename Comparator>
+Iterator Maximum(Iterator begin, Iterator end, Function function, Comparator comparator) {
+  auto biggestValue = function(*begin);
+  auto biggestPosition = begin;
+  for (auto it = std::next(begin); it != end; ++it) {
+    auto value = function(*it);
+    if (comparator(biggestValue, value)) {
+      biggestValue = value;
+      biggestPosition = it;
+    }
+  }
+  return biggestPosition;
+}
+
+/**
+ * Returns position of element with maximum value.
+ *
+ * Takes range of iterators and function.
+ * Function result must be comparable.
+ *
+ * Returns position of first element for which value
+ * of function is the biggest.
+ */
+template <typename Iterator, typename Function>
+Iterator Maximum(Iterator begin, Iterator end, Function function) {
+  return Maximum(std::move(begin),
+                 std::move(end),
+                 std::move(function),
+                 std::less<decltype(function(*begin))>());
+}
+
 } // namespace lib

@@ -83,4 +83,43 @@ BOOST_AUTO_TEST_CASE(prefix_sum_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(maximum_test) {
+  {
+    std::vector<uint32> values = {1, 3, 8, 7, 0, 8};
+    auto it = Maximum(counting_iterator<uint32>(0),
+                      counting_iterator<uint32>(values.size()),
+                      [&values](uint32 index) {
+                        return values[index];
+                      }
+    );
+    BOOST_CHECK_EQUAL(*it, 2);
+  }
+
+  {
+    std::vector<uint32> values = {1, 0, 8, 7, 0, 8};
+    auto it = Maximum(counting_iterator<uint32>(0),
+                      counting_iterator<uint32>(values.size()),
+                      [&values](uint32 index) {
+                        return values[index];
+                      },
+                      std::greater<uint32>()
+    );
+    BOOST_CHECK_EQUAL(*it, 1);
+  }
+
+  {
+    uint32 count = 0;
+    auto it = Maximum(counting_iterator<uint32>(0),
+                      counting_iterator<uint32>(100),
+                      [&count](uint32 value) {
+                        count++;
+                        return value;
+                      }
+    );
+    BOOST_CHECK_EQUAL(*it, 99);
+    BOOST_CHECK_EQUAL(count, 100);
+  }
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
