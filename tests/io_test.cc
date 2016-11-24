@@ -286,6 +286,12 @@ BOOST_AUTO_TEST_CASE(lines_iterator_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(newline_test) {
+  std::ostringstream stream;
+  stream << newline;
+  BOOST_CHECK_EQUAL(stream.str(), "\n");
+}
+
 BOOST_AUTO_TEST_CASE(iterate_lines_test) {
   {
     std::istringstream stream;
