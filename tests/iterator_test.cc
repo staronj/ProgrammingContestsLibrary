@@ -15,6 +15,7 @@ BOOST_AUTO_TEST_CASE(is_iterator_test) {
   BOOST_CHECK(is_iterator<counting_iterator<int>>::value);
   BOOST_CHECK(is_iterator<std::vector<int>::const_iterator>::value);
   BOOST_CHECK(is_iterator<std::istream_iterator<int>>::value);
+  BOOST_CHECK(is_iterator<counting_iterator<uint32>>::value);
 
   int table[4];
   BOOST_CHECK(!is_iterator<decltype(table)>::value);
@@ -26,6 +27,21 @@ BOOST_AUTO_TEST_CASE(is_iterable_test) {
   int table[4];
   BOOST_CHECK(is_iterable<decltype(table)>::value);
   BOOST_CHECK(!is_iterable<int*>::value);
+
+  {
+    using iterator = counting_iterator<uint32>;
+    BOOST_CHECK(is_iterable<iterator_range<iterator>>::value);
+  }
+
+  {
+    using iterator = std::vector<uint32>::const_iterator;
+    BOOST_CHECK(is_iterable<iterator_range<iterator>>::value);
+  }
+
+  {
+    using iterator = uint32*;
+    BOOST_CHECK(is_iterable<iterator_range<iterator>>::value);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(counting_iterator_test) {
@@ -91,6 +107,52 @@ BOOST_AUTO_TEST_CASE(range_test) {
     std::vector<int> V(r.begin(), r.end());
     std::vector<int> expected = {3, 2, 1, 0};
     BOOST_CHECK(V == expected);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(iterator_range_test) {
+  {
+    std::vector<uint32> v = {1, 2, 3, 4};
+
+    {
+      auto range = make_range(v.begin(), v.end());
+      BOOST_CHECK_EQUAL(range.size(), v.size());
+      BOOST_CHECK_EQUAL(range.empty(), v.empty());
+    }
+
+    {
+      auto range = make_range(v.begin(), v.begin());
+      BOOST_CHECK_EQUAL(range.size(), 0);
+      BOOST_CHECK_EQUAL(range.empty(), true);
+    }
+  }
+
+  {
+    auto r = range(0, 100);
+    BOOST_CHECK_EQUAL(r.size(), 100);
+    BOOST_CHECK_EQUAL(r.empty(), false);
+  }
+
+  {
+    auto r = range(0, 0);
+    BOOST_CHECK_EQUAL(r.size(), 0);
+    BOOST_CHECK_EQUAL(r.empty(), true);
+  }
+
+  {
+    std::list<uint32> v = {1, 2, 3, 4};
+
+    {
+      auto range = make_range(v.begin(), v.end());
+      BOOST_CHECK_EQUAL(range.size(), v.size());
+      BOOST_CHECK_EQUAL(range.empty(), v.empty());
+    }
+
+    {
+      auto range = make_range(v.begin(), v.begin());
+      BOOST_CHECK_EQUAL(range.size(), 0);
+      BOOST_CHECK_EQUAL(range.empty(), true);
+    }
   }
 }
 

@@ -6,10 +6,15 @@
 
 namespace lib {
 
-constexpr uint32 uint32_infinity = 1000 * 1000 * 1000;
+constexpr uint64 Hundred = 100uLL;
+constexpr uint64 Thousand = 1000uLL;
+constexpr uint64 Million = Thousand * Thousand;
+constexpr uint64 Billion = Thousand * Thousand * Thousand;
+
+constexpr uint32 uint32_infinity = Billion;
 constexpr int32 int32_infinity = uint32_infinity;
 
-constexpr uint64 uint64_infinity = uint64(uint32_infinity) * uint64(uint32_infinity);
+constexpr uint64 uint64_infinity = Billion * Billion;
 constexpr int64 int64_infinity = uint64_infinity;
 
 constexpr uint32 uint32_prime1 = 0xFFFFFFFB;
@@ -23,6 +28,15 @@ template <typename T>
 typename std::enable_if<std::is_integral<T>::value, bool>::type
 divides(T d, T n) {
   return (n % d) == 0;
+}
+
+/**
+ * Returns ceiling of a/b;
+ */
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value, T>::type
+ceiling_divide(T a, T b) {
+  return (a + b - 1) / b;
 }
 
 /**
@@ -109,7 +123,61 @@ std::vector<ValueType> PrefixSums(Iterator begin, Iterator end) {
 }
 
 /**
- * Returns position of element with maximum value.
+ * Returns position of element with maximum value and value.
+ *
+ * Takes range of iterators, function,
+ * default value and comparator for function results.
+ *
+ * If range is empty or no value was greater than
+ * default value, returns pair (default_value, end)
+ *
+ * Returns position of first element for which value
+ * of function is the biggest.
+ */
+template <typename Iterator, typename Function, typename Comparator>
+auto MaximumOrDefault(Iterator begin, Iterator end,
+                      Function function,
+                      decltype(function(*begin)) defaultValue,
+                      Comparator comparator) ->
+std::pair<Iterator, decltype(function(*begin))> {
+  auto biggestValue = defaultValue;
+  auto biggestPosition = end;
+  for (auto it = begin; it != end; ++it) {
+    auto value = function(*it);
+    if (comparator(biggestValue, value)) {
+      biggestValue = value;
+      biggestPosition = it;
+    }
+  }
+  return std::make_pair(biggestPosition, biggestValue);
+}
+
+/**
+ * Returns position of element with maximum value and value.
+ *
+ * Takes range of iterators, function and default value.
+ * Function result must be comparable.
+ *
+ * If range is empty or no value was greater than
+ * default value, returns pair (default_value, end)
+ *
+ * Returns position of first element for which value
+ * of function is the biggest.
+ */
+template <typename Iterator, typename Function>
+auto MaximumOrDefault(Iterator begin, Iterator end,
+                      Function function,
+                      decltype(function(*begin)) defaultValue) ->
+std::pair<Iterator, decltype(function(*begin))> {
+  return MaximumOrDefault(std::move(begin),
+                          std::move(end),
+                          std::move(function),
+                          defaultValue,
+                          std::less<decltype(defaultValue)>());
+}
+
+/**
+ * Returns position of element with maximum value and value.
  *
  * Takes range of iterators, function and
  * comparator for function results.
@@ -118,17 +186,10 @@ std::vector<ValueType> PrefixSums(Iterator begin, Iterator end) {
  * of function is the biggest.
  */
 template <typename Iterator, typename Function, typename Comparator>
-Iterator Maximum(Iterator begin, Iterator end, Function function, Comparator comparator) {
-  auto biggestValue = function(*begin);
-  auto biggestPosition = begin;
-  for (auto it = std::next(begin); it != end; ++it) {
-    auto value = function(*it);
-    if (comparator(biggestValue, value)) {
-      biggestValue = value;
-      biggestPosition = it;
-    }
-  }
-  return biggestPosition;
+auto Maximum(Iterator begin, Iterator end, Function function, Comparator comparator) ->
+std::pair<Iterator, decltype(function(*begin))> {
+  auto value = function(*begin);
+  return MaximumOrDefault(std::next(begin), end, function, value, comparator);
 }
 
 /**
@@ -141,7 +202,8 @@ Iterator Maximum(Iterator begin, Iterator end, Function function, Comparator com
  * of function is the biggest.
  */
 template <typename Iterator, typename Function>
-Iterator Maximum(Iterator begin, Iterator end, Function function) {
+auto Maximum(Iterator begin, Iterator end, Function function) ->
+std::pair<Iterator, decltype(function(*begin))> {
   return Maximum(std::move(begin),
                  std::move(end),
                  std::move(function),

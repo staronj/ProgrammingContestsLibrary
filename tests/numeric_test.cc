@@ -17,6 +17,15 @@ BOOST_AUTO_TEST_CASE(divides_test) {
   BOOST_CHECK(!divides(3, 1));
 }
 
+BOOST_AUTO_TEST_CASE(ceiling_divide_test) {
+  BOOST_CHECK_EQUAL(ceiling_divide(1, 2), 1);
+  BOOST_CHECK_EQUAL(ceiling_divide(0, 2), 0);
+  BOOST_CHECK_EQUAL(ceiling_divide(99, 100), 1);
+  BOOST_CHECK_EQUAL(ceiling_divide(50, 100), 1);
+  BOOST_CHECK_EQUAL(ceiling_divide(0, 100), 0);
+  BOOST_CHECK_EQUAL(ceiling_divide(-1, 100), 0);
+}
+
 BOOST_AUTO_TEST_CASE(pow_test) {
   BOOST_CHECK_EQUAL(power(1, 1000000), 1);
   BOOST_CHECK_EQUAL(power(-1, 1000 * 1000 * 1000 + 1), -1);
@@ -92,7 +101,7 @@ BOOST_AUTO_TEST_CASE(maximum_test) {
                         return values[index];
                       }
     );
-    BOOST_CHECK_EQUAL(*it, 2);
+    BOOST_CHECK_EQUAL(*it.first, 2);
   }
 
   {
@@ -104,7 +113,7 @@ BOOST_AUTO_TEST_CASE(maximum_test) {
                       },
                       std::greater<uint32>()
     );
-    BOOST_CHECK_EQUAL(*it, 1);
+    BOOST_CHECK_EQUAL(*it.first, 1);
   }
 
   {
@@ -116,7 +125,7 @@ BOOST_AUTO_TEST_CASE(maximum_test) {
                         return value;
                       }
     );
-    BOOST_CHECK_EQUAL(*it, 99);
+    BOOST_CHECK_EQUAL(*it.first, 99);
     BOOST_CHECK_EQUAL(count, 100);
   }
 }

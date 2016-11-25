@@ -150,6 +150,14 @@ auto make_counting_iterator(Integral n) -> counting_iterator<Integral> {
 }
 
 /**
+ * Printing operator for counting iterator.
+ */
+template <typename T>
+std::ostream& operator<<(std::ostream& stream, counting_iterator<T> it) {
+  return stream << *it;
+}
+
+/**
  * Random access iterator for iterating over integral type in reversed order.
  *
  * Example:
@@ -247,20 +255,30 @@ auto make_reverse_counting_iterator(Integral n) -> reverse_counting_iterator<Int
 template <typename Iterator>
 class iterator_range {
 public:
-  using iterator_type = Iterator;
-  using reference = const Iterator&;
-
   static_assert(is_iterator<Iterator>::value, "iterator_range's template argument should be iterator!");
+
+  using iterator_type = Iterator;
+  using size_type = typename std::iterator_traits<Iterator>::difference_type;
+
+  iterator_range() = default;
 
   explicit iterator_range(Iterator begin, Iterator end):
       begin_(std::move(begin)), end_(std::move(end)) { }
 
-  reference begin() const {
+  iterator_type begin() const {
     return begin_;
   }
 
-  reference end() const {
+  iterator_type end() const {
     return end_;
+  }
+
+  bool empty() const {
+    return begin_ == end_;
+  }
+
+  size_type size() const {
+    return std::distance(begin_, end_);
   }
 
 private:
