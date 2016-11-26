@@ -209,25 +209,6 @@ uint64 PowerModulo64(uint64 a, uint64 n, uint64 modulo) {
 }
 
 /**
- * Returns floor(sqrt(n)).
- */
-uint64 SquareFloor(uint64 n) {
-  uint64 result = static_cast<uint64>(sqrt(static_cast<double>(n)));
-  do { ++result; } while(result * result <= n);
-  do { --result; } while(result * result > n);
-  return result;
-}
-
-/**
- * Returns ceil(sqrt(n)).
- */
-uint64 SquareCeiling(uint64 n) {
-  uint64 result = SquareFloor(n);
-  if (result * result < n) result++;
-  return result;
-}
-
-/**
  * Returns vector of divisors of n in increasing order.
  *
  * Computational complexity is O(sqrt(n)).

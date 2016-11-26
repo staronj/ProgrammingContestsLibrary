@@ -23,7 +23,6 @@ BOOST_AUTO_TEST_CASE(palindromes_test) {
     std::vector<uint32> expected = {1, 2, 1};
     auto result = Palindromes(text.begin(), text.end());
     BOOST_CHECK(result == expected);
-    print("%0, %1", result, expected);
   }
 
   {
@@ -38,7 +37,6 @@ BOOST_AUTO_TEST_CASE(palindromes_test) {
     std::vector<uint32> expected = {1, 2, 3, 2, 1};
     auto result = Palindromes(text.begin(), text.end());
     BOOST_CHECK(result == expected);
-    print("%0, %1", result, expected);
   }
 
   {

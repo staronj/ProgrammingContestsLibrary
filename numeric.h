@@ -65,7 +65,9 @@ int64 power(int64 v, uint32 n) {
     if (n % 2 != 0)
       result *= v;
     n /= 2;
-    v *= v;
+
+    if (n > 0) // to protect against integer overflow (Undefined Behaviour)
+      v *= v;
   }
   return result;
 }
@@ -90,24 +92,6 @@ inline constexpr uint32 pop_count(uint64 n) {
 }
 
 /**
- * inline uint32 trailing_zeros_count(uint32 n)
-  {
-    uint32 powOfTwo = ( (-n) & n ) - 1;
-    return pop_count(powOfTwo);
-  }
-
-  inline uint32 leading_zeros_count(uint32 x)
-  {
-    x = x | (x >> 1);
-    x = x | (x >> 2);
-    x = x | (x >> 4);
-    x = x | (x >> 8);
-    x = x | (x >>16);
-    return pop_count(~x);
-  }
- */
-
-/**
  * Returns index of least significant one in n.
  * Alternatively returns max k such that 2^k | n.
  *
@@ -125,6 +109,46 @@ inline constexpr uint32 least_significant_one(uint64 n) {
  */
 inline constexpr uint32 most_significant_one(uint64 n) {
   return 63 - __builtin_clzll(n);
+}
+
+/*
+
+Alternative implementations:
+
+inline uint32 least_significant_one(uint64 n) {
+  uint64 powOfTwo = ( (-n) & n ) - 1uLL;
+  return pop_count(powOfTwo);
+}
+
+inline uint32 most_significant_one(uint64 x) {
+  x = x | (x >> 1);
+  x = x | (x >> 2);
+  x = x | (x >> 4);
+  x = x | (x >> 8);
+  x = x | (x >>16);
+  x = x | (x >>32);
+  return 63 - pop_count(~x);
+}
+
+ */
+
+/**
+ * Returns floor(sqrt(n)).
+ */
+uint64 SquareFloor(uint64 n) {
+  uint64 result = static_cast<uint64>(sqrt(static_cast<double>(n)));
+  do { ++result; } while(result * result <= n);
+  do { --result; } while(result * result > n);
+  return result;
+}
+
+/**
+ * Returns ceil(sqrt(n)).
+ */
+uint64 SquareCeiling(uint64 n) {
+  uint64 result = SquareFloor(n);
+  if (result * result < n) result++;
+  return result;
 }
 
 /**

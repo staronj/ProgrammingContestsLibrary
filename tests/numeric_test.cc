@@ -71,6 +71,30 @@ BOOST_AUTO_TEST_CASE(most_significant_one_test) {
   BOOST_CHECK_EQUAL(most_significant_one(0xFFFFFFFFFFFFFFuLL), 55);
 }
 
+BOOST_AUTO_TEST_CASE(square_test) {
+  BOOST_CHECK_EQUAL(SquareCeiling(0), 0);
+  BOOST_CHECK_EQUAL(SquareFloor(0), 0);
+  BOOST_CHECK_EQUAL(SquareCeiling(1), 1);
+  BOOST_CHECK_EQUAL(SquareFloor(1), 1);
+  BOOST_CHECK_EQUAL(SquareCeiling(2), 2);
+  BOOST_CHECK_EQUAL(SquareFloor(2), 1);
+  BOOST_CHECK_EQUAL(SquareCeiling(4), 2);
+  BOOST_CHECK_EQUAL(SquareFloor(4), 2);
+
+  BOOST_CHECK_EQUAL(SquareCeiling(1000 * 1000), 1000);
+  BOOST_CHECK_EQUAL(SquareFloor(1000 * 1000), 1000);
+
+  BOOST_CHECK_EQUAL(SquareCeiling(1000 * 1000 + 1), 1001);
+  BOOST_CHECK_EQUAL(SquareFloor(1000 * 1000 + 1), 1000);
+
+  lib::uint64 billion = 1000uLL * 1000uLL * 1000uLL;
+  BOOST_CHECK_EQUAL(SquareCeiling(billion * billion), billion);
+  BOOST_CHECK_EQUAL(SquareFloor(billion * billion), billion);
+
+  BOOST_CHECK_EQUAL(SquareCeiling(billion * billion + 1), billion + 1);
+  BOOST_CHECK_EQUAL(SquareFloor(billion * billion + 1), billion);
+}
+
 BOOST_AUTO_TEST_CASE(prefix_sum_test) {
   {
     std::vector<uint32> values = {};

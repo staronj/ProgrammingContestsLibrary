@@ -2,11 +2,12 @@
 // Jakub Staroń, 2016
 
 #include "headers.h"
-#include "iterators.h"
+#include "operators.h"
+#include "numeric.h"
 
 namespace lib {
 
-namespace utility {
+namespace detail {
 template<uint8 N>
 struct IntegerHelper : public IntegerHelper<N - 1> {
 };
@@ -31,23 +32,15 @@ struct IntegerHelper<33> {
   using integer_type = uint64;
 };
 
-inline uint32 trailing_zeros_count(uint32 n) {
-  return __builtin_ctz(n);
-}
+template<uint8 BytesNeeded>
+using IntegerType = typename IntegerHelper<BytesNeeded>::integer_type;
 
-inline uint32 leading_zeros_count(uint32 n) {
-  return __builtin_clz(n);
-}
-
-} // namespace utility
-
-
-using namespace utility;
+} // namespace detail
 
 template<uint8 logM>
 class VanEmdeBoasTree {
 public:
-  using integer_type = typename IntegerHelper<logM>::integer_type;
+  using integer_type = detail::IntegerType<logM>;
 
   enum Constants {
     ceiling_half_logM = (logM + 1) / 2,
@@ -64,7 +57,7 @@ public:
   using summary_type = VanEmdeBoasTree<summary_size>;
 
   VanEmdeBoasTree() {
-    set_empty();
+    setEmpty();
   }
 
   VanEmdeBoasTree(const VanEmdeBoasTree&) = delete;
@@ -88,7 +81,8 @@ public:
     if (empty()) {
       minimum = maximum = n;
       return true;
-    } else if (minimum == n)
+    }
+    else if (minimum == n)
       return false;
 
     if (n > maximum)
@@ -113,8 +107,9 @@ public:
   bool erase(integer_type n) {
     if (empty() || n < minimum || n > maximum) {
       return false;
-    } else if (minimum == maximum) {
-      set_empty();
+    }
+    else if (minimum == maximum) {
+      setEmpty();
       return true;
     }
 
@@ -148,7 +143,8 @@ public:
 
     if (!S[high(n)].empty() && low(n) < S[high(n)].last()) {
       return (high(n) << high_shift) + S[high(n)].successor(low(n));
-    } else {
+    }
+    else {
       integer_type i = summary.successor(high(n));
       return (i << high_shift) + S[i].first();
     }
@@ -162,17 +158,19 @@ public:
 
     if (!S[high(n)].empty() && low(n) > S[high(n)].first()) {
       return (high(n) << high_shift) + S[high(n)].predecessor(low(n));
-    } else if (summary.first() < high(n)) {
+    }
+    else if (summary.first() < high(n)) {
       integer_type i = summary.predecessor(high(n));
       return (i << high_shift) + S[i].last();
-    } else {
+    }
+    else {
       return minimum;
     }
   }
 
 private:
 
-  void set_empty() {
+  void setEmpty() {
     minimum = 1;
     maximum = 0;
   }
@@ -190,18 +188,16 @@ private:
   summary_type summary;
 };
 
-template<>
-class VanEmdeBoasTree<5> {
+template<uint8 logM>
+class SmallVanEmdeBoasTree {
 public:
-  using integer_type = uint32;
+  using integer_type = detail::IntegerType<1u << logM>;
 
-  VanEmdeBoasTree() {
-    data = 0;
-  }
+  SmallVanEmdeBoasTree() = default;
 
-  VanEmdeBoasTree(const VanEmdeBoasTree&) = delete;
-  VanEmdeBoasTree(const VanEmdeBoasTree&&) = delete;
-  VanEmdeBoasTree& operator=(const VanEmdeBoasTree&) = delete;
+  SmallVanEmdeBoasTree(const SmallVanEmdeBoasTree&) = delete;
+  SmallVanEmdeBoasTree(const SmallVanEmdeBoasTree&&) = delete;
+  SmallVanEmdeBoasTree& operator=(const SmallVanEmdeBoasTree&) = delete;
 
   bool find(integer_type n) const {
     return (data & (1u << n)) != 0;
@@ -215,12 +211,12 @@ public:
 
   integer_type first() const {
     assert(!empty());
-    return trailing_zeros_count(data);
+    return least_significant_one(data);
   }
 
   integer_type last() const {
     assert(!empty());
-    return 31 - leading_zeros_count(data);
+    return most_significant_one(data);
   }
 
   bool insert(integer_type n) {
@@ -235,141 +231,30 @@ public:
 
   integer_type successor(integer_type n) const {
     assert(!empty());
-    uint32 shiftedData = (data >> (n + 1));
-    return n + 1 + trailing_zeros_count(shiftedData);
+    uint32 mask = (1u << (n + 1)) - 1;
+    return least_significant_one(data & ~mask);
   }
 
   integer_type predecessor(integer_type n) const {
     assert(!empty());
-    uint32 shiftedData = (data << (32 - n));
-    return n - 1 - leading_zeros_count(shiftedData);
+    uint32 mask = (1u << n) - 1;
+    return most_significant_one(data & mask);
   }
 
-  integer_type data;
+private:
+  integer_type data = 0;
 };
 
 template<>
-class VanEmdeBoasTree<4> {
-public:
-  using integer_type = uint16;
-
-  VanEmdeBoasTree() {
-    data = 0;
-  }
-
-  VanEmdeBoasTree(const VanEmdeBoasTree&) = delete;
-  VanEmdeBoasTree(const VanEmdeBoasTree&&) = delete;
-  VanEmdeBoasTree& operator=(const VanEmdeBoasTree&) = delete;
-
-  bool find(integer_type n) const {
-    return (data & (1u << n)) != 0;
-  }
-
-  bool erase(integer_type n) {
-    bool result = find(n);
-    data &= ~(1u << n);
-    return result;
-  }
-
-  integer_type first() const {
-    assert(!empty());
-    return trailing_zeros_count(data);
-  }
-
-  integer_type last() const {
-    assert(!empty());
-    return 31 - leading_zeros_count(data);
-  }
-
-  bool insert(integer_type n) {
-    bool result = !find(n);
-    data |= (1u << n);
-    return result;
-  }
-
-  bool empty() const {
-    return (data == 0);
-  }
-
-  integer_type successor(integer_type n) const {
-    assert(!empty());
-    uint32 shiftedData = (data >> (n + 1));
-    return n + 1 + trailing_zeros_count(shiftedData);
-  }
-
-  integer_type predecessor(integer_type n) const {
-    assert(!empty());
-    uint32 shiftedData = (data << (32 - n));
-    return n - 1 - leading_zeros_count(shiftedData);
-  }
-
-  integer_type data;
+class VanEmdeBoasTree<5> : public SmallVanEmdeBoasTree<5> {
 };
 
 template<>
-class VanEmdeBoasTree<3> {
-public:
-  using integer_type = uint8;
+class VanEmdeBoasTree<4> : public SmallVanEmdeBoasTree<4> {
+};
 
-  VanEmdeBoasTree() {
-    data = 0;
-  }
-
-  VanEmdeBoasTree(const VanEmdeBoasTree&) = delete;
-  VanEmdeBoasTree(const VanEmdeBoasTree&&) = delete;
-  VanEmdeBoasTree& operator=(const VanEmdeBoasTree&) = delete;
-
-  bool find(integer_type n) const {
-    return (data & (1u << n)) != 0;
-  }
-
-  bool erase(integer_type n) {
-    bool result = find(n);
-    data &= ~(1u << n);
-    return result;
-  }
-
-  integer_type first() const {
-    assert(!empty());
-    uint8 n = 0;
-    while (!find(n)) n++;
-    return n;
-  }
-
-  integer_type last() const {
-    assert(!empty());
-    uint8 n = 7;
-    while (!find(n)) n--;
-    return n;
-  }
-
-  bool insert(integer_type n) {
-    bool result = !find(n);
-    data |= (1u << n);
-    return result;
-  }
-
-  bool empty() const {
-    return (data == 0);
-  }
-
-  integer_type successor(integer_type n) const {
-    assert(!empty());
-    do {
-      n++;
-    } while (!find(n));
-    return n;
-  }
-
-  integer_type predecessor(integer_type n) const {
-    assert(!empty());
-    do {
-      n--;
-    } while (!find(n));
-    return n;
-  }
-
-  integer_type data;
+template<>
+class VanEmdeBoasTree<3> : public SmallVanEmdeBoasTree<3> {
 };
 
 
@@ -382,20 +267,23 @@ public:
   using value_type = integer_type;
 
   friend class iterator_helper;
+
   friend class reverse_iterator_helper;
 
-  VanEmdeBoasSet():
-      tree_(new tree_type()) { }
+  VanEmdeBoasSet() :
+      tree_(new tree_type()) {}
 
-  VanEmdeBoasSet(const VanEmdeBoasSet &) = delete;
-  VanEmdeBoasSet &operator=(const VanEmdeBoasSet &) = delete;
+  VanEmdeBoasSet(const VanEmdeBoasSet&) = delete;
+  VanEmdeBoasSet& operator=(const VanEmdeBoasSet&) = delete;
 
+  VanEmdeBoasSet(VanEmdeBoasSet&&) = default;
+  VanEmdeBoasSet& operator=(VanEmdeBoasSet&&) = default;
 
   /**
    * Returns true if n is in set.
    */
   bool find(integer_type n) const {
-    if (n >= end_const)
+    if (n >= kEnd)
       outOfRange();
 
     return tree_->find(n);
@@ -426,7 +314,7 @@ public:
    * Returns maximum allowed value for this tree.
    */
   constexpr static size_type maxValue() {
-    return (end_const - 1);
+    return (kEnd - 1);
   }
 
   /**
@@ -434,7 +322,7 @@ public:
    * Returns true if n was in set.
    */
   bool erase(integer_type n) {
-    if (n >= end_const)
+    if (n >= kEnd)
       outOfRange();
 
     bool result = tree_->erase(n);
@@ -448,7 +336,7 @@ public:
    * Returns true if n was not already in set.
    */
   bool insert(integer_type n) {
-    if (n >= end_const)
+    if (n >= kEnd)
       outOfRange();
 
     bool result = tree_->insert(n);
@@ -510,6 +398,9 @@ public:
   public:
     using self_type = basic_iterator;
     using value_type = integer_type;
+    using reference = const value_type&;
+    using pointer = const value_type*;
+    using difference_type = int64;
     using iterator_category = std::bidirectional_iterator_tag;
     using container_pointer = const VanEmdeBoasSet*;
 
@@ -518,21 +409,21 @@ public:
       this->position = position;
     }
 
-    self_type operator++() {
+    self_type& operator++() {
       position = iterator_helper::increment(container, position);
       return *this;
     }
 
-    self_type operator--() {
+    self_type& operator--() {
       position = iterator_helper::decrement(container, position);
       return *this;
     }
 
-    value_type operator*() const {
+    reference operator*() const {
       return this->position;
     }
 
-    friend bool operator==(const self_type &lhs, const self_type &rhs) {
+    friend bool operator==(const self_type& lhs, const self_type& rhs) {
       return lhs.position == rhs.position;
     }
 
@@ -550,7 +441,7 @@ public:
       if (position > last)
         tree->illegalOperation();
       else if (position == last)
-        return end_const;
+        return kEnd;
       else
         return tree->successor(position);
     }
@@ -569,10 +460,10 @@ public:
 
     static value_type increment(tree_pointer tree, value_type position) {
       value_type first = tree->first();
-      if (position == end_const || position < first)
+      if (position == kEnd || position < first)
         tree->illegalOperation();
       else if (position == first)
-        return end_const;
+        return kEnd;
       else
         return tree->predecessor(position);
     }
@@ -589,34 +480,40 @@ public:
   using reverse_iterator = basic_iterator<reverse_iterator_helper>;
 
   iterator begin() const {
-    return empty()? end() : iterator(this, first());
+    return empty() ? end() : iterator(this, first());
   }
 
   iterator end() const {
-    return iterator(this, end_const);
+    return iterator(this, kEnd);
   }
 
   reverse_iterator rbegin() const {
-    return empty()? rend() : reverse_iterator(this, last());
+    return empty() ? rend() : reverse_iterator(this, last());
   }
 
   reverse_iterator rend() const {
-    return reverse_iterator(this, end_const);
+    return reverse_iterator(this, kEnd);
   }
 
 private:
+  static constexpr const char kOutOfRange[] = "VanEmdeBoasSet: outOfRange";
+  static constexpr const char kIllegalOperation[] = "VanEmdeBoasSet: illegalOperation";
+
   void outOfRange() const {
-    throw std::out_of_range("VanEmdeBoasSet: outOfRange");
+    throw std::out_of_range(kOutOfRange);
   }
 
   void illegalOperation() const {
-    throw std::runtime_error("VanEmdeBoasSet: illegalOperation");
+    throw std::runtime_error(kIllegalOperation);
   }
 
-  static constexpr value_type end_const = (1u << logM) - 1;
+  static constexpr value_type kEnd = (1u << logM) - 1;
 
   std::unique_ptr<tree_type> tree_;
   size_type size_ = 0;
 };
+
+template <uint8 logM>
+constexpr typename VanEmdeBoasSet<logM>::value_type VanEmdeBoasSet<logM>::kEnd;
 
 } // namespace lib

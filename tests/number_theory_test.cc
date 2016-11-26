@@ -9,7 +9,7 @@
 
 using namespace lib::numeric;
 
-BOOST_AUTO_TEST_SUITE(numeric_theory_test)
+BOOST_AUTO_TEST_SUITE(number_theory_test)
 
 BOOST_AUTO_TEST_CASE(gcd_test) {
   BOOST_CHECK_EQUAL(GCD(1, 1), 1);
@@ -134,30 +134,6 @@ BOOST_AUTO_TEST_CASE(power_modulo_test) {
   BOOST_CHECK_EQUAL(PowerModulo32(2, lib::power(10, 17), modulo), 952065854);
   BOOST_CHECK_EQUAL(PowerModulo32(3, lib::power(10, 17), modulo), 368629774);
   BOOST_CHECK_EQUAL(PowerModulo32(3, lib::power(10, 17) + 1, modulo), 105889315);
-}
-
-BOOST_AUTO_TEST_CASE(square_test) {
-  BOOST_CHECK_EQUAL(SquareCeiling(0), 0);
-  BOOST_CHECK_EQUAL(SquareFloor(0), 0);
-  BOOST_CHECK_EQUAL(SquareCeiling(1), 1);
-  BOOST_CHECK_EQUAL(SquareFloor(1), 1);
-  BOOST_CHECK_EQUAL(SquareCeiling(2), 2);
-  BOOST_CHECK_EQUAL(SquareFloor(2), 1);
-  BOOST_CHECK_EQUAL(SquareCeiling(4), 2);
-  BOOST_CHECK_EQUAL(SquareFloor(4), 2);
-
-  BOOST_CHECK_EQUAL(SquareCeiling(1000 * 1000), 1000);
-  BOOST_CHECK_EQUAL(SquareFloor(1000 * 1000), 1000);
-
-  BOOST_CHECK_EQUAL(SquareCeiling(1000 * 1000 + 1), 1001);
-  BOOST_CHECK_EQUAL(SquareFloor(1000 * 1000 + 1), 1000);
-
-  lib::uint64 billion = 1000uLL * 1000uLL * 1000uLL;
-  BOOST_CHECK_EQUAL(SquareCeiling(billion * billion), billion);
-  BOOST_CHECK_EQUAL(SquareFloor(billion * billion), billion);
-
-  BOOST_CHECK_EQUAL(SquareCeiling(billion * billion + 1), billion + 1);
-  BOOST_CHECK_EQUAL(SquareFloor(billion * billion + 1), billion);
 }
 
 BOOST_AUTO_TEST_CASE(divisors_test) {

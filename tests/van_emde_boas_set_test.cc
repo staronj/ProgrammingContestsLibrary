@@ -4,19 +4,57 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "data_structures/van_emde_boas_set.h"
+#include "iterators.h"
 #include "io.h"
 
 using namespace lib;
 
 BOOST_AUTO_TEST_SUITE(van_emde_boas_suite)
 
-constexpr uint32 kTreeSize = 21;
+constexpr uint32 kTreeSize = 20;
 
 BOOST_AUTO_TEST_CASE(creation_test) {
   VanEmdeBoasSet<kTreeSize> tree;
   BOOST_CHECK_EQUAL(tree.empty(), true);
   BOOST_CHECK_EQUAL(tree.size(), 0);
   BOOST_CHECK(tree.begin() == tree.end());
+}
+
+BOOST_AUTO_TEST_CASE(movable_test) {
+  VanEmdeBoasSet<kTreeSize> tree;
+  tree.insert(42);
+
+  VanEmdeBoasSet<kTreeSize> tree2 = std::move(tree);
+  VanEmdeBoasSet<kTreeSize> tree3;
+  tree3 = std::move(tree2);
+
+  BOOST_CHECK_EQUAL(tree3.empty(), false);
+  BOOST_CHECK_EQUAL(tree3.size(), 1);
+  BOOST_CHECK_EQUAL(tree3.find(42), true);
+}
+
+BOOST_AUTO_TEST_CASE(iterator_concept_test) {
+  BOOST_CHECK(is_iterator<VanEmdeBoasSet<kTreeSize>::iterator>::value);
+  BOOST_CHECK(is_iterator<VanEmdeBoasSet<kTreeSize>::reverse_iterator>::value);
+  BOOST_CHECK(is_iterable<VanEmdeBoasSet<kTreeSize>>::value);
+
+  VanEmdeBoasSet<kTreeSize> tree;
+  tree.insert(1);
+  tree.insert(4);
+  tree.insert(13);
+  std::vector<uint32> expected = {1, 4, 13};
+
+  {
+    std::vector<uint32> result(tree.begin(), tree.end());
+    BOOST_CHECK(result == expected);
+  }
+
+  {
+    std::vector<uint32> result;
+    for (auto i: tree)
+      result.push_back(i);
+    BOOST_CHECK(result == expected);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(one_insert_test) {
