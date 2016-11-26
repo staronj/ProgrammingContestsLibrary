@@ -37,6 +37,14 @@ public:
   }
 
   /**
+   * Constructs new value from given arguments and pushes it to stack.
+   */
+  template <typename... Args>
+  void emplace(Args&&... args) {
+    push(value_type(std::forward<Args>(args)...));
+  }
+
+  /**
    * Pops value from stack. If stack is empty behaviour is undefined.
    */
   void pop() {

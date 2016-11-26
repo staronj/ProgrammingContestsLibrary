@@ -16,6 +16,13 @@ BOOST_AUTO_TEST_CASE(empty) {
   BOOST_CHECK_EQUAL(stack.empty(), true);
 }
 
+BOOST_AUTO_TEST_CASE(emplace_test) {
+  MaxStack<std::pair<int, int>> stack;
+  stack.emplace(2, 3);
+  stack.emplace(1, 2);
+  BOOST_CHECK(stack.max() == std::make_pair(2, 3));
+}
+
 BOOST_AUTO_TEST_CASE(push_pop) {
   MaxStack<int> stack;
   stack.push(10);

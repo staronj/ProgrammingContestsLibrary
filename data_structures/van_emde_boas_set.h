@@ -35,12 +35,10 @@ struct IntegerHelper<33> {
 template<uint8 BytesNeeded>
 using IntegerType = typename IntegerHelper<BytesNeeded>::integer_type;
 
-} // namespace detail
-
 template<uint8 logM>
 class VanEmdeBoasTree {
 public:
-  using integer_type = detail::IntegerType<logM>;
+  using integer_type = IntegerType<logM>;
 
   enum Constants {
     ceiling_half_logM = (logM + 1) / 2,
@@ -191,7 +189,7 @@ private:
 template<uint8 logM>
 class SmallVanEmdeBoasTree {
 public:
-  using integer_type = detail::IntegerType<1u << logM>;
+  using integer_type = IntegerType<1u << logM>;
 
   SmallVanEmdeBoasTree() = default;
 
@@ -257,11 +255,30 @@ template<>
 class VanEmdeBoasTree<3> : public SmallVanEmdeBoasTree<3> {
 };
 
+} // namespace detail
 
+/**
+ * Set-like data structure for storing integers from known universum.
+ *
+ * M stands for universum size.
+ * Space compelxity O(M)
+ * Search O(log log M)
+ * Insert O(log log M)
+ * Delete O(log log M)
+ * Successor/predecessor O(log log M)
+ *
+ * Universum must be power of 2, so we only care for exponent of 2.
+ * Last element of universum is reserved for technical reasons.
+ *
+ * Example:
+ * <pre>
+ * VanEmdeBoasSet<20> set; // set can store values from range [0, 2^n - 1)
+ * </pre>
+ */
 template<uint8 logM>
 class VanEmdeBoasSet {
 public:
-  using tree_type = VanEmdeBoasTree<logM>;
+  using tree_type = detail::VanEmdeBoasTree<logM>;
   using integer_type = typename tree_type::integer_type;
   using size_type = uint32;
   using value_type = integer_type;
@@ -515,5 +532,11 @@ private:
 
 template <uint8 logM>
 constexpr typename VanEmdeBoasSet<logM>::value_type VanEmdeBoasSet<logM>::kEnd;
+
+template <uint8 logM>
+constexpr const char VanEmdeBoasSet<logM>::kOutOfRange[];
+
+template <uint8 logM>
+constexpr const char VanEmdeBoasSet<logM>::kIllegalOperation[];
 
 } // namespace lib

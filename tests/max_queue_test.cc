@@ -16,6 +16,13 @@ BOOST_AUTO_TEST_CASE(empty) {
   BOOST_CHECK_EQUAL(queue.empty(), true);
 }
 
+BOOST_AUTO_TEST_CASE(emplace_test) {
+  MaxQueue<std::pair<int, int>> queue;
+  queue.emplace(1, 2);
+  queue.emplace(2, 3);
+  BOOST_CHECK(queue.max() == std::make_pair(2, 3));
+}
+
 BOOST_AUTO_TEST_CASE(push_pop) {
   MaxQueue<int> queue;
   queue.push(10);

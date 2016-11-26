@@ -41,6 +41,14 @@ public:
   }
 
   /**
+   * Constructs new value from given arguments and pushes it to queue.
+   */
+  template <typename... Args>
+  void emplace(Args&&... args) {
+    push(value_type(std::forward<Args>(args)...));
+  }
+
+  /**
    * Pops value from queue. If queue is empty behaviour is undefined.
    */
   void pop() {
