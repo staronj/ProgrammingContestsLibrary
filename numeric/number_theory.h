@@ -331,7 +331,7 @@ struct MillerRabinPrimeTest {
       if (p == witness)
         return true;
 
-    const uint64 odd_factor = (p - 1uLL) / (1uLL << trailing_zeros(p - 1));
+    const uint64 odd_factor = (p - 1uLL) / (1uLL << least_significant_one(p - 1));
 
     for (const auto witness: witnesses) {
       uint64 k = odd_factor;

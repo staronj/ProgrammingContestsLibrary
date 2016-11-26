@@ -31,7 +31,7 @@ public:
       throw std::out_of_range(kInvalidRange);
 
     const size_type length = last - first + 1;
-    const size_type length_log = integer_log2(length);
+    const size_type length_log = most_significant_one(length);
     const size_type segment_size = (1u << length_log);
 
     return minimum_index(length_log, first, last + 1 - segment_size);
@@ -44,7 +44,7 @@ public:
 private:
   void calculate() {
     segments_[0].assign(counting_iterator<uint32>(0), counting_iterator<uint32>(size()));
-    const size_type log_size = integer_log2(size());
+    const size_type log_size = most_significant_one(size());
     for(auto i : range<size_type>(1, log_size + 1))
     {
       const size_type segment_length = (1u << i);

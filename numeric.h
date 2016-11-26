@@ -49,12 +49,14 @@ T abs(const T& value) {
 }
 
 /**
- * Returns -1, 0 or 1 depending on signum of value. Return type is int.
+ * Returns 1, 0 or -1 depending on signum of value.
+ * Return type is int.
  */
 template <typename T>
-int signum(const T& value) {
-  constexpr T zero(0);
-  return (value == zero)? 0 : ((value < zero)? -1 : 1);
+inline constexpr
+typename std::enable_if<std::is_integral<T>::value, int>::type
+signum(const T& value) {
+  return (value > T(0))? 1 : ((value < T(0))? -1 : 0);
 }
 
 int64 power(int64 v, uint32 n) {
@@ -80,20 +82,49 @@ power(T v, uint64 n, T one) {
   return one;
 }
 
-int32 signum(int64 n) {
-  return (n == 0)? 0 : ((n < 0)? -1 : 1);
-}
-
+/**
+ * Returns number of turned on bits.
+ */
 inline constexpr uint32 pop_count(uint64 n) {
   return __builtin_popcountl(n);
 }
 
-inline uint32 integer_log2(uint64 n) {
-  return (n == 0)? 0u : uint32(63 - __builtin_clzll (n));
+/**
+ * inline uint32 trailing_zeros_count(uint32 n)
+  {
+    uint32 powOfTwo = ( (-n) & n ) - 1;
+    return pop_count(powOfTwo);
+  }
+
+  inline uint32 leading_zeros_count(uint32 x)
+  {
+    x = x | (x >> 1);
+    x = x | (x >> 2);
+    x = x | (x >> 4);
+    x = x | (x >> 8);
+    x = x | (x >>16);
+    return pop_count(~x);
+  }
+ */
+
+/**
+ * Returns index of least significant one in n.
+ * Alternatively returns max k such that 2^k | n.
+ *
+ * If n is equal to 0 result is undefined.
+ */
+inline constexpr uint32 least_significant_one(uint64 n) {
+  return __builtin_ffsll(n) - 1;
 }
 
-inline uint32 trailing_zeros(uint64 n) {
-  return (n == 0)? 0u : __builtin_ctzll(n);
+/**
+ * Returns floor of binary logaritm of number, ie
+ * max k such that 2^k <= n.
+ *
+ * If n is equal to 0 result is undefined.
+ */
+inline constexpr uint32 most_significant_one(uint64 n) {
+  return 63 - __builtin_clzll(n);
 }
 
 /**

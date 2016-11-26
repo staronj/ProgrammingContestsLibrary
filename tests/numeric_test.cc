@@ -52,24 +52,23 @@ BOOST_AUTO_TEST_CASE(pop_count_test) {
   BOOST_CHECK_EQUAL(pop_count(0xFFFFFFFFFFFFFFuLL), 56);
 }
 
-BOOST_AUTO_TEST_CASE(trailing_zeros_test) {
-  BOOST_CHECK_EQUAL(trailing_zeros(1), 0);
-  BOOST_CHECK_EQUAL(trailing_zeros(2), 1);
-  BOOST_CHECK_EQUAL(trailing_zeros(0xFFFFFFFF), 0);
-  BOOST_CHECK_EQUAL(trailing_zeros(1uLL << 33), 33);
-  BOOST_CHECK_EQUAL(trailing_zeros(1uLL << 63), 63);
-  BOOST_CHECK_EQUAL(trailing_zeros(47 * 64), 6);
-  BOOST_CHECK_EQUAL(trailing_zeros((1uLL << 42) * 11111), 42);
+BOOST_AUTO_TEST_CASE(least_significant_one_test) {
+  BOOST_CHECK_EQUAL(least_significant_one(1), 0);
+  BOOST_CHECK_EQUAL(least_significant_one(2), 1);
+  BOOST_CHECK_EQUAL(least_significant_one(0xFFFFFFFF), 0);
+  BOOST_CHECK_EQUAL(least_significant_one(1uLL << 33), 33);
+  BOOST_CHECK_EQUAL(least_significant_one(1uLL << 63), 63);
+  BOOST_CHECK_EQUAL(least_significant_one(47 * 64), 6);
+  BOOST_CHECK_EQUAL(least_significant_one((1uLL << 42) * 11111), 42);
 }
 
-BOOST_AUTO_TEST_CASE(integer_log2_test) {
-  BOOST_CHECK_EQUAL(integer_log2(0), 0);
-  BOOST_CHECK_EQUAL(integer_log2(1), 0);
-  BOOST_CHECK_EQUAL(integer_log2(0xFFFFFFFF), 31);
-  BOOST_CHECK_EQUAL(integer_log2(7), 2);
-  BOOST_CHECK_EQUAL(integer_log2(8), 3);
-  BOOST_CHECK_EQUAL(integer_log2(0xFFFFFFFFFFFFFFFFuLL), 63);
-  BOOST_CHECK_EQUAL(integer_log2(0xFFFFFFFFFFFFFFuLL), 55);
+BOOST_AUTO_TEST_CASE(most_significant_one_test) {
+  BOOST_CHECK_EQUAL(most_significant_one(1), 0);
+  BOOST_CHECK_EQUAL(most_significant_one(0xFFFFFFFF), 31);
+  BOOST_CHECK_EQUAL(most_significant_one(7), 2);
+  BOOST_CHECK_EQUAL(most_significant_one(8), 3);
+  BOOST_CHECK_EQUAL(most_significant_one(0xFFFFFFFFFFFFFFFFuLL), 63);
+  BOOST_CHECK_EQUAL(most_significant_one(0xFFFFFFFFFFFFFFuLL), 55);
 }
 
 BOOST_AUTO_TEST_CASE(prefix_sum_test) {
