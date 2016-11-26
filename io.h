@@ -475,4 +475,49 @@ iterator_range<lines_iterator> iterate_lines(std::istream& stream) {
   return make_range(lines_iterator(&stream), lines_iterator());
 }
 
+/**
+ * Helper class for reading elements to container from stream.
+ *
+ * Example:
+ * <pre>
+ * std::vector<int> v;
+ * StreamReader<std::vector<int>> reader(100, v);
+ * std::cin >> v; // reads 100 ints from std::cin and stores them in v
+ * </pre>
+ */
+template <typename Container>
+struct SequenceReader {
+  using size_type = uint32;
+  using value_type = typename Container::value_type;
+  using container_type = Container;
+
+  SequenceReader(size_type count, container_type& container):
+      count_(count), container_(container) { }
+
+  friend std::istream& operator>>(std::istream& stream, SequenceReader reader) {
+    reader.container_.resize(reader.count_);
+    for (auto& elem: reader.container_)
+      stream >> elem;
+    return stream;
+  }
+
+private:
+  size_type count_;
+  container_type& container_;
+};
+
+/**
+ * Helper function for reading sequence of elements to container.
+ *
+ * Example:
+ * <pre>
+ * std::vector<int> v;
+ * std::cin >> ReadSequence(100, v); // reads 100 ints from std::cin and stores them in v
+ * </pre>
+ */
+template <typename Container>
+SequenceReader<Container> ReadSequence(uint32 count, Container& container) {
+  return {count, container};
+}
+
 } // namespace lib

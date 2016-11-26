@@ -334,4 +334,32 @@ BOOST_AUTO_TEST_CASE(iterate_lines_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(sequence_reader_test) {
+  {
+    std::istringstream stream;
+    std::vector<int> v;
+    SequenceReader<std::vector<int>> reader(0, v);
+    stream >> reader;
+    std::vector<int> expected;
+    BOOST_CHECK(v == expected);
+  }
+
+  {
+    std::istringstream stream("1 2 3");
+    std::vector<int> v;
+    SequenceReader<std::vector<int>> reader(3, v);
+    stream >> reader;
+    std::vector<int> expected = {1, 2, 3};
+    BOOST_CHECK(v == expected);
+  }
+
+  {
+    std::istringstream stream("1 2 3");
+    std::vector<int> v;
+    stream >> ReadSequence(3, v);
+    std::vector<int> expected = {1, 2, 3};
+    BOOST_CHECK(v == expected);
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
