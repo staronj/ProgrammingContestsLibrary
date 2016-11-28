@@ -8,70 +8,6 @@ namespace lib {
 namespace text {
 
 /**
- * Functor-like predicate to test equality to given value.
- */
-template <typename Value>
-struct is_equal_to_predicate {
-  using value_type = Value;
-
-  is_equal_to_predicate(value_type value):
-      value_(std::move(value)) { }
-
-  bool operator()(const value_type& value) const {
-    return value == value_;
-  }
-
-private:
-  value_type value_;
-};
-
-/**
- * Returns is_equal_to_predicate for given value.
- *
- * Example:
- * <pre>
- * std::vector<int> v = {1, 2, 4, 16};
- * std::any_of(v.begin(), v.end(), is_equal_to(4)); // returns true
- * </pre>
- */
-template <typename Value>
-is_equal_to_predicate<Value> is_equal_to(Value value) {
-  return is_equal_to_predicate<Value>(std::move(value));
-}
-
-/**
- * Functor-like predicate to test belonging to given set.
- */
-template <typename Value>
-struct is_in_set_predicate {
-  using value_type = Value;
-
-  template <typename Iterator>
-  is_in_set_predicate(Iterator begin, Iterator end):
-      values_(begin, end) { }
-
-  bool operator()(const value_type& value) const {
-    return std::find(values_.begin(), values_.end(), value) != values_.end();
-  }
-
-private:
-  std::vector<Value> values_;
-};
-
-/**
- * Returns is_in_set_predicate for given characters.
- *
- * Example:
- * <pre>
- * std::string s = "Ala ma kota.";
- * std::find_if(s.begin(), s.end(), is_in_set(",.;")); // returns iterator to '.'
- * </pre>
- */
-is_in_set_predicate<char> is_in_set(const char* characters) {
-  return is_in_set_predicate<char>(characters, characters + std::strlen(characters));
-}
-
-/**
  * Returns vector of strigns created by splitting given sequence using predicate.
  *
  * includeEmpty indicates if empty sequences are included.
@@ -111,7 +47,10 @@ std::vector<std::string> split(Iterator begin, Iterator end, Predicate predicate
  */
 template <typename Iterator>
 std::vector<std::string> split(Iterator begin, Iterator end, char c, bool includeEmpty = false) {
-  return split(begin, end, is_equal_to(c), includeEmpty);
+  auto predicate = [c](char d) {
+    return c == d;
+  };
+  return split(begin, end, predicate, includeEmpty);
 }
 
 /**
@@ -119,7 +58,12 @@ std::vector<std::string> split(Iterator begin, Iterator end, char c, bool includ
  */
 template <typename Iterator>
 std::vector<std::string> split(Iterator begin, Iterator end, const char* chars, bool includeEmpty = false) {
-  return split(begin, end, is_in_set(chars), includeEmpty);
+  const char* const str_begin = chars;
+  const char* const str_end = chars + strlen(chars);
+  auto predicate = [str_begin, str_end](char c) {
+    return std::find(str_begin, str_end, c) != str_end;
+  };
+  return split(begin, end, predicate, includeEmpty);
 }
 
 /**
@@ -150,6 +94,57 @@ std::string join(std::string separator, Iterator begin, Iterator end) {
     result += str;
   }
   return result;
+}
+
+/**
+ * Python-like function strip.
+ *
+ * For given range and predicate returns string with removed starting
+ * and ending characters which satisfy predicate.
+ *
+ * Example:
+ * <pre>
+ * std::string text = "    Ala ma kota.\n\n\t";
+ * strip(text.begin(), text.end(), std::isspace); // returns "Ala ma kota."
+ * </pre>
+ */
+template <typename Iterator, typename Predicate>
+std::string strip(Iterator begin, Iterator end, Predicate predicate) {
+  while (begin != end && predicate(*begin))
+    ++begin;
+
+  while (begin != end && predicate(*std::prev(end)))
+    --end;
+
+  return std::string(begin, end);
+}
+
+/**
+ * Python-like strip function.
+ *
+ * This version takes range and character.
+ */
+template <typename Iterator>
+std::string strip(Iterator begin, Iterator end, char c) {
+  auto predicate = [c] (char d) {
+    return c == d;
+  };
+  return strip(begin, end, predicate);
+}
+
+/**
+ * Python-like strip function.
+ *
+ * This version takes range and set of characters as c-string.
+ */
+template <typename Iterator>
+std::string strip(Iterator begin, Iterator end, const char* chars) {
+  const char* const str_begin = chars;
+  const char* const str_end = chars + strlen(chars);
+  auto predicate = [str_begin, str_end](char c) {
+    return std::find(str_begin, str_end, c) != str_end;
+  };
+  return strip(begin, end, predicate);
 }
 
 } // namespace text
