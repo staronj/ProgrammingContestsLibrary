@@ -23,15 +23,10 @@ Build target `all`, go to subdirectory `benchmarks` and run executable.
 
 Tool for generating documentation. 
 
+#### Installation
 ```bash
 sudo apt-get install doxygen
 ```
-
-#### Installation
-```bash
-sudo apt-get install libboost-test-dev
-```
-
 
 ### Boost unit test framework
 
