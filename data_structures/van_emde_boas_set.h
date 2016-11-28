@@ -524,14 +524,14 @@ private:
     throw std::runtime_error(kIllegalOperation);
   }
 
-  static constexpr value_type kEnd = (1u << logM) - 1;
+  static const value_type kEnd = (1u << logM) - 1;
 
   std::unique_ptr<tree_type> tree_;
   size_type size_ = 0;
 };
 
 template <uint8 logM>
-constexpr typename VanEmdeBoasSet<logM>::value_type VanEmdeBoasSet<logM>::kEnd;
+const typename VanEmdeBoasSet<logM>::value_type VanEmdeBoasSet<logM>::kEnd;
 
 template <uint8 logM>
 constexpr const char VanEmdeBoasSet<logM>::kOutOfRange[];

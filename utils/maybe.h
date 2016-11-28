@@ -67,6 +67,7 @@ public:
   Maybe& operator=(value_type value) {
     destroy();
     construct(std::move(value));
+    return *this;
   }
 
   /**
@@ -76,6 +77,7 @@ public:
     destroy();
     if (other)
       construct(other.get());
+    return *this;
   }
 
   /**
@@ -88,6 +90,7 @@ public:
       construct(std::move(other.get()));
       other.destroy();
     }
+    return *this;
   }
 
   /**
@@ -158,7 +161,7 @@ private:
     }
 
     void destroy() {
-        ~ref();   
+        ref().~value_type();   
     }
 
     pointer ptr() {
