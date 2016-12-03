@@ -4,22 +4,11 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "iterators.h"
+#include "iterators/random_access_iterator.h"
 
 using namespace lib;
 
-BOOST_AUTO_TEST_SUITE(iterator)
-
-BOOST_AUTO_TEST_CASE(is_iterator_test) {
-  BOOST_CHECK(is_iterator<const char*>::value);
-  BOOST_CHECK(is_iterator<int*>::value);
-  BOOST_CHECK(is_iterator<counting_iterator<int>>::value);
-  BOOST_CHECK(is_iterator<std::vector<int>::const_iterator>::value);
-  BOOST_CHECK(is_iterator<std::istream_iterator<int>>::value);
-  BOOST_CHECK(is_iterator<counting_iterator<uint32>>::value);
-
-  int table[4];
-  BOOST_CHECK(!is_iterator<decltype(table)>::value);
-}
+BOOST_AUTO_TEST_SUITE(iterator_test_suite)
 
 BOOST_AUTO_TEST_CASE(is_iterable_test) {
   BOOST_CHECK(is_iterable<std::vector<int>>::value);
@@ -176,6 +165,30 @@ BOOST_AUTO_TEST_CASE(indirect_iterator_test) {
   std::vector<std::string> result(it, end);
   std::vector<std::string> expected = {"kota", "kota", "Ala", "ma"};
   BOOST_CHECK(result == expected);
+}
+
+BOOST_AUTO_TEST_CASE(random_access_iterator_test) {
+  {
+    struct Helper {
+      using value_type = int;
+      using difference_type = int;
+      using reference = int;
+      using pointer = int*;
+      void next() { }
+      void prev() { }
+      void advance(difference_type) { }
+      reference value() const { return 42; }
+      pointer ptr() const { return nullptr; }
+      difference_type difference(const Helper& other) const { return 0; }
+      bool less(const Helper& other) const { return true; }
+      bool equal(const Helper& other) const { return true; }
+    };
+
+    using iterator = random_access_iterator<Helper>;
+    iterator it;
+    BOOST_CHECK_EQUAL(*it, 42);
+    BOOST_CHECK_EQUAL(is_random_access_iterator<iterator>::value, true);
+  }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

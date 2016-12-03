@@ -13,6 +13,7 @@
 #include <vector>
 #include <array>
 #include <list>
+#include <forward_list>
 #include <deque>
 #include <queue>
 #include <set>

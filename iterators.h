@@ -3,44 +3,18 @@
 
 #include "headers.h"
 #include "operators.h"
+#include "iterators/is_iterator.h"
+#include "iterators/input_iterator.h"
+#include "iterators/random_access_iterator.h"
 
 namespace lib {
 
 /**
- * type_traits-like predicate. Equal to true_type if argument is iterator.
+ * type_traits-like predicate. Equal to true_type if argument is iterable.
  *
  * Example:
  * <pre>
- * static_assert(is_iterator<std::vector<int>::iterator>::value, "vector iterator is not iterator! help!");
- * </pre>
- */
-template<typename Iterator>
-struct is_iterator {
-private:
-  template<typename I> static constexpr auto test(int)
-  -> decltype(
-      *std::declval<const I>(),
-      std::declval<const I>() == std::declval<const I>(),
-      std::declval<const I>() != std::declval<const I>(),
-      ++ std::declval<I&>(),
-      std::declval<I&>() ++,
-      std::iterator_traits<I>(),
-      bool()) { return
-        std::is_destructible<I>::value;
-  }
-
-  template<typename I> static constexpr bool test(...) { return false; }
-
-public:
-  static constexpr bool value = test<Iterator>(0);
-};
-
-/**
- * type_traits-like predicate. Equal to true_type if argument is iteratorable.
- *
- * Example:
- * <pre>
- * static_assert(is_iteratorable<std::vector<int>>::value, "vector should be iterable!");
+ * static_assert(is_iterable<std::vector<int>>::value, "vector should be iterable!");
  * </pre>
  */
 template<typename T>
@@ -66,6 +40,76 @@ public:
   static constexpr bool value = test<T>(0);
 };
 
+namespace detail {
+
+template <typename Integral>
+struct counting_iterator_helper {
+  static_assert(std::is_integral<Integral>::value, "counting_iterator's template argument should be integral");
+  using value_type = Integral;
+  using reference = value_type;
+  using pointer = const value_type*;
+  using difference_type = typename std::make_signed<Integral>::type;
+  using self_type = counting_iterator_helper;
+
+  counting_iterator_helper(): value_() { }
+  explicit counting_iterator_helper(Integral n): value_(n) { }
+
+  void next() { ++value_; }
+  void prev() { --value_; }
+  reference value() const { return value_; }
+  pointer ptr() const { return &value_; }
+
+  bool equal(const self_type& other) const
+    { return value_ == other.value_; }
+
+  void advance(difference_type diff)
+    { value_ += diff; }
+
+  difference_type difference(const self_type& other) const
+    { return value_ - other.value_; }
+
+  bool less(const self_type& other) const
+    { return value_ < other.value_; }
+
+private:
+  Integral value_;
+};
+
+template <typename Integral>
+struct reverse_counting_iterator_helper {
+  static_assert(std::is_integral<Integral>::value, "reverse_counting_iterator's template argument should be integral");
+  using value_type = Integral;
+  using reference = value_type;
+  using pointer = const value_type*;
+  using difference_type = typename std::make_signed<Integral>::type;
+  using self_type = reverse_counting_iterator_helper;
+
+  reverse_counting_iterator_helper(): value_() { }
+  reverse_counting_iterator_helper(Integral n): value_(n) { }
+
+  void next() { --value_; }
+  void prev() { ++value_; }
+  reference value() const { return value_; }
+  pointer ptr() const { return &value_; }
+
+  bool equal(const self_type& other) const
+  { return value_ == other.value_; }
+
+  void advance(difference_type diff)
+  { value_ -= diff; }
+
+  difference_type difference(const self_type& other) const
+  { return other.value_ - value_; }
+
+  bool less(const self_type& other) const
+  { return value_ > other.value_; }
+
+private:
+  Integral value_;
+};
+
+} // namespace detail
+
 /**
  * Random access iterator for iterating over integral type.
  *
@@ -77,62 +121,7 @@ public:
  * Produces v with elements {0, 1, 2, 3, 4}
  */
 template <typename Integral>
-class counting_iterator {
-public:
-  static_assert(std::is_integral<Integral>::value, "counting_iterator's template argument should be integral");
-  using self_type = counting_iterator;
-  using value_type = Integral;
-  using reference = const value_type&;
-  using pointer = const value_type*;
-  using difference_type = typename std::make_signed<Integral>::type;
-  using iterator_category = std::random_access_iterator_tag;
-
-  counting_iterator(): value_() { }
-
-  explicit counting_iterator(Integral n): value_(n) { }
-
-  reference operator*() const {
-    return value_;
-  }
-
-  self_type& operator++() {
-    ++value_;
-    return *this;
-  }
-
-  self_type& operator--() {
-    --value_;
-    return *this;
-  }
-
-  self_type& operator+=(difference_type n) {
-    value_ += n;
-    return *this;
-  }
-
-  friend self_type operator+(const self_type& obj, difference_type n) {
-    return self_type(obj.value_ + n);
-  }
-
-  friend difference_type operator-(const self_type& lhs, const self_type& rhs) {
-    return lhs.value_ - rhs.value_;
-  }
-
-  value_type operator[](difference_type n) {
-    return value_type(value_ + n);
-  }
-
-  friend bool operator<(const self_type& lhs, const self_type& rhs) {
-    return lhs.value_ < rhs.value_;
-  }
-
-  friend bool operator==(const self_type& lhs, const self_type& rhs) {
-    return lhs.value_ == rhs.value_;
-  }
-
-private:
-  Integral value_;
-};
+using counting_iterator = random_access_iterator<detail::counting_iterator_helper<Integral>>;
 
 /**
  * Helper function for building counting_iterator.
@@ -168,62 +157,8 @@ std::ostream& operator<<(std::ostream& stream, counting_iterator<T> it) {
  * Produces v with elements {4, 3, 2, 1, 0}
  */
 template <typename Integral>
-class reverse_counting_iterator {
-public:
-  static_assert(std::is_integral<Integral>::value, "reverse_counting_iterator's template argument should be integral");
-  using self_type = reverse_counting_iterator;
-  using value_type = Integral;
-  using reference = const value_type&;
-  using pointer = const value_type*;
-  using difference_type = typename std::make_signed<Integral>::type;
-  using iterator_category = std::random_access_iterator_tag;
+using reverse_counting_iterator = random_access_iterator<detail::reverse_counting_iterator_helper<Integral>>;
 
-  reverse_counting_iterator(): value_() { }
-
-  explicit reverse_counting_iterator(Integral n): value_(n) { }
-
-  reference operator*() const {
-    return value_;
-  }
-
-  self_type& operator++() {
-    --value_;
-    return *this;
-  }
-
-  self_type& operator--() {
-    ++value_;
-    return *this;
-  }
-
-  self_type& operator+=(difference_type n) {
-    value_ -= n;
-    return *this;
-  }
-
-  friend self_type operator+(const self_type& obj, difference_type n) {
-    return self_type(obj.value_ - n);
-  }
-
-  friend difference_type operator-(const self_type& lhs, const self_type& rhs) {
-    return rhs.value_ - lhs.value_;
-  }
-
-  value_type operator[](difference_type n) {
-    return value_type(value_ - n);
-  }
-
-  friend bool operator<(const self_type& lhs, const self_type& rhs) {
-    return rhs.value_ < lhs.value_;
-  }
-
-  friend bool operator==(const self_type& lhs, const self_type& rhs) {
-    return lhs.value_ == rhs.value_;
-  }
-
-private:
-  Integral value_;
-};
 
 /**
  * Helper function for building reverse_counting_iterator.
@@ -519,6 +454,58 @@ public:
   virtual bool hasNext() = 0;
 };
 
+namespace detail {
+
+template <typename ValueType>
+struct generator_iterator_helper {
+  using self_type = generator_iterator_helper;
+  using generator_type = generator<ValueType>;
+  using generator_pointer = typename generator<ValueType>::ptr;
+  using value_type = typename generator_type::value_type;
+  using reference = const value_type&;
+  using pointer = const value_type*;
+  using difference_type = std::ptrdiff_t;
+
+  generator_iterator_helper() = default;
+  generator_iterator_helper(generator_iterator_helper&&) = default;
+  generator_iterator_helper(const generator_iterator_helper&) = default;
+  generator_iterator_helper& operator=(const generator_iterator_helper&) = default;
+  generator_iterator_helper& operator=(generator_iterator_helper&&) = default;
+
+  generator_iterator_helper(generator_type* generator):
+    generator_iterator_helper(generator_pointer(generator)) { }
+
+  generator_iterator_helper(generator_pointer generator):
+    generator_(std::move(generator)) {
+      next();
+  }
+  
+  void next() {
+    if (generator_->hasNext())
+      value_ = generator_->next();
+    else
+      generator_.reset();
+  }
+  
+  reference value() const { return value_; }
+  
+  pointer ptr() const { return &value_; }
+
+  bool equal(const self_type& other) const {
+    return (this == &other) || (is_end() && other.is_end());
+  }
+  
+private:
+  bool is_end() const {
+    return !bool(generator_.get());
+  }
+  
+  generator_pointer generator_;
+  value_type value_;
+};
+
+} // namespace detail
+
 /**
  * Iterator for iterating over values returned by generator.
  *
@@ -528,59 +515,7 @@ public:
  * </pre>
  */
 template <typename ValueType>
-class generator_iterator {
-public:
-  using self_type = generator_iterator;
-  using generator_type = generator<ValueType>;
-  using generator_pointer = typename generator<ValueType>::ptr;
-  using value_type = typename generator_type::value_type;
-  using reference = const value_type&;
-  using pointer = const value_type*;
-  using difference_type = std::ptrdiff_t;
-  using iterator_category = std::input_iterator_tag;
-
-  generator_iterator() = default;
-
-  generator_iterator(generator_type* generator):
-      generator_iterator(generator_pointer(generator)) { }
-
-  generator_iterator(generator_pointer generator):
-      generator_(std::move(generator)) {
-    advance();
-  }
-
-  reference operator*() const {
-    return value_;
-  }
-
-  pointer operator->() const {
-    return &value_;
-  }
-
-  self_type& operator++() {
-    advance();
-    return *this;
-  }
-
-  friend bool operator==(const self_type& lhs, const self_type& rhs) {
-    return (&lhs == &rhs) || (lhs.is_end() && rhs.is_end());
-  }
-
-  bool is_end() const {
-    return !bool(generator_.get());
-  }
-
-private:
-  void advance() {
-    if (generator_->hasNext())
-      value_ = generator_->next();
-    else
-      generator_.reset();
-  }
-
-  generator_pointer generator_;
-  value_type value_;
-};
+using generator_iterator = input_iterator<detail::generator_iterator_helper<ValueType>>;
 
 /**
  * Returns iterator range to values generated by generator.

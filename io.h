@@ -458,20 +458,23 @@ private:
 };
 
 /**
- * Input iterator for reading lines from input.
+ * Builds lines iterator for given stream.
  */
-class lines_iterator: public generator_iterator<std::string> {
-public:
-  lines_iterator() = default;
+generator_iterator<std::string> lines_iterator(std::istream* stream) {
+  return generator_iterator<std::string>(new lines_generator(stream));
+}
 
-  lines_iterator(std::istream* stream):
-      generator_iterator(new lines_generator(stream)) { }
-};
+/**
+ * Builds 'end' lines iterator.
+ */
+generator_iterator<std::string> lines_iterator() {
+  return generator_iterator<std::string>();
+}
 
 /**
  * Returns range of lines_iterator to iterate over all lines in stream.
  */
-iterator_range<lines_iterator> iterate_lines(std::istream& stream) {
+iterator_range<generator_iterator<std::string>> iterate_lines(std::istream& stream) {
   return make_range(lines_iterator(&stream), lines_iterator());
 }
 
