@@ -117,6 +117,14 @@ public:
   friend bool operator>=(const self_type& lhs, const self_type& rhs) {
     return rhs <= lhs;
   }
+
+  const Helper& getHelper() const {
+    return helper_;
+  }
+
+  Helper& getHelper() {
+    return helper_;
+  }
   
 private:
   Helper helper_;

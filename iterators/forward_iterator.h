@@ -51,6 +51,14 @@ public:
     return !(lhs == rhs);
   }
 
+  const Helper& getHelper() const {
+    return helper_;
+  }
+
+  Helper& getHelper() {
+    return helper_;
+  }
+
 private:
   Helper helper_;
 };
