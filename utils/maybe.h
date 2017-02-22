@@ -6,7 +6,9 @@
 
 namespace lib {
 
-struct Nothing_t { };
+struct Nothing_t {
+  constexpr Nothing_t() { };
+};
 
 /**
  * Haskell-like Nothing.

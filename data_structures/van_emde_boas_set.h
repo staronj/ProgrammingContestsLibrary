@@ -516,11 +516,11 @@ private:
   static constexpr const char kOutOfRange[] = "VanEmdeBoasSet: outOfRange";
   static constexpr const char kIllegalOperation[] = "VanEmdeBoasSet: illegalOperation";
 
-  void outOfRange() const {
+  [[ noreturn ]] void outOfRange() const {
     throw std::out_of_range(kOutOfRange);
   }
 
-  void illegalOperation() const {
+  [[ noreturn ]] void illegalOperation() const {
     throw std::runtime_error(kIllegalOperation);
   }
 
