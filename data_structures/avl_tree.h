@@ -273,15 +273,15 @@ T* last(T* node) {
  * constantly true on remaining suffix.
  */
 template<typename T, typename Predicate>
-T* find(T* node, Predicate predicate) {
-  while (node != nullptr && !predicate(node))
-    node = node->right();
+T* find(T* root, Predicate predicate) {
+  while (root != nullptr && !predicate(root))
+    root = root->right();
 
-  if (node == nullptr)
+  if (root == nullptr)
     return nullptr;
 
-  auto left = find(node->left(), predicate);
-  return (left != nullptr) ? left : node;
+  auto left = find(root->left(), predicate);
+  return (left != nullptr) ? left : root;
 }
 
 /**
@@ -334,35 +334,29 @@ T* balance_to_root(T* node) {
 
 /**
  * Performs insert on tree.
- * Inserts node before the first node for
- * which predicate is true.
+ * Inserts new_node before the 'where' node.
  *
- * If predicate is always false then inserted node
- * will be the last node.
- *
- * predicate should be function that is monotonic, ie
- * is constantly false on (possibly empty) prefix and then
- * constantly true on remaining suffix.
+ * If 'where' node is null then inserts new_node as
+ * last element of the tree.
  *
  * New node should be pointer to newly created node.
  */
-template<typename T, typename Predicate>
-T* insert(T* node, T* new_node, Predicate predicate) {
-  if (node == nullptr)
+template<typename T>
+T* insert(T* root, T* where, T* new_node) {
+  if (root == nullptr)
     return new_node;
-
-  auto found = find(node, predicate);
-  if (found == nullptr) {
-    found = last(node);
-    link(found, new_node, side_type::right);
+  
+  if (where == nullptr) {
+    where = last(root);
+    link(where, new_node, side_type::right);
   }
   else {
-    if (found->left() == nullptr) {
-      link(found, new_node, side_type::left);
+    if (where->left() == nullptr) {
+      link(where, new_node, side_type::left);
     }
     else {
-      found = last(found->left());
-      link(found, new_node, side_type::right);
+      where = last(where->left());
+      link(where, new_node, side_type::right);
     }
   }
   return balance_to_root(new_node);
@@ -466,11 +460,11 @@ T* prev_inorder(T* node) {
  * Node should not be null.
  */
 template<typename T>
-void destroy_tree(T*& node) {
+void destroy_tree(T*& root) {
   using node_pointer = T*;
 
-  assert(node != nullptr);
-  assert(node->side() == side_type::root);
+  assert(root != nullptr);
+  assert(root->side() == side_type::root);
 
   /**
    * For given subtree returns first node in
@@ -503,14 +497,14 @@ void destroy_tree(T*& node) {
       return n->parent();
   };
 
-  node = first_preorder(node);
-  while (node != nullptr) {
-    auto tmp = node;
-    node = next_postorder(node);
+  root = first_preorder(root);
+  while (root != nullptr) {
+    auto tmp = root;
+    root = next_postorder(root);
 
     delete tmp;
   }
-  assert(node == nullptr);
+  assert(root == nullptr);
 }
 
 
@@ -548,16 +542,17 @@ void DummyNode::update() {
 /**
  * Returns node which is lower_bound for given value.
  */
-DummyNode::node_pointer lower_bound(DummyNode::node_pointer node, DummyNode::value_type value) {
-  return find(node, [value](DummyNode::node_pointer node) {
+DummyNode::node_pointer lower_bound(DummyNode::node_pointer root, DummyNode::value_type value) {
+  return find(root, [value](DummyNode::node_pointer node) {
     return node->value() >= value;
   });
 }
 
-DummyNode::node_pointer insert(DummyNode::node_pointer node, DummyNode::value_type k) {
-  return insert(node, new DummyNode(k), [k](DummyNode::node_pointer n) {
+DummyNode::node_pointer insert(DummyNode::node_pointer root, DummyNode::value_type k) {
+  auto found = find(root, [k](DummyNode::node_pointer n) {
     return n->value() > k;
   });
+  return insert(root, found, new DummyNode(k));
 }
 
 } // namespace avl
