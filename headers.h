@@ -62,6 +62,41 @@ uint64 Random64() {
   return uint64(Random32()) << 32 | uint64(Random32());
 }
 
+/**
+ * Returns random number from range [0, n).
+ */
+uint32 Random32(uint32 n) {
+  return Random32() % n;
+}
+
+/**
+ * Returns random number from range [a, b).
+ *
+ * a must be strictly less than b.
+ */
+uint32 Random32(uint32 a, uint32 b) {
+  assert(a < b);
+  return (Random32() % (b - a)) + a;
+}
+
+/**
+ * Returns random number from range [0, n).
+ */
+uint64 Random64(uint64 n) {
+  return Random64() % n;
+}
+
+/**
+ * Returns random number from range [a, b).
+ *
+ * a must be strictly less than b.
+ */
+uint64 Random64(uint64 a, uint64 b) {
+  assert(a < b);
+  return (Random64() % (b - a)) + a;
+}
+
+
 #ifdef __SIZEOF_INT128__
 #define HAVE_INT128_TYPES
 #endif
