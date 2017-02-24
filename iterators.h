@@ -6,6 +6,7 @@
 #include "iterators/is_iterator.h"
 #include "iterators/input_iterator.h"
 #include "iterators/random_access_iterator.h"
+#include "utils/maybe.h"
 
 namespace lib {
 
@@ -444,14 +445,9 @@ public:
   /**
    * Generates new value and returns it.
    *
-   * If there is no next value behaviour is undefined.
+   * If there is no next value returns Nothing.
    */
-  virtual value_type next() = 0;
-
-  /**
-   * Returns true if generator can generate new value.
-   */
-  virtual bool hasNext() = 0;
+  virtual Maybe<value_type> next() = 0;
 };
 
 namespace detail {
@@ -477,8 +473,9 @@ struct generator_iterator_helper {
   }
   
   void next() {
-    if (generator_->hasNext())
-      value_ = generator_->next();
+    auto value = generator_->next();
+    if (value != Nothing)
+      value_ = value.get();
     else
       generator_.reset();
   }

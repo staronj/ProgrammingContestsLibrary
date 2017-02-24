@@ -15,8 +15,11 @@ public:
   fibonacci_generator(uint32 N):
       F1(0), F2(1), I(N) { }
 
-  value_type next() final {
+  Maybe<value_type> next() final {
     I--;
+
+    if (I <= 0)
+      return Nothing;
 
     uint64 T = F2;
     F2 = F1 + F2;
@@ -25,14 +28,10 @@ public:
     return F2;
   }
 
-  bool hasNext() final {
-    return I != 0;
-  }
-
 private:
   uint64 F1;
   uint64 F2;
-  uint32 I;
+  int32 I;
 };
 
 constexpr uint32 kNumberOfIterations = 100;

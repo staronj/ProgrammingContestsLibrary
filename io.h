@@ -440,16 +440,11 @@ public:
   lines_generator(std::istream* stream):
       stream_(stream) { }
 
-  value_type next() final {
+  Maybe<value_type> next() final {
     if (!stream_->good())
-      throw std::ios::failure("lines_generator - stream in invalid state after line read.");
-    else
-      std::getline(*stream_, line_);
+      return Nothing;
+    std::getline(*stream_, line_);
     return line_;
-  }
-
-  bool hasNext() final {
-    return !stream_->eof();
   }
 
 private:
