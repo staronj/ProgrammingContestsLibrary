@@ -467,10 +467,6 @@ struct generator_iterator_helper {
   using difference_type = std::ptrdiff_t;
 
   generator_iterator_helper() = default;
-  generator_iterator_helper(generator_iterator_helper&&) = default;
-  generator_iterator_helper(const generator_iterator_helper&) = default;
-  generator_iterator_helper& operator=(const generator_iterator_helper&) = default;
-  generator_iterator_helper& operator=(generator_iterator_helper&&) = default;
 
   generator_iterator_helper(generator_type* generator):
     generator_iterator_helper(generator_pointer(generator)) { }

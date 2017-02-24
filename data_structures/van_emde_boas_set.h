@@ -4,6 +4,7 @@
 #include "headers.h"
 #include "operators.h"
 #include "numeric.h"
+#include "iterators/bidirectional_iterator.h"
 
 namespace lib {
 
@@ -410,91 +411,92 @@ public:
     return tree_->predecessor(n);
   }
 
-  template<class iterator_helper>
-  class basic_iterator {
-  public:
-    using self_type = basic_iterator;
+  struct forward_iterator_helper {
+    using self_type = forward_iterator_helper;
+    using container_type = VanEmdeBoasSet;
+    using container_pointer = const container_type*;
     using value_type = integer_type;
-    using reference = const value_type&;
+    using reference = value_type;
     using pointer = const value_type*;
     using difference_type = int64;
-    using iterator_category = std::bidirectional_iterator_tag;
-    using container_pointer = const VanEmdeBoasSet*;
 
-    basic_iterator(container_pointer container, value_type position) {
-      this->container = container;
-      this->position = position;
+    forward_iterator_helper(container_pointer container, value_type value) :
+        container_(container), value_(value) { }
+
+    void next() {
+      value_type last = container_->last();
+      if (value_ > last)
+        container_->illegalOperation();
+      else if (value_ == last)
+        value_ = container_type::kEnd;
+      else
+        value_ = container_->successor(value_);
     }
 
-    self_type& operator++() {
-      position = iterator_helper::increment(container, position);
-      return *this;
+    void prev() {
+      if (value_ <= container_->first())
+        container_->illegalOperation();
+      else
+        value_ = container_->predecessor(value_);
     }
 
-    self_type& operator--() {
-      position = iterator_helper::decrement(container, position);
-      return *this;
-    }
+    reference value() const { return value_; }
 
-    reference operator*() const {
-      return this->position;
-    }
+    pointer ptr() const { return &value_; }
 
-    friend bool operator==(const self_type& lhs, const self_type& rhs) {
-      return lhs.position == rhs.position;
+    bool equal(const self_type& other) const {
+      return value_ == other.value_;
     }
 
   private:
-    value_type position;
-    container_pointer container;
-  };
-
-  struct forward_iterator_helper {
-    using value_type = integer_type;
-    using tree_pointer = const VanEmdeBoasSet*;
-
-    static value_type increment(tree_pointer tree, value_type position) {
-      value_type last = tree->last();
-      if (position > last)
-        tree->illegalOperation();
-      else if (position == last)
-        return kEnd;
-      else
-        return tree->successor(position);
-    }
-
-    static value_type decrement(tree_pointer tree, value_type position) {
-      if (position <= tree->first())
-        tree->illegalOperation();
-      else
-        return tree->predecessor(position);
-    }
+    value_type value_;
+    container_pointer container_;
   };
 
   struct reverse_iterator_helper {
+    using self_type = reverse_iterator_helper;
+    using container_type = VanEmdeBoasSet;
+    using container_pointer = const container_type*;
     using value_type = integer_type;
-    using tree_pointer = const VanEmdeBoasSet*;
+    using reference = value_type;
+    using pointer = const value_type*;
+    using difference_type = int64;
 
-    static value_type increment(tree_pointer tree, value_type position) {
-      value_type first = tree->first();
-      if (position == kEnd || position < first)
-        tree->illegalOperation();
-      else if (position == first)
-        return kEnd;
+    reverse_iterator_helper(container_pointer container, value_type value) :
+      container_(container), value_(value) { }
+
+    void next() {
+      value_type first = container_->first();
+      if (value_ == kEnd || value_ < first)
+        container_->illegalOperation();
+      else if (value_ == first)
+        value_ = kEnd;
       else
-        return tree->predecessor(position);
+        value_ = container_->predecessor(value_);
     }
 
-    static value_type decrement(tree_pointer tree, value_type position) {
-      if (position >= tree->last())
-        tree->illegalOperation();
+    void prev() {
+      if (value_ >= container_->last())
+        container_->illegalOperation();
       else
-        return tree->successor(position);
+        value_ = container_->successor(value_);
     }
+
+    reference value() const { return value_; }
+
+    pointer ptr() const { return &value_; }
+
+    bool equal(const self_type& other) const {
+      return value_ == other.value_;
+    }
+
+  private:
+    value_type value_;
+    container_pointer container_;
   };
 
-  using iterator = basic_iterator<forward_iterator_helper>;
-  using reverse_iterator = basic_iterator<reverse_iterator_helper>;
+  using iterator = bidirectional_iterator<forward_iterator_helper>;
+  using reverse_iterator = bidirectional_iterator<reverse_iterator_helper>;
 
   iterator begin() const {
     return empty() ? end() : iterator(this, first());
