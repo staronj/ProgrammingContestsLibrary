@@ -125,6 +125,31 @@ BOOST_AUTO_TEST_CASE(maximum_test) {
                       }
     );
     BOOST_CHECK_EQUAL(*it.first, 2);
+    BOOST_CHECK_EQUAL(it.second, 8);
+  }
+
+  {
+    std::vector<uint32> values = {1};
+    auto it = Maximum(counting_iterator<uint32>(0),
+                      counting_iterator<uint32>(values.size()),
+                      [&values](uint32 index) {
+                        return values[index];
+                      }
+    );
+    BOOST_CHECK_EQUAL(*it.first, 0);
+    BOOST_CHECK_EQUAL(it.second, 1);
+  }
+
+  {
+    std::vector<uint32> values = {9, 8, 7, 6};
+    auto it = Maximum(counting_iterator<uint32>(0),
+                      counting_iterator<uint32>(values.size()),
+                      [&values](uint32 index) {
+                        return values[index];
+                      }
+    );
+    BOOST_CHECK_EQUAL(*it.first, 0);
+    BOOST_CHECK_EQUAL(it.second, 9);
   }
 
   {
@@ -137,6 +162,7 @@ BOOST_AUTO_TEST_CASE(maximum_test) {
                       std::greater<uint32>()
     );
     BOOST_CHECK_EQUAL(*it.first, 1);
+    BOOST_CHECK_EQUAL(it.second, 0);
   }
 
   {

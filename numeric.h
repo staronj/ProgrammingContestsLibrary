@@ -178,26 +178,23 @@ std::vector<ValueType> PrefixSums(Iterator begin, Iterator end) {
 }
 
 /**
- * Returns position of element with maximum value and value.
+ * Returns position of element with maximum value and correspoding value.
  *
- * Takes range of iterators, function,
- * default value and comparator for function results.
+ * Takes range of iterators, function and
+ * comparator for function results.
  *
- * If range is empty or no value was greater than
- * default value, returns pair (default_value, end)
+ * Function must take decltype(*begin) and returns value_type.
+ * Comparator must be able to compare two values of type value_type.
  *
  * Returns position of first element for which value
  * of function is the biggest.
  */
 template <typename Iterator, typename Function, typename Comparator>
-auto MaximumOrDefault(Iterator begin, Iterator end,
-                      Function function,
-                      decltype(function(*begin)) defaultValue,
-                      Comparator comparator) ->
+auto Maximum(Iterator begin, Iterator end, Function function, Comparator comparator) ->
 std::pair<Iterator, decltype(function(*begin))> {
-  auto biggestValue = defaultValue;
-  auto biggestPosition = end;
-  for (auto it = begin; it != end; ++it) {
+  auto biggestValue = function(*begin);
+  auto biggestPosition = begin;
+  for (auto it = std::next(begin); it != end; ++it) {
     auto value = function(*it);
     if (comparator(biggestValue, value)) {
       biggestValue = value;
@@ -208,50 +205,13 @@ std::pair<Iterator, decltype(function(*begin))> {
 }
 
 /**
- * Returns position of element with maximum value and value.
- *
- * Takes range of iterators, function and default value.
- * Function result must be comparable.
- *
- * If range is empty or no value was greater than
- * default value, returns pair (default_value, end)
- *
- * Returns position of first element for which value
- * of function is the biggest.
- */
-template <typename Iterator, typename Function>
-auto MaximumOrDefault(Iterator begin, Iterator end,
-                      Function function,
-                      decltype(function(*begin)) defaultValue) ->
-std::pair<Iterator, decltype(function(*begin))> {
-  return MaximumOrDefault(std::move(begin),
-                          std::move(end),
-                          std::move(function),
-                          defaultValue,
-                          std::less<decltype(defaultValue)>());
-}
-
-/**
- * Returns position of element with maximum value and value.
- *
- * Takes range of iterators, function and
- * comparator for function results.
- *
- * Returns position of first element for which value
- * of function is the biggest.
- */
-template <typename Iterator, typename Function, typename Comparator>
-auto Maximum(Iterator begin, Iterator end, Function function, Comparator comparator) ->
-std::pair<Iterator, decltype(function(*begin))> {
-  auto value = function(*begin);
-  return MaximumOrDefault(std::next(begin), end, function, value, comparator);
-}
-
-/**
- * Returns position of element with maximum value.
+ * Returns position of element with maximum value and correspoding value.
  *
  * Takes range of iterators and function.
  * Function result must be comparable.
+ *
+ * Function must take decltype(*begin) and returns value_type.
+ * Comparator must be able to compare two values of type value_type.
  *
  * Returns position of first element for which value
  * of function is the biggest.
