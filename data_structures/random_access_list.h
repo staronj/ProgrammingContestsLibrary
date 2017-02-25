@@ -523,6 +523,27 @@ public:
     std::swap(root_, other.root_);
   }
 
+  /**
+   * Performs binary search on the list.
+   *
+   * Returns iterator to first element for which predicate
+   * is true or end() if is always false.
+   *
+   * predicate must be monotonic,
+   * i.e. must be constantly false on (possibly empty) prefix
+   * and then constantly true on remaining suffix.
+   *
+   * predicate must have signature bool(const_reference).
+   */
+  template<typename Predicate>
+  iterator find(Predicate predicate) const {
+    auto avl_predicate = [&predicate](node_pointer node) {
+      return predicate(node->value());
+    };
+    auto node = avl::find(root_, avl_predicate);
+    return iterator(node, this);
+  }
+
 private:
   node_pointer GoAtIndex(size_type index) const {
     assert(index <= size());

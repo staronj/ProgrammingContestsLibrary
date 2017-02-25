@@ -169,4 +169,43 @@ BOOST_AUTO_TEST_CASE(swap) {
   BOOST_CHECK_EQUAL(list2.size(), 3);
 }
 
+BOOST_AUTO_TEST_CASE(find) {
+  auto AlwaysFalse = [](const int&) { return false; };
+  auto AlwaysTrue = [](const int&) { return true; };
+
+  {
+    RandomAccessList<int> list;
+    BOOST_CHECK(list.find(AlwaysFalse) == list.end());
+    BOOST_CHECK(list.find(AlwaysTrue) == list.end());
+  }
+
+  {
+    RandomAccessList<int> list = {1};
+    BOOST_CHECK(list.find(AlwaysFalse) == list.end());
+    BOOST_CHECK(list.find(AlwaysTrue) == list.begin());
+  }
+
+  {
+    RandomAccessList<int> list = {1, 2};
+    BOOST_CHECK(list.find(AlwaysFalse) == list.end());
+    BOOST_CHECK(list.find(AlwaysTrue) == list.begin());
+
+    auto FindTwo = [](const int& i) { return i > 1; };
+    BOOST_CHECK(list.find(FindTwo) == list.begin() + 1);
+  }
+
+  {
+    constexpr auto size = 10 * 1000;
+    RandomAccessList<int> list(counting_iterator<int>(0), counting_iterator<int>(size));
+
+    BOOST_CHECK(list.find(AlwaysFalse) == list.end());
+    BOOST_CHECK(list.find(AlwaysTrue) == list.begin());
+
+    for (auto i: range<int>(0, size)) {
+      auto FindI = [i](const int& j) { return j >= i; };
+      BOOST_CHECK(list.find(FindI) == list.begin() + i);
+    }
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

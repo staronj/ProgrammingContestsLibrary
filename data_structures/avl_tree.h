@@ -268,9 +268,11 @@ T* last(T* node) {
  * Returns first element for which predicate is true
  * or nullptr if is always false.
  *
- * predicate should be function that is monotonic, ie
- * is constantly false on (possibly empty) prefix and then
- * constantly true on remaining suffix.
+ * predicate must be monotonic,
+ * i.e. must be constantly false on (possibly empty) prefix
+ * and then constantly true on remaining suffix.
+ *
+ * predicate must take T* type and return boolean value
  */
 template<typename T, typename Predicate>
 T* find(T* root, Predicate predicate) {
