@@ -130,34 +130,86 @@ public:
   using iterator = random_access_iterator<iterator_helper<value_type>>;
   using const_iterator = random_access_iterator<iterator_helper<const value_type>>;
 
+  /**
+   * Construct new, empty list.
+   *
+   * Time complexity O(1).
+   */
   RandomAccessList() = default;
 
+  /**
+   * Constructs new list with elements from range [begin, end).
+   *
+   * Denote (end - begin) by n.
+   * Time complexity O(n log n).
+   */
   template<class InputIt>
-  RandomAccessList(InputIt first, InputIt last) {
-    assign(first, last);
+  RandomAccessList(InputIt begin, InputIt end) {
+    assign(begin, end);
   }
 
+  /**
+   * Constructs new list with elements from other list.
+   *
+   * Denote other.size() by n.
+   * Time complexity O(n log n).
+   */
   RandomAccessList(const RandomAccessList& other) {
     operator=(other);
   }
 
+  /**
+   * Constructs new list from rvalue of other list.
+   *
+   * The other list becomes empty as a result.
+   *
+   * Time complexity O(1).
+   */
   RandomAccessList(RandomAccessList&& other) {
     operator=(std::move(other));
   }
 
+  /**
+   * Constructs new list from initializer list.
+   *
+   * Denote init.size() by n.
+   * Time complexity O(n log n).
+   */
   RandomAccessList(std::initializer_list<value_type> init) {
     assign(init);
   }
 
+  /**
+   * Destroys list.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(n).
+   */
   ~RandomAccessList() {
     clear();
   }
 
+  /**
+   * Assigns one list into another.
+   *
+   * Returns reference to lhs.
+   *
+   * Denote list.size() by n and other.size() by m.
+   * Time complexity O(n + m log m).
+   */
   RandomAccessList& operator=(RandomAccessList& other) {
     assign(other.begin(), other.end());
     return *this;
   }
 
+  /**
+   * Moves one list into another.
+   *
+   * The other list becomes empty as a result.
+   * Returns reference to lhs.
+   *
+   * Time complexity O(1).
+   */
   RandomAccessList& operator=(RandomAccessList&& other) {
     clear();
     root_ = other.root_;
@@ -165,11 +217,23 @@ public:
     return *this;
   }
 
+  /**
+   * Assigns elements from initializer list into list.
+   *
+   * Denote list.size() by n and ilist.size() by m.
+   * Time complexity O(n + m log m).
+   */
   RandomAccessList& operator=(std::initializer_list<value_type> ilist) {
     assign(ilist);
     return *this;
   }
 
+  /**
+   * Assigns elements from range [begin, end) into list.
+   *
+   * Denote (end - begin) by n.
+   * Time complexity O(n log n).
+   */
   template< class InputIt >
   void assign(InputIt first, InputIt last) {
     clear();
@@ -177,40 +241,100 @@ public:
       push_back(value);
   }
 
+  /**
+   * Assigns elements from initializer list into list.
+   *
+   * Denote list.size() by n and ilist.size() by m.
+   * Time complexity O(n + m log m).
+   */
   void assign(std::initializer_list<value_type> ilist) {
     assign(ilist.begin(), ilist.end());
   }
 
+  /**
+   * Returns reference to the first element of the list.
+   *
+   * List must not be empty.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   reference front() {
     assert(!empty());
     return avl::first(root_)->value();
   }
 
+  /**
+   * Returns const reference to the first element of the list.
+   *
+   * List must not be empty.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   const_reference front() const {
     assert(!empty());
     return avl::first(root_)->value();
   }
 
+  /**
+   * Returns reference to the last element of the list.
+   *
+   * List must not be empty.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   reference back() {
     assert(!empty());
     return avl::last(root_)->value();
   }
 
+  /**
+   * Returns const reference to the last element of the list.
+   *
+   * List must not be empty.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   const_reference back() const {
     assert(!empty());
     return avl::last(root_)->value();
   }
 
+  /**
+   * Returns reference to element at position pos.
+   *
+   * Denote list.size() by n.
+   *
+   * pos must satisfy 0 <= pos < n.
+   * Time complexity O(log n).
+   */
   reference operator[](size_type pos) {
     auto node = GoAtIndex(pos);
     return node->value();
   }
 
+  /**
+   * Returns const reference to element at position pos.
+   *
+   * Denote list.size() by n.
+   *
+   * pos must satisfy 0 <= pos < n.
+   * Time complexity O(log n).
+   */
   const_reference operator[](size_type pos) const {
     auto node = GoAtIndex(pos);
     return node->value();
   }
 
+  /**
+   * Returns iterator to the first element of the list.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   iterator begin() {
     if (empty())
       return end();
@@ -218,6 +342,12 @@ public:
       return iterator(avl::first(root_), this);
   }
 
+  /**
+   * Returns const iterator to the first element of the list.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   const_iterator begin() const {
     if (empty())
       return end();
@@ -225,27 +355,63 @@ public:
       return const_iterator(avl::first(root_), this);
   }
 
+  /**
+   * Returns iterator to the first position after last element of the list.
+   *
+   * Time complexity O(1).
+   */
   iterator end() {
     return iterator(nullptr, this);
   }
 
+  /**
+   * Returns const iterator to the first position after last element of the list.
+   *
+   * Time complexity O(1).
+   */
   const_iterator end() const {
     return const_iterator(nullptr, this);
   }
 
+  /**
+   * Checks if the list has no elements.
+   *
+   * Time complexity O(1).
+   */
   bool empty() const {
     return (root_ == nullptr);
   }
 
+  /**
+   * Returns the number of elements stored in list.
+   *
+   * Time complexity O(1).
+   */
   size_type size() const {
     return (root_ != nullptr)? ListNode::size(root_) : 0;
   }
 
+  /**
+   * Removes all elements stored in list.
+   *
+   * List becomes empty.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   void clear() {
     if (root_ != nullptr)
       avl::destroy_tree(root_);
   }
 
+  /**
+   * Inserts new node before node pointed by iterator pos.
+   *
+   * Returns iterator to newly created list node.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   iterator insert(iterator pos, value_type value) {
     auto where = pos.getHelper().node_;
     auto new_node = new ListNode(std::move(value));
@@ -253,11 +419,27 @@ public:
     return iterator(new_node, this);
   }
 
+  /**
+   * Inserts new node before node pointed by iterator pos.
+   *
+   * Returns iterator to newly created list node.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   template<class... Args>
   iterator emplace(iterator pos, Args&&... args) {
     return insert(pos, value_type(std::forward<Args>(args)...));
   }
 
+  /**
+   * Removes node pointed by iterator pos.
+   *
+   * Returns iterator to subsequent node.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   iterator erase(iterator pos) {
     assert(pos != end());
     auto next = std::next(pos);
@@ -266,32 +448,77 @@ public:
     return next;
   }
 
+  /**
+   * Inserts node at the end of the list.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   void push_back(value_type value) {
     insert(end(), value);
   }
 
+  /**
+   * Inserts node at the end of the list.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   template<class... Args>
   void emplace_back(Args&&... args) {
     push_back(value_type(std::forward<Args>(args)...));
   }
 
+  /**
+   * Removes the last node of the list.
+   *
+   * List must not be empty.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   void pop_back() {
     erase(std::prev(end()));
   }
 
+  /**
+   * Inserts node at the begin of the list.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   void push_front(value_type value) {
     insert(begin(), value);
   }
 
+  /**
+   * Inserts node at the begin of the list.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   template<class... Args>
   void emplace_front(Args&&... args) {
     push_front(value_type(std::forward<Args>(args)...));
   }
 
+  /**
+   * Removes the first node of the list.
+   *
+   * List must not be empty.
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
   void pop_front() {
     erase(begin());
   }
 
+  /**
+   * Swappes two lists.
+   *
+   * Time complexity O(1).
+   */
   void swap(RandomAccessList& other) {
     std::swap(root_, other.root_);
   }
