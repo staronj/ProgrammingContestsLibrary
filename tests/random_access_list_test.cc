@@ -136,6 +136,22 @@ BOOST_AUTO_TEST_CASE(pop) {
 }
 
 BOOST_AUTO_TEST_CASE(erase) {
+  {
+    RandomAccessList<int> list = {1};
+    BOOST_CHECK(list.erase(list.begin()) == list.end());
+  }
+
+  {
+    RandomAccessList<int> list = {1, 2};
+    BOOST_CHECK(list.erase(list.begin() + 1) == list.end());
+  }
+
+  {
+    RandomAccessList<int> list = {1, 2};
+    auto it = list.begin() + 1;
+    BOOST_CHECK(list.erase(list.begin()) == it);
+  }
+
   auto predicate = [](int k) {
     return (k % 3 == 0) != (k % 5 == 0);
   };
