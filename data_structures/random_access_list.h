@@ -106,14 +106,27 @@ private:
       else if (diff == -1)
         prev();
       else if (diff != 0) {
-        auto index = container_->CalculateIndex(node_);
-        node_ = container_->GoAtIndex(index + diff);
+        // We want to find the node without going up to root.
+        // First, we find such ancestor that have the wanted node
+        // inside.
+        // Next, we find the wanted node in that subtree.
+
+        diff += ListNode::size(node_->left());
+        while (node_->side() != avl::side_type::root &&
+               (diff < 0 || ListNode::size(node_) <= diff)) {
+          auto side = node_->side();
+          node_ = node_->parent();
+          if (side == avl::side_type::right)
+            diff += ListNode::size(node_->left()) + 1;
+        }
+        assert(diff >= 0);
+        node_ = RandomAccessList::nth_in_subtree(node_, diff);
       }
     }
 
     difference_type difference(const self_type& other) const {
-      difference_type lhs = container_->CalculateIndex(node_);
-      difference_type rhs = container_->CalculateIndex(other.node_);
+      difference_type lhs = container_->index_of(node_);
+      difference_type rhs = container_->index_of(other.node_);
       return lhs - rhs;
     }
 
@@ -312,7 +325,7 @@ public:
    * Time complexity O(log n).
    */
   reference operator[](size_type pos) {
-    auto node = GoAtIndex(pos);
+    auto node = nth_in_subtree(root_, pos);
     return node->value();
   }
 
@@ -325,7 +338,7 @@ public:
    * Time complexity O(log n).
    */
   const_reference operator[](size_type pos) const {
-    auto node = GoAtIndex(pos);
+    auto node = nth_in_subtree(root_, pos);
     return node->value();
   }
 
@@ -544,30 +557,53 @@ public:
     return iterator(node, this);
   }
 
+  /**
+   * Returns index of node pointed by iterator.
+   *
+   * Equivalent to (pos - list.begin()).
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
+  size_type index_of(iterator pos) const {
+    return index_of(pos.getHelper().node_);
+  }
+
+  /**
+   * Returns index of node pointed by iterator.
+   *
+   * Equivalent to (pos - list.begin()).
+   *
+   * Denote list.size() by n.
+   * Time complexity O(log n).
+   */
+  size_type index_of(const_iterator pos) const {
+    return index_of(pos.getHelper().node_);
+  }
+
 private:
-  node_pointer GoAtIndex(size_type index) const {
-    assert(index <= size());
-    if (index == size())
+  static node_pointer nth_in_subtree(node_pointer root, size_type index) {
+    assert(index <= ListNode::size(root));
+    if (index == ListNode::size(root))
       return nullptr;
 
-    auto node = root_;
     while (index > 0) {
-      auto size = ListNode::size(node->left());
+      auto size = ListNode::size(root->left());
       if (index < size) {
-        node = node->left();
+        root = root->left();
       }
       else if (index > size) {
-        node = node->right();
+        root = root->right();
         index -= size + 1;
       }
       else {
-        return node;
+        return root;
       }
     }
-    return avl::first(node);
+    return avl::first(root);
   }
 
-  size_type CalculateIndex(node_pointer node) const {
+  size_type index_of(node_pointer node) const {
     if (node == nullptr)
       return size();
 

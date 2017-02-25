@@ -127,3 +127,12 @@ BENCHMARK_F(Iteration, RAListHalf, SearchFixture, samples, 2 * iterations)
   }
   celero::DoNotOptimizeAway(sum);
 }
+
+BENCHMARK_F(Iteration, RAListTenth, SearchFixture, samples, 2 * iterations)
+{
+  uint64 sum = 0;
+  for (auto it = randomAccessList.begin(); it != randomAccessList.end(); it += 10) {
+    sum += *it;
+  }
+  celero::DoNotOptimizeAway(sum);
+}

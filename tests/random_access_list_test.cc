@@ -84,6 +84,7 @@ BOOST_AUTO_TEST_CASE(construction) {
       BOOST_CHECK_EQUAL(*it, i);
       BOOST_CHECK_EQUAL(list[i], i);
       BOOST_CHECK_EQUAL(*(list.begin() + i), i);
+      BOOST_CHECK(it + (size - i) == list.end());
       it++;
     }
     BOOST_CHECK_EQUAL(it == list.end(), true);
@@ -222,6 +223,22 @@ BOOST_AUTO_TEST_CASE(find) {
       BOOST_CHECK(list.find(FindI) == list.begin() + i);
     }
   }
+}
+
+BOOST_AUTO_TEST_CASE(index_of) {
+  RandomAccessList<int> list;
+  BOOST_CHECK_EQUAL(list.index_of(list.begin()), 0);
+  BOOST_CHECK_EQUAL(list.index_of(list.end()), 0);
+
+  list = {1, 2, 3};
+  BOOST_CHECK_EQUAL(list.index_of(list.begin()), 0);
+  BOOST_CHECK_EQUAL(list.index_of(list.begin() + 2), 2);
+  BOOST_CHECK_EQUAL(list.index_of(list.end()), 3);
+
+  auto it = list.begin() + 1;
+  BOOST_CHECK_EQUAL(list.index_of(it), 1);
+  list.push_front(0);
+  BOOST_CHECK_EQUAL(list.index_of(it), 2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
