@@ -82,6 +82,7 @@ BOOST_AUTO_TEST_CASE(construction) {
     auto it = list.begin();
     for (auto i: range<int>(0, size)) {
       BOOST_CHECK_EQUAL(*it, i);
+      BOOST_CHECK_EQUAL(it[0], i);
       BOOST_CHECK_EQUAL(list[i], i);
       BOOST_CHECK_EQUAL(*(list.begin() + i), i);
       BOOST_CHECK(it + (size - i) == list.end());
