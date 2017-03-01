@@ -101,25 +101,34 @@ private:
     }
 
     void advance(difference_type diff) {
-      if (diff == 1)
+      if (diff == 1) {
         next();
-      else if (diff == -1)
+      }
+      else if (diff == -1) {
         prev();
+      }
       else if (diff != 0) {
-        // We want to find the node without going up to root.
-        // First, we find such ancestor that have the wanted node
-        // inside.
-        // Next, we find the wanted node in that subtree.
+        if (node_ != nullptr) {
+          // We want to find the node without going up to root.
+          // First, we find such ancestor that have the wanted node
+          // inside.
+          // Next, we find the wanted node in that subtree.
 
-        diff += ListNode::size(node_->left());
-        while (node_->side() != avl::side_type::root &&
-               (diff < 0 || ListNode::size(node_) <= diff)) {
-          auto side = node_->side();
-          node_ = node_->parent();
-          if (side == avl::side_type::right)
-            diff += ListNode::size(node_->left()) + 1;
+          diff += ListNode::size(node_->left());
+          while (node_->side() != avl::side_type::root &&
+                 (diff < 0 || ListNode::size(node_) <= diff)) {
+            auto side = node_->side();
+            node_ = node_->parent();
+            if (side == avl::side_type::right)
+              diff += ListNode::size(node_->left()) + 1;
+          }
         }
-        assert(diff >= 0);
+        else {
+          node_ = container_->root_;
+          diff += container_->size();
+        }
+
+        assert(0 <= diff && diff <= container_->size());
         node_ = RandomAccessList::nth_in_subtree(node_, diff);
       }
     }
