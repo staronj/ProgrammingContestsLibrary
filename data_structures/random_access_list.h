@@ -590,6 +590,36 @@ public:
     return index_of(pos.getHelper().node_);
   }
 
+  /**
+   * Returns iterator to element at position pos.
+   *
+   * Equivalent to list.begin() + pos, but could be
+   * faster.
+   * Denote list.size() by n.
+   *
+   * pos must satisfy 0 <= pos < n.
+   * Time complexity O(log n).
+   */
+  iterator iterator_to(size_type pos) {
+    auto node = nth_in_subtree(root_, pos);
+    return iterator(node, this);
+  }
+
+  /**
+   * Returns iterator to element at position pos.
+   *
+   * Equivalent to list.begin() + pos, but could be
+   * faster.
+   * Denote list.size() by n.
+   *
+   * pos must satisfy 0 <= pos < n.
+   * Time complexity O(log n).
+   */
+  const_iterator iterator_to(size_type pos) const {
+    auto node = nth_in_subtree(root_, pos);
+    return const_iterator(node, this);
+  }
+
 private:
   static node_pointer nth_in_subtree(node_pointer root, size_type index) {
     assert(index <= ListNode::size(root));
