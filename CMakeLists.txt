@@ -56,12 +56,17 @@ foreach(BENCHMARK ${BENCHMARK_LIST})
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY benchmarks/)
 endforeach(BENCHMARK)
 
-add_custom_command(OUTPUT
-        ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc
-        COMMAND
-        python include.py --input main.cc --output ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc
-        DEPENDS main.cc ${HEADERS_LIST} include.py
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
+function(flatten input output)
+    add_custom_command(OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/${output}
+            COMMAND
+            python include.py --input ${input} --output ${CMAKE_CURRENT_BINARY_DIR}/${output} --remove-comments
+            DEPENDS ${input} ${HEADERS_LIST} include.py
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+            )
+endfunction(flatten)
 
-add_executable(main ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc ${HEADERS_LIST})
+flatten(main.cc main_flat.cc)
+
+add_executable(main_flat ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc ${HEADERS_LIST})
+add_executable(main main.cc ${HEADERS_LIST})
