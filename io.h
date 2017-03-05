@@ -2,6 +2,7 @@
 // Jakub Staroń, 2016
 
 #include "iterators.h"
+#include "generators.h"
 
 namespace lib {
 
@@ -433,89 +434,55 @@ void read(std::istream& stream, Args&&... args) {
 }
 
 /**
- * Generator for reading lines from std::istream.
+ * Returns generator yielding lines from given stream.
  */
-class lines_generator: public generator<std::string> {
-public:
-  lines_generator(std::istream* stream):
-      stream_(stream) { }
-
-  Maybe<value_type> next() final {
-    if (!stream_->good())
+generator_handle<Generator<std::string>> Lines(std::istream& stream) {
+  return generate([&stream]() -> Maybe<std::string> {
+    if (!stream.good())
       return Nothing;
-    std::getline(*stream_, line_);
-    return line_;
-  }
-
-private:
-  std::istream* stream_;
-  std::string line_;
-};
-
-/**
- * Builds lines iterator for given stream.
- */
-generator_iterator<std::string> lines_iterator(std::istream* stream) {
-  return generator_iterator<std::string>(new lines_generator(stream));
+    std::string line;
+    std::getline(stream, line);
+    return line;
+  });
 }
 
 /**
- * Builds 'end' lines iterator.
- */
-generator_iterator<std::string> lines_iterator() {
-  return generator_iterator<std::string>();
-}
-
-/**
- * Returns range of lines_iterator to iterate over all lines in stream.
- */
-iterator_range<generator_iterator<std::string>> iterate_lines(std::istream& stream) {
-  return make_range(lines_iterator(&stream), lines_iterator());
-}
-
-/**
- * Helper class for reading elements to container from stream.
+ * Returns generator reading ginven number of
+ * values from given stream.
+ *
+ * Note that this call itself do not read values
+ * from stream (generator is lazy).
  *
  * Example:
  * <pre>
- * std::vector<int> v;
- * StreamReader<std::vector<int>> reader(100, v);
- * std::cin >> v; // reads 100 ints from std::cin and stores them in v
+ * // Reads 10 ints from std::cin and stores them in vector
+ * auto v = as_vector(ReadSequence<int>(std::cin, 10));
  * </pre>
  */
-template <typename Container>
-struct SequenceReader {
-  using size_type = uint32;
-  using value_type = typename Container::value_type;
-  using container_type = Container;
+template <typename ValueType>
+auto ReadSequence(std::istream& stream, uint32 count) ->
+generator_handle<Generator<ValueType>>
+{
+  class SequenceReader: public Generator<ValueType> {
+  public:
+    SequenceReader(std::istream& stream, uint32 count):
+        stream_(stream), count_(count) { }
 
-  SequenceReader(size_type count, container_type& container):
-      count_(count), container_(container) { }
+    Maybe<ValueType> next() final {
+      if (count_ == 0)
+        return Nothing;
 
-  friend std::istream& operator>>(std::istream& stream, SequenceReader reader) {
-    reader.container_.resize(reader.count_);
-    for (auto& elem: reader.container_)
-      stream >> elem;
-    return stream;
-  }
+      count_--;
+      ValueType value;
+      stream_ >> value;
+      return Just<ValueType>(value);
+    }
 
-private:
-  size_type count_;
-  container_type& container_;
-};
-
-/**
- * Helper function for reading sequence of elements to container.
- *
- * Example:
- * <pre>
- * std::vector<int> v;
- * std::cin >> ReadSequence(100, v); // reads 100 ints from std::cin and stores them in v
- * </pre>
- */
-template <typename Container>
-SequenceReader<Container> ReadSequence(uint32 count, Container& container) {
-  return {count, container};
+  private:
+    std::istream& stream_;
+    uint32 count_;
+  };
+  return detail::build_generator_handle<SequenceReader>(stream, count);
 }
 
 } // namespace lib

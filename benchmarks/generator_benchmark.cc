@@ -1,61 +1,35 @@
 // Jakub Staroń, 2016
 #include <celero/Celero.h>
 
-#include "iterators.h"
+#include "generators.h"
+#include "numeric.h"
 
 CELERO_MAIN
 
 using namespace lib;
 
 constexpr size_t samples = 100;
-constexpr size_t iterations = 100;
-
-class fibonacci_generator: public generator<uint32> {
-public:
-  fibonacci_generator(uint32 N):
-      F1(0), F2(1), I(N) { }
-
-  Maybe<value_type> next() final {
-    I--;
-
-    if (I <= 0)
-      return Nothing;
-
-    uint64 T = F2;
-    F2 = F1 + F2;
-    F1 = T;
-
-    return F2;
-  }
-
-private:
-  uint64 F1;
-  uint64 F2;
-  int32 I;
-};
-
-constexpr uint32 kNumberOfIterations = 100;
+constexpr size_t iterations = 1;
 
 BASELINE(IterateRange, Generator, samples, iterations)
 {
+  std::vector<uint64> v(counting_iterator<uint64>(0), counting_iterator<uint64>(Million));
+  auto generator = generate(v);
+  //generator = map(generator, [](uint64 i) { return i ^ (i + i); });
   uint64 sum = 0;
-  for (auto i: iterate_generator(new fibonacci_generator(kNumberOfIterations))) {
-    sum += i;
+  for (auto i: iterate(generator)) {
+    //sum += i;
+    sum += i ^ (i + i);
   }
   celero::DoNotOptimizeAway(sum);
 }
 
 BENCHMARK(IterateRange, Range, samples, iterations)
 {
+  std::vector<uint64> v(counting_iterator<uint64>(0), counting_iterator<uint64>(Million));
   uint64 sum = 0;
-  uint64 F1 = 0;
-  uint64 F2 = 1;
-  for (auto i: range<uint32>(0, kNumberOfIterations)) {
-    uint64 T = F2;
-    F2 = F1 + F2;
-    F1 = T;
-
-    sum += F2;
+  for (auto i: v) {
+    sum += i ^ (i + i);
   }
   celero::DoNotOptimizeAway(sum);
 }

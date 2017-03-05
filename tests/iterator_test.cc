@@ -1,9 +1,10 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "iterators.h"
+#include "io.h"
 #include "iterators/random_access_iterator.h"
 
 using namespace lib;
