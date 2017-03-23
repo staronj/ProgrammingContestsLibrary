@@ -77,7 +77,7 @@ public:
    */
   Maybe& operator=(const Maybe& other) {
     destroy();
-    if (other)
+    if (!other.empty())
       construct(other.get());
     return *this;
   }
@@ -88,7 +88,7 @@ public:
    * Moved maybe will be empty after that.
    */
   Maybe& operator=(Maybe&& other) {
-    if (other) {
+    if (!other.empty()) {
       construct(std::move(other.get()));
       other.destroy();
     }
@@ -100,13 +100,6 @@ public:
    */
   bool empty() const {
     return !initialized_;
-  }
-
-  /**
-   * Returns true if maybe stores a value.
-   */
-  operator bool() const {
-    return !empty();
   }
 
   /**
@@ -139,6 +132,13 @@ public:
 
   friend bool operator==(Nothing_t, const self_type& rhs) {
       return rhs.empty();
+  }
+
+  friend bool operator==(const self_type& lhs, const self_type& rhs) {
+    if (lhs.empty() || rhs.empty())
+      return lhs.empty() && rhs.empty();
+    else
+      return lhs.get() == rhs.get();
   }
   
   ~Maybe() {

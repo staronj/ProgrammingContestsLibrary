@@ -12,7 +12,6 @@ BOOST_AUTO_TEST_SUITE(maybe_suite)
 BOOST_AUTO_TEST_CASE(empty_maybe_test) {
   Maybe<std::string> maybe;
   BOOST_CHECK(maybe.empty());
-  BOOST_CHECK(!maybe);
   BOOST_CHECK(maybe == Nothing);
   BOOST_CHECK(Nothing == maybe);
   BOOST_CHECK_THROW(maybe.get(), std::exception);
@@ -21,7 +20,6 @@ BOOST_AUTO_TEST_CASE(empty_maybe_test) {
 BOOST_AUTO_TEST_CASE(initialization_by_value_test) {
   Maybe<std::string> maybe("42");
   BOOST_CHECK(!maybe.empty());
-  BOOST_CHECK(maybe);
   BOOST_CHECK(maybe != Nothing);
   BOOST_CHECK(Nothing != maybe);
   BOOST_CHECK_EQUAL(maybe.get(), "42");
@@ -48,7 +46,6 @@ BOOST_AUTO_TEST_CASE(assign_value_test) {
   Maybe<std::string> maybe;
   maybe = "42";
   BOOST_CHECK(!maybe.empty());
-  BOOST_CHECK(maybe);
   BOOST_CHECK_EQUAL(maybe.get(), "42");
 }
 
@@ -85,6 +82,23 @@ BOOST_AUTO_TEST_CASE(construct_from_nothing_in_lambda) {
     auto result2 = maybePositive(2);
     BOOST_CHECK(!result2.empty());
     BOOST_CHECK_EQUAL(result2.get(), 2);
+}
+
+BOOST_AUTO_TEST_CASE(equal) {
+  BOOST_CHECK_EQUAL(Maybe<int>(Nothing) == Maybe<int>(Nothing), true);
+  BOOST_CHECK_EQUAL(Maybe<int>(Nothing) != Maybe<int>(Nothing), false);
+
+  BOOST_CHECK_EQUAL(Maybe<int>(1) == Maybe<int>(Nothing), false);
+  BOOST_CHECK_EQUAL(Maybe<int>(1) != Maybe<int>(Nothing), true);
+
+  BOOST_CHECK_EQUAL(Maybe<int>(1) == Maybe<int>(1), true);
+  BOOST_CHECK_EQUAL(Maybe<int>(1) != Maybe<int>(1), false);
+
+  BOOST_CHECK_EQUAL(Just(1) == Just(1), true);
+  BOOST_CHECK_EQUAL(Just(1) != Just(1), false);
+
+  BOOST_CHECK_EQUAL(Just(1) == Just(2), false);
+  BOOST_CHECK_EQUAL(Just(1) != Just(2), true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
