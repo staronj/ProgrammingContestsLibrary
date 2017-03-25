@@ -35,7 +35,7 @@ uint64 NumberOfDivisors(uint64 N) {
       counts.push_back(1);
     }
     else {
-      uint64 sqrt = numeric::SquareFloor(N);
+      uint64 sqrt = SquareFloor(N);
       if (sqrt * sqrt == N) {
         counts.push_back(2);
       }
@@ -54,13 +54,14 @@ uint64 NumberOfDivisors(uint64 N) {
 
 int main() {
   std::ios::sync_with_stdio(false);
+
   uint32 T;
   read(std::cin, T);
-  for (auto t: range<uint32>(0, T)) {
-    uint64 N;
-    read(std::cin, N);
+  auto input = ReadSequence<uint32>(std::cin, T);
+  iterate(input, [](uint32 N) {
     print("%0", NumberOfDivisors(N));
-  }
+  });
   print("%0", lib::flush);
+
   return 0;
 }

@@ -47,11 +47,10 @@ public:
   }
 
   void Run() {
-    for(auto i: range<uint32>(0, T)) {
-      uint32 N;
-      read(std::cin, N);
+    auto input = ReadSequence<uint32>(std::cin, T);
+    iterate(input, [this](uint32 N) {
       print("%0", Result(N));
-    }
+    });
   }
 
   void LoadData() {

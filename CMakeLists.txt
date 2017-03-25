@@ -66,7 +66,18 @@ function(flatten input output)
             )
 endfunction(flatten)
 
+file(GLOB EXAMPLES_LIST
+        "examples/*.cc"
+)
+
+foreach(EXAMPLE ${EXAMPLES_LIST})
+    get_filename_component(NAME ${EXAMPLE} NAME_WE)
+    add_executable(${NAME} ${EXAMPLE} ${HEADERS_LIST})
+    set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY examples/)
+endforeach(EXAMPLE)
+
 flatten(main.cc main_flat.cc)
 
 add_executable(main_flat ${CMAKE_CURRENT_BINARY_DIR}/main_flat.cc ${HEADERS_LIST})
 add_executable(main main.cc ${HEADERS_LIST})
+

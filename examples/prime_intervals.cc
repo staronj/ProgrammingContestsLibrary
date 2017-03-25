@@ -10,7 +10,7 @@
 using namespace lib;
 
 constexpr uint32 kMaxN = 2147483647u;
-const uint32 kMaxPrimeNeeded = numeric::SquareFloor(kMaxN);
+const uint32 kMaxPrimeNeeded = SquareFloor(kMaxN);
 
 const auto primes = numeric::PrimeNumbers(kMaxPrimeNeeded + 1);
 
@@ -37,35 +37,17 @@ std::vector<uint32> PrimesInRange(uint32 begin, uint32 end) {
   return result;
 }
 
-
-class Application {
-public:
-  Application() { }
-
-  void Run() {
-    for(auto i: range<uint32>(0, T)) {
-      uint32 L, U;
-      read(std::cin, L, U);
-      const auto primes = PrimesInRange(L, U + 1);
-      for (auto p: primes)
-        print("%0", p);
-    }
-  }
-
-  void LoadData() {
-    read(std::cin, T);
-  }
-
-private:
-  uint32 T;
-};
-
 int main(int argc, const char* argv[]) {
   std::ios::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
-  Application application;
-  application.LoadData();
-  application.Run();
+
+  uint32 T;
+  read(std::cin, T);
+  auto input = ReadSequence<uint32_pair>(std::cin, T);
+  iterate(input, [](uint32_pair pair) {
+    const auto primes = PrimesInRange(pair.first, pair.second + 1);
+    for (auto p: primes)
+      print("%0", p);
+  });
+
   return 0;
 }
