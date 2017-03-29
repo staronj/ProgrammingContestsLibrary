@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 #include <celero/Celero.h>
 
 #include "generators.h"
@@ -6,7 +6,7 @@
 
 CELERO_MAIN
 
-using namespace lib;
+using namespace pcl;
 
 constexpr size_t samples = 100;
 constexpr size_t iterations = 1;

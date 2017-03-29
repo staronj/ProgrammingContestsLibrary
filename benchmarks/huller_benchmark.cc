@@ -1,4 +1,4 @@
-// Jakub Staroń, 2017
+// Jakub Staroń, 2016-2017
 #include <celero/Celero.h>
 
 #include "data_structures/huller.h"
@@ -6,7 +6,7 @@
 
 CELERO_MAIN
 
-using namespace lib;
+using namespace pcl;
 
 constexpr size_t samples = 10;
 constexpr size_t iterations = 1;
@@ -23,7 +23,7 @@ public:
 
   void setUp(int64_t experimentValue) override
   {
-    using lib::Random32;
+    using pcl::Random32;
     for (auto i: range<uint32>(0, experimentValue))
       queries.emplace_back(Random32(), Random32());
   }
@@ -75,7 +75,7 @@ public:
 
   void setUp(int64_t experimentValue) override
   {
-    using lib::Random32;
+    using pcl::Random32;
     for (auto i: range<uint32>(0, experimentValue))
       huller.insert(i, -i * (i + 1));
 

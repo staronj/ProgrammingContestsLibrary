@@ -1,9 +1,9 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 
-namespace lib {
+namespace pcl {
 namespace numeric {
 
 // Predeclarations
@@ -171,4 +171,4 @@ std::istream& operator>>(std::istream& stream, prime_field<prime>& lhs) {
 }
 
 } // namespace numeric
-} // namespace lib
+} // namespace pcl

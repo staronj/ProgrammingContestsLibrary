@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 //
 // Solution to SPOJ problem, see
 // http://www.spoj.com/problems/LCMSUM/
@@ -8,7 +8,7 @@
 #include "logger.h"
 #include "io.h"
 
-using namespace lib;
+using namespace pcl;
 
 logging::Logger& logger = logging::get_logger("main");
 

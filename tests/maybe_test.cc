@@ -1,11 +1,11 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
 #include "utils/maybe.h"
 #include <boost/test/unit_test.hpp>
 
-using namespace lib;
+using namespace pcl;
 
 BOOST_AUTO_TEST_SUITE(maybe_suite)
 

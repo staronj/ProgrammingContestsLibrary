@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 #include <celero/Celero.h>
 
 #include "data_structures/max_queue.h"
@@ -6,7 +6,7 @@
 
 CELERO_MAIN
 
-using namespace lib;
+using namespace pcl;
 
 constexpr size_t samples = 10;
 constexpr size_t iterations = 10;
@@ -24,7 +24,7 @@ public:
 
   void setUp(int64_t experimentValue) override
   {
-    using lib::Random32;
+    using pcl::Random32;
     std::queue<int32> queue;
     for (auto i: range<uint32>(0, experimentValue)) {
       if (!queue.empty() && Random32() % 2 == 0) {

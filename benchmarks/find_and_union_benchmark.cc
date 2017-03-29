@@ -1,11 +1,11 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 #include <celero/Celero.h>
 
 #include "data_structures/find_and_union.h"
 
 CELERO_MAIN
 
-using namespace lib;
+using namespace pcl;
 
 constexpr size_t samples = 20;
 constexpr size_t iterations = 10;
@@ -24,7 +24,7 @@ public:
   void setUp(int64_t experimentValue) override
   {
     N = experimentValue;
-    using lib::Random32;
+    using pcl::Random32;
     for (auto i: range<uint32>(0, experimentValue)) {
       queries.emplace_back(Random32() % experimentValue, Random32() % experimentValue);
     }

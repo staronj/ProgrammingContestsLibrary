@@ -1,11 +1,11 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "numeric.h"
 #include "io.h"
 
-namespace lib {
+namespace pcl {
 namespace geometry {
 namespace _2d {
 
@@ -159,7 +159,7 @@ cos(const point<T>& lhs, const point<T>& rhs) {
 
 template<typename T>
 std::ostream& operator<<(std::ostream& stream, const point<T>& point) {
-  lib::detail::delimiter_printer printer(stream);
+  pcl::detail::delimiter_printer printer(stream);
   stream << printer.prefix();
   stream << printer.delimiter() << point.x;
   stream << printer.delimiter() << point.y;
@@ -195,7 +195,7 @@ struct Line {
 template<typename T>
 detail::enable_if_floating<T, T> distanceToLine(const point<T>& point, const Line<T>& line) {
   auto line_vector = normalize(line.first - line.second);
-  return lib::abs(VectorProduct(line_vector, point - line.first));
+  return pcl::abs(VectorProduct(line_vector, point - line.first));
 }
 
 template<typename T>
@@ -212,4 +212,4 @@ struct Polygon {
 
 } // namespace _2d
 } // namespace geometry
-} // namespace lib
+} // namespace pcl

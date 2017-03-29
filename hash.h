@@ -1,12 +1,12 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "numeric.h"
 #include "numeric/prime_field.h"
 #include "operators.h"
 
-namespace lib {
+namespace pcl {
 namespace hash {
 
 /**
@@ -81,4 +81,4 @@ hash_type hash(const char* text) {
 }
 
 } // namespace hash
-} // namespace lib
+} // namespace pcl

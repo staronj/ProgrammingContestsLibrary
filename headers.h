@@ -1,5 +1,5 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include <iostream>
 #include <sstream>
@@ -27,7 +27,7 @@
 #include <random>
 #include <cassert>
 
-namespace lib {
+namespace pcl {
 
 using byte    = unsigned char;
 using int8    = std::int8_t;
@@ -121,4 +121,4 @@ using uint32_pair   = std::pair<uint32, uint32>;
 using int64_pair    = std::pair<int64, int64>;
 using uint64_pair   = std::pair<uint64, uint64>;
 
-} // namespace lib
+} // namespace pcl

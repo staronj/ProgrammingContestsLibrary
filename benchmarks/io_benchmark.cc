@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 #include <celero/Celero.h>
 
 #include "data_structures/indexer.h"
@@ -6,7 +6,7 @@
 
 CELERO_MAIN
 
-using namespace lib;
+using namespace pcl;
 
 constexpr size_t samples = 10;
 constexpr size_t iterations = 10;
@@ -29,7 +29,7 @@ public:
     constexpr uint32 kMaxNumber = 1000 * 1000 * 1000;
     std::string string;
     for (auto i: range<uint32>(0, experimentValue)) {
-      string += std::to_string(lib::Random32() % kMaxNumber);
+      string += std::to_string(pcl::Random32() % kMaxNumber);
       string += '\n';
     }
     stream.str(string);

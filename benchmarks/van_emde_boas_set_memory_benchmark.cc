@@ -1,9 +1,9 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "data_structures/van_emde_boas_set.h"
 #include "io.h"
 
-using namespace lib;
+using namespace pcl;
 
 std::string PrettyPrintSize(uint64 size) {
   std::ostringstream stream;

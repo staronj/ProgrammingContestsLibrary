@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "iterators.h"
 
-namespace lib {
+namespace pcl {
 
 constexpr uint64 Hundred = 100uLL;
 constexpr uint64 Thousand = 1000uLL;
@@ -225,4 +225,4 @@ std::pair<Iterator, decltype(function(*begin))> {
                  std::less<decltype(function(*begin))>());
 }
 
-} // namespace lib
+} // namespace pcl

@@ -1,9 +1,9 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * Power tree.
@@ -74,4 +74,4 @@ private:
   std::vector<value_type> load_;
 };
 
-} // namespace lib
+} // namespace pcl

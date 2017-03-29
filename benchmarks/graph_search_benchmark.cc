@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 #include <celero/Celero.h>
 
 #include "graph/graph.h"
@@ -7,7 +7,7 @@
 
 CELERO_MAIN
 
-using namespace lib;
+using namespace pcl;
 
 constexpr size_t samples = 5;
 constexpr size_t iterations = 5;
@@ -27,7 +27,7 @@ public:
   {
     for (auto i: range<uint32>(0, experimentValue))
       graph.add_vertex();
-    using lib::Random32;
+    using pcl::Random32;
     for (auto i: range<uint32>(0, 3 * experimentValue)) {
       graph.add_edge(Random32() % experimentValue, Random32() % experimentValue);
     }

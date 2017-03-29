@@ -1,4 +1,4 @@
-// Jakub Staroń, 2017
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
@@ -7,7 +7,7 @@
 #include "generators.h"
 #include "io.h"
 
-using namespace lib;
+using namespace pcl;
 
 BOOST_AUTO_TEST_SUITE(generator_test_suite)
 

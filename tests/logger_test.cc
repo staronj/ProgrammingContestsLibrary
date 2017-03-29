@@ -1,11 +1,11 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "logger.h"
 
-using namespace lib::logging;
+using namespace pcl::logging;
 
 BOOST_AUTO_TEST_SUITE(logger_test)
 

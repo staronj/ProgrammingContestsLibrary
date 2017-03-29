@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
@@ -6,7 +6,7 @@
 #include "text_algorithms/string.h"
 #include "io.h"
 
-using namespace lib;
+using namespace pcl;
 
 auto IsSpace = [](char c) {return std::isspace(c); };
 

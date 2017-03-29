@@ -1,11 +1,11 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "graph/graph.h"
 #include "numeric.h"
 #include "io.h"
 
-namespace lib {
+namespace pcl {
 namespace graph {
 
 template <typename Graph>
@@ -96,4 +96,4 @@ template <typename Graph>
 constexpr typename BreadthFirstSearch<Graph>::distance_type BreadthFirstSearch<Graph>::invalid_distance;
 
 } // namespace graph
-} // namespace lib
+} // namespace pcl

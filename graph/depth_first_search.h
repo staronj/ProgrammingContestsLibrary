@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "graph/graph.h"
 #include "numeric.h"
 
-namespace lib {
+namespace pcl {
 namespace graph {
 
 template <typename Graph>
@@ -116,4 +116,4 @@ template <typename Graph>
 constexpr id_type DepthFirstSearch<Graph>::invalid_vertex;
 
 } // namespace graph
-} // namespace lib
+} // namespace pcl

@@ -1,9 +1,9 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * Data structure for assigning consecutive identificators for values.
@@ -69,4 +69,4 @@ private:
   std::vector<typename map_type::const_iterator> id_to_value_;
 };
 
-} // namespace lib
+} // namespace pcl

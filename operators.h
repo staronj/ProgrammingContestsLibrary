@@ -1,9 +1,9 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 
-namespace lib {
+namespace pcl {
 
 // post-incrementation -> pre-incrementation
 template <typename T>
@@ -170,4 +170,4 @@ constexpr std::pair<Integral1, Integral2> operator*(const std::pair<Integral1, I
 }
 
 
-} // namespace lib
+} // namespace pcl

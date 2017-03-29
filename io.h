@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "iterators.h"
 #include "generators.h"
 
-namespace lib {
+namespace pcl {
 
 namespace detail {
 
@@ -399,7 +399,7 @@ void print(const char* format, const Args&... args) {
  *
  * Example:
  * <pre>
- * print("important message%0", lib::flush);
+ * print("important message%0", pcl::flush);
  * </pre>
  */
 std::ostream& flush(std::ostream& stream) {
@@ -485,4 +485,4 @@ generator_handle<Generator<ValueType>>
   return detail::build_generator_handle<SequenceReader>(stream, count);
 }
 
-} // namespace lib
+} // namespace pcl

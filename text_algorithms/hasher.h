@@ -1,9 +1,9 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "hash.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * Data structure for computing hashes of substrings.
@@ -82,4 +82,4 @@ private:
   index_type size_;
 };
 
-} // namespace lib
+} // namespace pcl

@@ -7,7 +7,7 @@
 #include "io.h"
 #include "iterators/random_access_iterator.h"
 
-using namespace lib;
+using namespace pcl;
 
 BOOST_AUTO_TEST_SUITE(iterator_test_suite)
 

@@ -5,7 +5,7 @@
 #include "headers.h"
 #include "iterators.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * Computes prefix-suffix table of text using KMP algorithm.
@@ -73,4 +73,4 @@ private:
   std::vector<uint32> borders_;
 };
 
-} // namespace lib
+} // namespace pcl

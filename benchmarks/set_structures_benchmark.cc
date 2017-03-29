@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 #include <celero/Celero.h>
 
 #include "numeric.h"
@@ -7,7 +7,7 @@
 
 CELERO_MAIN
 
-using namespace lib;
+using namespace pcl;
 
 constexpr size_t samples = 10;
 constexpr size_t iterations = 1;
@@ -26,7 +26,7 @@ public:
   void setUp(int64_t experimentValue) override
   {
     for (auto i: range<int32>(0, experimentValue)) {
-      using lib::Random32;
+      using pcl::Random32;
 
       auto value1 = Random32() % Million;
       auto value2 = Random32() % Million;

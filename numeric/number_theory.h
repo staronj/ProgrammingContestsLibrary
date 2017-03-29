@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "numeric.h"
 
-namespace lib {
+namespace pcl {
 namespace numeric {
 
 /**
@@ -441,4 +441,4 @@ uint32 DiscreteLogarithm(const uint32 a, uint32 x, const uint32 p) {
 }
 
 } // namespace numeric
-} // namespace lib
+} // namespace pcl

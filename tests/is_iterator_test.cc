@@ -1,11 +1,11 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "iterators.h"
 
-using namespace lib;
+using namespace pcl;
 
 BOOST_AUTO_TEST_SUITE(is_iterator_test_suite)
 

@@ -1,11 +1,11 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "graph/graph.h"
 
-using namespace lib::graph;
+using namespace pcl::graph;
 
 BOOST_AUTO_TEST_SUITE(graph)
 

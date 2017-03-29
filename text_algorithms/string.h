@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "iterators.h"
 
-namespace lib {
+namespace pcl {
 namespace text {
 
 /**
@@ -148,4 +148,4 @@ std::string strip(Iterator begin, Iterator end, const char* chars) {
 }
 
 } // namespace text
-} // namespace lib
+} // namespace pcl

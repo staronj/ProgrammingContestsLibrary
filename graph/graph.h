@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "iterators.h"
 
-namespace lib {
+namespace pcl {
 namespace graph {
 
 using id_type = uint32;
@@ -117,4 +117,4 @@ private:
 using UndirectedGraph = StaticGraph<UndirectedEdge>;
 
 } // namespace graph
-} // namespace lib
+} // namespace pcl

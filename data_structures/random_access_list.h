@@ -1,12 +1,12 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "iterators.h"
 #include "data_structures/avl_tree.h"
 #include "iterators/random_access_iterator.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * Implementation of random access list using avl trees.
@@ -659,4 +659,4 @@ private:
   node_pointer root_ = nullptr;
 };
 
-} // namespace lib
+} // namespace pcl

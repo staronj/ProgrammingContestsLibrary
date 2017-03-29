@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "operators.h"
 
-namespace lib {
+namespace pcl {
 
 struct Nothing_t {
   constexpr Nothing_t() { };
@@ -208,4 +208,4 @@ Maybe<T> Just(T value) {
 }
 
 
-} // namespace lib
+} // namespace pcl

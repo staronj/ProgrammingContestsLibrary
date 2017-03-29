@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
@@ -6,7 +6,7 @@
 #include "iterators.h"
 #include "numeric.h"
 
-using namespace lib;
+using namespace pcl;
 
 BOOST_AUTO_TEST_SUITE(numeric_test)
 
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(square_test) {
   BOOST_CHECK_EQUAL(SquareCeiling(1000 * 1000 + 1), 1001);
   BOOST_CHECK_EQUAL(SquareFloor(1000 * 1000 + 1), 1000);
 
-  lib::uint64 billion = 1000uLL * 1000uLL * 1000uLL;
+  pcl::uint64 billion = 1000uLL * 1000uLL * 1000uLL;
   BOOST_CHECK_EQUAL(SquareCeiling(billion * billion), billion);
   BOOST_CHECK_EQUAL(SquareFloor(billion * billion), billion);
 

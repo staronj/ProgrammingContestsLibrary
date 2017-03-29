@@ -1,11 +1,11 @@
 #pragma once
-// Jakub Staroń, 2017
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "data_structures/random_access_list.h"
 
 
-namespace lib {
+namespace pcl {
 
 /**
  * Data structure representing set of linear functions.
@@ -159,4 +159,4 @@ private:
   comparator_type comparator_;
 };
 
-} // namespace lib
+} // namespace pcl

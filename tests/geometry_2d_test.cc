@@ -1,11 +1,11 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "geometry/2d/2d.h"
 
-using namespace lib::geometry::_2d;
+using namespace pcl::geometry::_2d;
 
 BOOST_AUTO_TEST_SUITE(geometry_2d_suite)
 

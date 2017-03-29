@@ -1,12 +1,12 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "operators.h"
 #include "iterators/is_iterator.h"
 #include "iterators/random_access_iterator.h"
 
-namespace lib {
+namespace pcl {
 
 namespace detail {
 namespace is_iterable_impl {
@@ -423,4 +423,4 @@ indirect_iterator<ValuesIterator, IndexesIterator> {
   return indirect_iterator<ValuesIterator, IndexesIterator>(std::move(indexes), std::move(mapper));
 };
 
-} // namespace lib
+} // namespace pcl

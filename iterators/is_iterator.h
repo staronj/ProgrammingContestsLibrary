@@ -1,7 +1,7 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
-namespace lib {
+namespace pcl {
 
 namespace detail {
 
@@ -203,4 +203,4 @@ public:
 template<typename It>
 constexpr bool is_random_access_iterator<It>::value;
 
-} // namespace lib
+} // namespace pcl

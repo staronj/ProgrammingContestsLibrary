@@ -1,9 +1,9 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * MaxQueue data structure.
@@ -88,4 +88,4 @@ private:
   size_type size_;
 };
 
-} // namespace lib
+} // namespace pcl

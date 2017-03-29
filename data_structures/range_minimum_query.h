@@ -1,11 +1,11 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "iterators.h"
 #include "numeric.h"
 
-namespace lib {
+namespace pcl {
 
 template <typename Value, typename Comparator = std::less<Value>>
 class RangeMinimumQuery {
@@ -72,4 +72,4 @@ private:
 template <typename Value, typename Comparator>
 constexpr uint32 RangeMinimumQuery<Value, Comparator>::kMaximumNumberOfLevels;
 
-} // namespace lib
+} // namespace pcl

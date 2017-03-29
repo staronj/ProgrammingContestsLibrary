@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 //
 // Solution to SPOJ problem, see
 // http://www.spoj.com/problems/DIVFACT/
@@ -8,7 +8,7 @@
 #include "numeric/prime_field.h"
 #include "io.h"
 
-using namespace lib;
+using namespace pcl;
 
 constexpr uint32 kPrime = 1000 * 1000 * 1000 + 7;
 constexpr uint32 kMaxN = 50 * 1000;

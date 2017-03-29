@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
@@ -8,8 +8,8 @@
 #include "iterators.h"
 #include "io.h"
 
-using namespace lib::graph;
-using namespace lib;
+using namespace pcl::graph;
+using namespace pcl;
 
 struct SimpleGraphFixture {
   using graph_type = UndirectedGraph;

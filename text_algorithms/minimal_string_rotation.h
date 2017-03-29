@@ -1,9 +1,9 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 
-namespace lib {
+namespace pcl {
 namespace text {
 
 /**
@@ -79,4 +79,4 @@ std::string MinimalStringRotation(const std::string& text) {
 }
 
 } // namespace text
-} // namespace lib
+} // namespace pcl

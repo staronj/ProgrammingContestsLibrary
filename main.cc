@@ -1,11 +1,11 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "iterators.h"
 #include "io.h"
 #include "logger.h"
 
-using namespace lib;
+using namespace pcl;
 
 logging::Logger& logger = logging::get_logger("main");
 

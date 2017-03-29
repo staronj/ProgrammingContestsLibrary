@@ -1,11 +1,11 @@
 #pragma once
-// Jakub Staroń, 2017
+// Jakub Staroń, 2016-2017
 
 #include "iterators.h"
 #include "iterators/input_iterator.h"
 #include "utils/maybe.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * Base class for generators implementation.
@@ -416,4 +416,4 @@ typename std::enable_if<
   );
 }
 
-} // namespace lib
+} // namespace pcl

@@ -1,9 +1,9 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "io.h"
 
-namespace lib {
+namespace pcl {
 namespace logging {
 
 enum class log_level {
@@ -79,4 +79,4 @@ Logger& get_logger(const std::string& name) {
 }
 
 } // namespace logging
-} // namespace lib
+} // namespace pcl

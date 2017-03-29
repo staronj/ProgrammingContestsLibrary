@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 //
 // Solution to SPOJ problem, see
 // http://www.spoj.com/problems/NUMDIV/
@@ -7,7 +7,7 @@
 #include "io.h"
 #include "numeric/number_theory.h"
 
-using namespace lib;
+using namespace pcl;
 
 const uint64 kMaxN = power(10uLL, 18);
 const uint64 kPrimesToPreprocess = power(10uLL, 6);
@@ -61,7 +61,7 @@ int main() {
   iterate(input, [](uint32 N) {
     print("%0", NumberOfDivisors(N));
   });
-  print("%0", lib::flush);
+  print("%0", pcl::flush);
 
   return 0;
 }

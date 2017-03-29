@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "io.h"
 #include "headers.h"
 
-namespace lib {
+namespace pcl {
 namespace avl {
 
 enum class side_type : uint8 {
@@ -558,4 +558,4 @@ DummyNode::node_pointer insert(DummyNode::node_pointer root, DummyNode::value_ty
 }
 
 } // namespace avl
-} // namespace lib
+} // namespace pcl

@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "iterators/is_iterator.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * Template class for creating input iterators.
@@ -73,4 +73,4 @@ private:
   Helper helper_;
 };
 
-} // namespace lib
+} // namespace pcl

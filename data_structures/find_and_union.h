@@ -1,10 +1,10 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "iterators.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * FindAndUnion structure.
@@ -54,4 +54,4 @@ private:
   std::vector<id_type> parent_;
 };
 
-} // namespace lib
+} // namespace pcl

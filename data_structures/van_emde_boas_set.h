@@ -1,12 +1,12 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 #include "operators.h"
 #include "numeric.h"
 #include "iterators/bidirectional_iterator.h"
 
-namespace lib {
+namespace pcl {
 
 namespace detail {
 template<uint8 N>
@@ -541,4 +541,4 @@ constexpr const char VanEmdeBoasSet<logM>::kOutOfRange[];
 template <uint8 logM>
 constexpr const char VanEmdeBoasSet<logM>::kIllegalOperation[];
 
-} // namespace lib
+} // namespace pcl

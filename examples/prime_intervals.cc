@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 //
 // Solution to SPOJ problem, see
 // http://www.spoj.com/problems/PRINT/
@@ -7,7 +7,7 @@
 #include "numeric/number_theory.h"
 #include "io.h"
 
-using namespace lib;
+using namespace pcl;
 
 constexpr uint32 kMaxN = 2147483647u;
 const uint32 kMaxPrimeNeeded = SquareFloor(kMaxN);

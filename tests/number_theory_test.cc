@@ -1,4 +1,4 @@
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
@@ -7,7 +7,7 @@
 #include "io.h"
 #include "numeric/number_theory.h"
 
-using namespace lib::numeric;
+using namespace pcl::numeric;
 
 BOOST_AUTO_TEST_SUITE(number_theory_test)
 
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(gcd_test) {
 }
 
 BOOST_AUTO_TEST_CASE(extended_gcd_test) {
-  using namespace lib;
+  using namespace pcl;
   std::vector<int64_pair> tests = {
       {0, 1},
       {1, 0},
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(extended_gcd_test) {
 }
 
 BOOST_AUTO_TEST_CASE(merge_congruences_test) {
-  using namespace lib;
+  using namespace pcl;
   using test_type = std::tuple<uint64_pair, uint64_pair, uint64_pair>;
   std::vector<test_type> tests = {
       test_type {
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(merge_congruences_test) {
 }
 
 BOOST_AUTO_TEST_CASE(merge_congruences_contradicting_test) {
-  using namespace lib;
+  using namespace pcl;
   using test_type = std::tuple<uint64_pair, uint64_pair>;
   std::vector<test_type> tests = {
       test_type {
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(merge_congruences_contradicting_test) {
 }
 
 BOOST_AUTO_TEST_CASE(merge_congruences_iterable_test) {
-  using namespace lib;
+  using namespace pcl;
   std::vector<uint64_pair> congruences = {
       {1, 2},
       {2, 3},
@@ -130,14 +130,14 @@ BOOST_AUTO_TEST_CASE(operations_32bits_test) {
 }
 
 BOOST_AUTO_TEST_CASE(power_modulo_test) {
-  lib::uint64 modulo = lib::power(10, 9) + 7;
-  BOOST_CHECK_EQUAL(PowerModulo32(2, lib::power(10, 17), modulo), 952065854);
-  BOOST_CHECK_EQUAL(PowerModulo32(3, lib::power(10, 17), modulo), 368629774);
-  BOOST_CHECK_EQUAL(PowerModulo32(3, lib::power(10, 17) + 1, modulo), 105889315);
+  pcl::uint64 modulo = pcl::power(10, 9) + 7;
+  BOOST_CHECK_EQUAL(PowerModulo32(2, pcl::power(10, 17), modulo), 952065854);
+  BOOST_CHECK_EQUAL(PowerModulo32(3, pcl::power(10, 17), modulo), 368629774);
+  BOOST_CHECK_EQUAL(PowerModulo32(3, pcl::power(10, 17) + 1, modulo), 105889315);
 }
 
 BOOST_AUTO_TEST_CASE(divisors_test) {
-  using namespace lib;
+  using namespace pcl;
 
   auto ExpectedDivisors = [](uint32 n) {
     std::vector<uint32> divisors;
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(divisors_test) {
 }
 
 BOOST_AUTO_TEST_CASE(prime_divisors_test) {
-  using namespace lib;
+  using namespace pcl;
 
   {
     uint32 N = 1;
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(prime_divisors_test) {
 }
 
 BOOST_AUTO_TEST_CASE(factorization_test) {
-  using namespace lib;
+  using namespace pcl;
 
   auto Defactorize = [](const std::vector<uint32>& v) {
     uint32 result = 1;
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(factorization_test) {
 }
 
 BOOST_AUTO_TEST_CASE(primes_test) {
-  using namespace lib;
+  using namespace pcl;
 
   constexpr uint32 million = 1000 * 1000;
   auto primes = Sieve(million);

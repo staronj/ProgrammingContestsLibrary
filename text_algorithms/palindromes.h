@@ -1,9 +1,9 @@
 #pragma once
-// Jakub Staroń, 2016
+// Jakub Staroń, 2016-2017
 
 #include "headers.h"
 
-namespace lib {
+namespace pcl {
 
 /**
  * Returns vector of length 2 * (end - being) - 1 with
@@ -59,4 +59,4 @@ std::vector<uint32> Palindromes(Iterator begin, Iterator end) {
   return result;
 }
 
-} // namespace lib
+} // namespace pcl
