@@ -169,4 +169,87 @@ BOOST_AUTO_TEST_CASE(strip_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(starts_with_test) {
+  // Iterators
+  {
+    std::string text;
+    std::string prefix;
+    bool result = true;
+    BOOST_CHECK_EQUAL(text::starts_with(text.begin(), text.end(), prefix.begin(), prefix.end()), result);
+  }
+
+  {
+    std::string text;
+    std::string prefix = "a";
+    bool result = false;
+    BOOST_CHECK_EQUAL(text::starts_with(text.begin(), text.end(), prefix.begin(), prefix.end()), result);
+  }
+
+  {
+    std::string text = "a";
+    std::string prefix = "a";
+    bool result = true;
+    BOOST_CHECK_EQUAL(text::starts_with(text.begin(), text.end(), prefix.begin(), prefix.end()), result);
+  }
+
+  {
+    std::string text = "a";
+    std::string prefix = "ab";
+    bool result = false;
+    BOOST_CHECK_EQUAL(text::starts_with(text.begin(), text.end(), prefix.begin(), prefix.end()), result);
+  }
+
+  {
+    std::string text = "a";
+    std::string prefix;
+    bool result = true;
+    BOOST_CHECK_EQUAL(text::starts_with(text.begin(), text.end(), prefix.begin(), prefix.end()), result);
+  }
+
+  // String, string
+
+  {
+    std::string text;
+    std::string prefix;
+    bool result = true;
+    BOOST_CHECK_EQUAL(text::starts_with(text, prefix), result);
+  }
+
+  {
+    std::string text;
+    std::string prefix = "a";
+    bool result = false;
+    BOOST_CHECK_EQUAL(text::starts_with(text, prefix), result);
+  }
+
+  {
+    std::string text = "a";
+    std::string prefix = "a";
+    bool result = true;
+    BOOST_CHECK_EQUAL(text::starts_with(text, prefix), result);
+  }
+
+  {
+    std::string text = "a";
+    std::string prefix = "ab";
+    bool result = false;
+    BOOST_CHECK_EQUAL(text::starts_with(text, prefix), result);
+  }
+
+  {
+    std::string text = "a";
+    std::string prefix;
+    bool result = true;
+    BOOST_CHECK_EQUAL(text::starts_with(text, prefix), result);
+  }
+
+  // String, C-string
+
+  BOOST_CHECK_EQUAL(text::starts_with("", ""), true);
+  BOOST_CHECK_EQUAL(text::starts_with("", "a"), false);
+  BOOST_CHECK_EQUAL(text::starts_with("a", "a"), true);
+  BOOST_CHECK_EQUAL(text::starts_with("a", "ab"), false);
+  BOOST_CHECK_EQUAL(text::starts_with("a", ""), true);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

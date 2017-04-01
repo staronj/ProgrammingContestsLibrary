@@ -147,5 +147,33 @@ std::string strip(Iterator begin, Iterator end, const char* chars) {
   return strip(begin, end, predicate);
 }
 
+/**
+ * Returns true if <begin2, end2) is prefix of <begin1, end1).
+ */
+template <typename Iterator1, typename Iterator2>
+bool starts_with(Iterator1 begin1, Iterator1 end1, Iterator2 begin2, Iterator2 end2) {
+  for (auto elem: make_range(begin2, end2)) {
+    if (begin1 == end1 || *begin1++ != elem)
+      return false;
+  }
+  return true;
+}
+
+/**
+ * Returns true if text starts with given prefix.
+ */
+bool starts_with(const std::string text, const std::string& prefix) {
+  return starts_with(text.begin(), text.end(), prefix.begin(), prefix.end());
+}
+
+/**
+ * Returns true if text starts with given prefix.
+ */
+bool starts_with(const std::string text, const char* prefix) {
+  auto length = std::strlen(prefix);
+  return starts_with(text.begin(), text.end(), prefix, prefix + length);
+}
+
+
 } // namespace text
 } // namespace pcl
