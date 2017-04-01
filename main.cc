@@ -7,7 +7,7 @@
 
 using namespace pcl;
 
-logging::Logger& logger = logging::get_logger("main");
+logging::Logger logger("main");
 
 class Application {
 public:
@@ -31,8 +31,7 @@ int main(int argc, const char* argv[]) {
   std::ios::sync_with_stdio(false);
   std::cin.tie(nullptr);
   std::cout.tie(nullptr);
-  logger.set_log_level(logging::log_level::debug);
-  logger.add_stream(&std::cerr, logging::log_level::debug);
+  logging::log_master().subscribe("main", logging::log_level::debug, "L", &std::cerr);
   Application application;
   application.LoadData();
   application.Run();

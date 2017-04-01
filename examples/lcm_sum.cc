@@ -10,7 +10,7 @@
 
 using namespace pcl;
 
-logging::Logger& logger = logging::get_logger("main");
+logging::Logger logger("main");
 
 /**
  * Returns vector with values of Euler's totient function
@@ -78,8 +78,7 @@ int main(int argc, const char* argv[]) {
   std::ios::sync_with_stdio(false);
   std::cin.tie(nullptr);
   std::cout.tie(nullptr);
-  logger.set_log_level(logging::log_level::none);
-  logger.add_stream(&std::cerr, logging::log_level::debug);
+  logging::log_master().subscribe("main", logging::log_level::none, "", &std::cerr);
   Application application;
   application.LoadData();
   application.Run();

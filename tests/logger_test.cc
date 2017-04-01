@@ -23,9 +23,8 @@ struct Noncopyable {
 BOOST_AUTO_TEST_CASE(ostream_printing_test) {
   {
     std::ostringstream stream;
-    Logger& logger = get_logger("test1");
-    logger.add_stream(&stream, log_level::error);
-    logger.set_log_level(log_level::info);
+    log_master().subscribe("test1", log_level::error, "", &stream);
+    Logger logger("test1");
     logger.debug("%0", 1);
     BOOST_CHECK_EQUAL(stream.str(), "");
     logger.info("%0", 2);
@@ -38,10 +37,11 @@ BOOST_AUTO_TEST_CASE(ostream_printing_test) {
     std::ostringstream stream1;
     std::ostringstream stream2;
     std::ostringstream stream3;
-    Logger& logger = get_logger("test2");
-    logger.add_stream(&stream1, log_level::debug);
-    logger.add_stream(&stream2, log_level::info);
-    logger.add_stream(&stream3, log_level::error);
+    log_master().subscribe("test2", log_level::debug, "", &stream1);
+    log_master().subscribe("test2", log_level::info, "", &stream2);
+    log_master().subscribe("test2", log_level::error, "", &stream3);
+
+    Logger logger("test2");
     logger.error("%0", 1);
     logger.info("%0", 2);
     logger.debug("%0", 3);

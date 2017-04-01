@@ -2,6 +2,7 @@
 // Jakub Staroń, 2016-2017
 
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <iterator>
 #include <type_traits>
