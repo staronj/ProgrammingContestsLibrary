@@ -177,16 +177,14 @@ struct generator_iterator_helper {
 
   void next() {
     assert(!is_end());
-    auto value = generator_->next();
-    if (value != Nothing)
-      value_ = value.get();
-    else
+    value_ = generator_->next();
+    if (value_ == Nothing)
       generator_ = nullptr;
   }
 
-  reference value() const { return value_; }
+  reference value() const { return value_.get(); }
 
-  pointer ptr() const { return &value_; }
+  pointer ptr() const { return &value_.get(); }
 
   bool equal(const self_type& other) const {
     return (this == &other) || (is_end() && other.is_end());
@@ -198,7 +196,7 @@ private:
   }
 
   generator_pointer generator_;
-  value_type value_;
+  Maybe<value_type> value_;
 };
 
 template <typename GeneratorType>

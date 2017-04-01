@@ -101,4 +101,14 @@ BOOST_AUTO_TEST_CASE(equal) {
   BOOST_CHECK_EQUAL(Just(1) != Just(2), true);
 }
 
+BOOST_AUTO_TEST_CASE(destroying_maybe) {
+  auto maybe = Just(1);
+  maybe = Nothing;
+  BOOST_CHECK_EQUAL(maybe.empty(), true);
+  maybe = Just(2);
+  BOOST_CHECK_EQUAL(maybe.empty(), false);
+  maybe = Maybe<int>(Nothing);
+  BOOST_CHECK_EQUAL(maybe.empty(), true);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

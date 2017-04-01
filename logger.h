@@ -77,24 +77,24 @@ public:
             case 'T':
               log += '[';
               log += topic;
-              log += "] ";
+              log += "]\t";
               break;
             case 'L':
               log += '[';
               log += log_level_name(level);
-              log += "] ";
+              log += "]\t";
               break;
             case 'D':
               log += '[';
               log += detail::date_time_string();
-              log += "] ";
+              log += "]\t";
               break;
             default:
               continue;
           }
         }
         log += message;
-        *subscription.stream << log;
+        *subscription.stream << log << std::flush;
       }
     }
   }

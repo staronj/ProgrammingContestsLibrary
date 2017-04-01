@@ -88,6 +88,7 @@ public:
    * Moved maybe will be empty after that.
    */
   Maybe& operator=(Maybe&& other) {
+    destroy();
     if (!other.empty()) {
       construct(std::move(other.get()));
       other.destroy();
