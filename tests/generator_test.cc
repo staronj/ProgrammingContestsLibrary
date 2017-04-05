@@ -11,7 +11,7 @@ using namespace pcl;
 
 BOOST_AUTO_TEST_SUITE(generator_test_suite)
 
-struct DummyGenerator: Generator<int> {
+struct DummyGenerator: GeneratorBase<int> {
   Maybe<int> next() final {
     return (n < 3)? Just(n++) : Nothing;
   }
@@ -21,14 +21,14 @@ struct DummyGenerator: Generator<int> {
 
 BOOST_AUTO_TEST_CASE(generator_test) {
   {
-    generator_handle<Generator<int>> gen(new DummyGenerator());
+    Generator<int> gen(new DummyGenerator());
     auto gen_range = iterate(gen);
     BOOST_CHECK(is_iterable<decltype(gen_range)>::value);
     for (auto i: gen_range) { }
   }
 
   {
-    generator_handle<Generator<int>> gen(new DummyGenerator());
+    Generator<int> gen(new DummyGenerator());
     std::ostringstream str;
     print(str, "%0", iterate(gen));
     BOOST_CHECK_EQUAL(str.str(), "0 1 2\n");
@@ -285,5 +285,20 @@ BOOST_AUTO_TEST_CASE(map_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(stacking_test) {
+  std::vector<int> v = {1, 2, 3, 4};
+
+  {
+    auto result = as_vector(
+        filter(
+          map(generate(v), [](int i) {return i + 1;}),
+          [] (int i) {return i < 4;}
+        )
+    );
+
+    std::vector<int> expected = {2, 3};
+    BOOST_CHECK(expected == result);
+  }
+}
 
 BOOST_AUTO_TEST_SUITE_END()

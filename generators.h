@@ -11,16 +11,16 @@ namespace pcl {
  * Base class for generators implementation.
  */
 template <typename ValueType>
-class Generator {
+class GeneratorBase {
 public:
   using value_type = ValueType;
-  using pointer = std::unique_ptr<Generator>;
+  using pointer = std::unique_ptr<GeneratorBase>;
 
-  Generator() = default;
-  Generator(const Generator&) = delete;
-  Generator& operator=(const Generator&) = delete;
-  Generator(Generator&&) = default;
-  virtual ~Generator() = default;
+  GeneratorBase() = default;
+  GeneratorBase(const GeneratorBase&) = delete;
+  GeneratorBase& operator=(const GeneratorBase&) = delete;
+  GeneratorBase(GeneratorBase&&) = default;
+  virtual ~GeneratorBase() = default;
 
   /**
    * Generates new value and returns it.
@@ -30,8 +30,8 @@ public:
   virtual Maybe<value_type> next() = 0;
 };
 
-template <class GeneratorType>
-using generator_handle = std::unique_ptr<GeneratorType>;
+template <class ValueType>
+using Generator = std::unique_ptr<GeneratorBase<ValueType>>;
 
 /**
  * type_traits-like predicate. Equal to true_type if argument is generator.
@@ -41,23 +41,22 @@ using generator_handle = std::unique_ptr<GeneratorType>;
  * static_assert(is_generator<DummyGenerator>, "our DummyGenerator is wrongly implemented!");
  * </pre>
  */
-template <typename GeneratorType>
-using is_generator = std::is_base_of<Generator<typename GeneratorType::value_type>, GeneratorType>;
-
-template <typename GeneratorHandle>
-struct is_generator_handle : std::false_type { };
+template <typename Generator>
+struct is_generator : std::false_type { };
 
 template <typename GeneratorType>
-struct is_generator_handle<std::unique_ptr<GeneratorType>> : is_generator<GeneratorType> { };
+struct is_generator<std::unique_ptr<GeneratorType>> :
+    std::is_base_of<GeneratorBase<typename GeneratorType::value_type>, GeneratorType> { };
 
 template <typename GeneratorType>
-struct is_generator_handle<std::unique_ptr<GeneratorType>&> : is_generator<GeneratorType> { };
+struct is_generator<std::unique_ptr<GeneratorType>&> :
+    std::is_base_of<GeneratorBase<typename GeneratorType::value_type>, GeneratorType> { };
 
 namespace detail {
 
 template <typename GeneratorType, typename... Args>
-generator_handle<GeneratorType> build_generator_handle(Args&&... args) {
-  return generator_handle<GeneratorType>(new GeneratorType(std::forward<Args>(args)...));
+Generator<typename GeneratorType::value_type> build_generator(Args&& ... args) {
+  return Generator<typename GeneratorType::value_type>(new GeneratorType(std::forward<Args>(args)...));
 };
 
 } // namespace detail
@@ -75,11 +74,11 @@ generator_handle<GeneratorType> build_generator_handle(Args&&... args) {
  */
 template <typename Callable>
 auto generate(Callable&& callable) ->
-generator_handle<Generator<typename decltype(callable())::value_type>>
+Generator<typename decltype(callable())::value_type>
 {
   using value_type = typename decltype(callable())::value_type;
 
-  class FromCallableGenerator: public Generator<value_type> {
+  class FromCallableGenerator: public GeneratorBase<value_type> {
   public:
     FromCallableGenerator(Callable&& callable):
         callable_(std::move(callable)) { }
@@ -92,7 +91,7 @@ generator_handle<Generator<typename decltype(callable())::value_type>>
     Callable callable_;
   };
 
-  return detail::build_generator_handle<FromCallableGenerator>(std::move(callable));
+  return detail::build_generator<FromCallableGenerator>(std::move(callable));
 }
 
 /**
@@ -111,11 +110,11 @@ generator_handle<Generator<typename decltype(callable())::value_type>>
  */
 template <typename Iterator>
 auto generate(Iterator begin, Iterator end) ->
-generator_handle<Generator<typename std::iterator_traits<Iterator>::value_type>>
+Generator<typename std::iterator_traits<Iterator>::value_type>
 {
   using value_type = typename std::iterator_traits<Iterator>::value_type;
 
-  class SequenceGenerator: public Generator<value_type> {
+  class SequenceGenerator: public GeneratorBase<value_type> {
   public:
     SequenceGenerator(Iterator&& begin, Iterator&& end):
         it_(std::move(begin)), end_(std::move(end)) { }
@@ -129,7 +128,7 @@ generator_handle<Generator<typename std::iterator_traits<Iterator>::value_type>>
     const Iterator end_;
   };
 
-  return detail::build_generator_handle<SequenceGenerator>(std::move(begin), std::move(end));
+  return detail::build_generator<SequenceGenerator>(std::move(begin), std::move(end));
 }
 
 /**
@@ -158,12 +157,12 @@ typename std::enable_if<
 
 namespace detail {
 
-template <typename GeneratorType>
+template <typename ValueType>
 struct generator_iterator_helper {
+  using value_type = ValueType;
   using self_type = generator_iterator_helper;
-  using generator_type = GeneratorType;
+  using generator_type = GeneratorBase<ValueType>;
   using generator_pointer = generator_type*;
-  using value_type = typename generator_type::value_type;
   using reference = const value_type&;
   using pointer = const value_type*;
   using difference_type = std::ptrdiff_t;
@@ -199,34 +198,34 @@ private:
   Maybe<value_type> value_;
 };
 
-template <typename GeneratorType>
-using generator_iterator = input_iterator<detail::generator_iterator_helper<GeneratorType>>;
+template <typename ValueType>
+using generator_iterator = input_iterator<detail::generator_iterator_helper<ValueType>>;
 
-template <typename GeneratorType>
+template <typename ValueType>
 class generator_iterator_range {
 public:
-  using iterator_type = generator_iterator<GeneratorType>;
+  using iterator_type = generator_iterator<ValueType>;
 
-  explicit generator_iterator_range(generator_handle<GeneratorType>&& generator):
+  explicit generator_iterator_range(Generator<ValueType>&& generator):
       generator_(std::move(generator)) { }
 
   iterator_type begin() const {
-    return generator_iterator<GeneratorType>(generator_.get());
+    return generator_iterator<ValueType>(generator_.get());
   }
 
   iterator_type end() const {
-    return generator_iterator<GeneratorType>();
+    return generator_iterator<ValueType>();
   }
 
 private:
-  generator_handle<GeneratorType> generator_;
+  Generator<ValueType> generator_;
 };
 
-template <typename GeneratorHandle>
-auto build_generator_iterator_range(GeneratorHandle&& generator) ->
-generator_iterator_range<typename GeneratorHandle::element_type>
+template <typename Generator>
+auto build_generator_iterator_range(Generator&& generator) ->
+generator_iterator_range<typename Generator::element_type::value_type>
 {
-  return generator_iterator_range<typename GeneratorHandle::element_type>(std::move(generator));
+  return generator_iterator_range<typename Generator::element_type::value_type>(std::move(generator));
 }
 
 } // namespace detail
@@ -246,7 +245,7 @@ generator_iterator_range<typename GeneratorHandle::element_type>
 template <typename GeneratorHandle>
 auto iterate(GeneratorHandle&& generator) ->
 typename std::enable_if<
-    is_generator_handle<GeneratorHandle>::value,
+    is_generator<GeneratorHandle>::value,
     decltype(detail::build_generator_iterator_range(std::move(generator)))
 >::type
 {
@@ -263,10 +262,10 @@ typename std::enable_if<
  * iterate(generate(v), [](int i) { print("%0", i); });
  * </pre>
  */
-template <typename GeneratorHandle, typename Callable>
-auto iterate(GeneratorHandle&& generator, Callable&& callable) ->
+template <typename Generator, typename Callable>
+auto iterate(Generator&& generator, Callable&& callable) ->
 typename std::enable_if<
-    is_generator_handle<GeneratorHandle>::value
+    is_generator<Generator>::value
 >::type
 {
   while (true) {
@@ -291,7 +290,7 @@ typename std::enable_if<
 template <typename GeneratorHandle>
 auto as_vector(GeneratorHandle&& generator) ->
 typename std::enable_if<
-    is_generator_handle<GeneratorHandle>::value,
+    is_generator<GeneratorHandle>::value,
     std::vector<typename std::remove_reference<GeneratorHandle>::type::element_type::value_type>
 >::type
 {
@@ -313,7 +312,7 @@ typename std::enable_if<
 template <typename GeneratorHandle>
 auto as_list(GeneratorHandle&& generator) ->
 typename std::enable_if<
-    is_generator_handle<GeneratorHandle>::value,
+    is_generator<GeneratorHandle>::value,
     std::list<typename std::remove_reference<GeneratorHandle>::type::element_type::value_type>
 >::type
 {
@@ -335,7 +334,7 @@ typename std::enable_if<
 template <typename GeneratorHandle>
 auto as_set(GeneratorHandle&& generator) ->
 typename std::enable_if<
-    is_generator_handle<GeneratorHandle>::value,
+    is_generator<GeneratorHandle>::value,
     std::set<typename std::remove_reference<GeneratorHandle>::type::element_type::value_type>
 >::type
 {
@@ -359,14 +358,14 @@ typename std::enable_if<
 template <typename GeneratorHandle, typename Callable>
 auto filter(GeneratorHandle&& generator, Callable predicate) ->
 typename std::enable_if<
-    is_generator_handle<GeneratorHandle>::value,
-    generator_handle<Generator<typename std::remove_reference<GeneratorHandle>::type::element_type::value_type>>
+    is_generator<GeneratorHandle>::value,
+    Generator<typename std::remove_reference<GeneratorHandle>::type::element_type::value_type>
 >::type
 {
   using value_type = typename std::remove_reference<GeneratorHandle>::type::element_type::value_type;
 
   return generate(
-      std::bind([] (GeneratorHandle generator, Callable predicate) -> Maybe<value_type> {
+      std::bind([] (typename std::remove_reference<GeneratorHandle>::type& generator, Callable predicate) -> Maybe<value_type> {
                   while (true) {
                     auto elem = generator->next();
                     if (elem == Nothing)
@@ -397,14 +396,14 @@ typename std::enable_if<
 template <typename GeneratorHandle, typename Callable>
 auto map(GeneratorHandle&& generator, Callable callable) ->
 typename std::enable_if<
-    is_generator_handle<GeneratorHandle>::value,
-    generator_handle<Generator<decltype(callable(generator->next().get()))>>
+    is_generator<GeneratorHandle>::value,
+    Generator<decltype(callable(generator->next().get()))>
 >::type
 {
   using value_type = decltype(callable(generator->next().get()));
 
   return generate(
-      std::bind([] (GeneratorHandle generator, Callable callable) -> Maybe<value_type> {
+      std::bind([] (typename std::remove_reference<GeneratorHandle>::type& generator, Callable callable) -> Maybe<value_type> {
                   auto elem = generator->next();
                   return (elem == Nothing)? Nothing : Just<value_type>(callable(elem.get()));
                 },

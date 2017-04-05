@@ -436,7 +436,7 @@ void read(std::istream& stream, Args&&... args) {
 /**
  * Returns generator yielding lines from given stream.
  */
-generator_handle<Generator<std::string>> Lines(std::istream& stream) {
+Generator<std::string> Lines(std::istream& stream) {
   return generate([&stream]() -> Maybe<std::string> {
     if (!stream.good())
       return Nothing;
@@ -461,9 +461,9 @@ generator_handle<Generator<std::string>> Lines(std::istream& stream) {
  */
 template <typename ValueType>
 auto ReadSequence(std::istream& stream, uint32 count) ->
-generator_handle<Generator<ValueType>>
+Generator<ValueType>
 {
-  class SequenceReader: public Generator<ValueType> {
+  class SequenceReader: public GeneratorBase<ValueType> {
   public:
     SequenceReader(std::istream& stream, uint32 count):
         stream_(stream), count_(count) { }
@@ -482,7 +482,7 @@ generator_handle<Generator<ValueType>>
     std::istream& stream_;
     uint32 count_;
   };
-  return detail::build_generator_handle<SequenceReader>(stream, count);
+  return detail::build_generator<SequenceReader>(stream, count);
 }
 
 } // namespace pcl
