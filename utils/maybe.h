@@ -160,7 +160,7 @@ private:
 
   struct storage_type {
     void construct(value_type value) {
-        new (data_) value_type(value);
+        new (data_) value_type(std::move(value));
     }
 
     void destroy() {
